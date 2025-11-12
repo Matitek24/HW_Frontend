@@ -1,11 +1,14 @@
 <script setup>
 import HelloWorld from './components/HelloWorld.vue'
+import Login from './components/Login.vue';
+import ApiTest from './components/ApiTest.vue';
 </script>
 
 <template>
-
-  <HelloWorld msg="Vite + Vue" />
-
+<!-- 
+  <HelloWorld msg="Vite + Vue" /> -->
+  <Login />
+  <ApiTest />
 </template>
 
 <style scoped>
