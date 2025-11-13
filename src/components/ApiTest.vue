@@ -6,7 +6,7 @@
   </template>
   
   <script setup>
- import { ref } from 'vue'; // <--- MUSISZ ZAIMPORTOWAĆ 'ref'
+ import { ref } from 'vue';
  import axios from 'axios';
 
 
