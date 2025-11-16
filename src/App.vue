@@ -1,27 +1,26 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import Login from './components/Login.vue';
-import ApiTest from './components/ApiTest.vue';
-</script>
-
 <template>
-<!-- 
-  <HelloWorld msg="Vite + Vue" /> -->
-  <Login />
-  <ApiTest />
+  <div id="app">
+    <router-view />
+  </div>
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+<script setup>
+
+</script>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+
+#app {
+  width: 100%;
+  min-height: 100vh;
 }
 </style>

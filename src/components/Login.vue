@@ -1,144 +1,192 @@
 <template>
-    <div class="card shadow-lg mx-auto" style="max-width: 420px;">
-      <div class="card-body p-4">
-        <h2 class="card-title text-center text-primary mb-4">Logowanie JWT</h2>
-        
-        <!-- Formularz logowania -->
-        <form @submit.prevent="handleLogin">
-          
-          <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" id="email" v-model="email" required 
-                   class="form-control" placeholder="Wprowadź email">
-          </div>
-  
-          <div class="mb-4">
-            <label for="haslo" class="form-label">Hasło</label>
-            <input type="password" id="haslo" v-model="haslo" required 
-                   class="form-control" placeholder="Wprowadź hasło">
-          </div>
-  
-          <button type="submit" :disabled="isLoading" 
-                  class="btn btn-primary w-100 py-2">
-            <span v-if="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            {{ isLoading ? 'Logowanie...' : 'Zaloguj się' }}
-          </button>
-        </form>
-  
-        <!-- Sekcja Komunikatów -->
-        <div v-if="token" class="mt-4 alert alert-success text-break">
-          <h6 class="alert-heading">Sukces! Uwierzytelniono.</h6>
-          <p class="mb-1">Otrzymany token ({{ tokenType }}):</p>
-          <div class="token-output border p-2 bg-light rounded mb-2 overflow-auto" style="font-size: 0.8rem;">
-              {{ token }}
-          </div>
-          <button @click="copyToClipboard" class="btn btn-sm btn-success">
-              Skopiuj Token
-          </button>
-        </div>
-  
-        <div v-if="error" class="mt-4 alert alert-danger">
-          <h6 class="alert-heading">Błąd Logowania:</h6>
-          <p class="mb-0">{{ error }}</p>
-        </div>
-        
-        <div v-if="message" class="mt-4 alert alert-info">
-          <p class="mb-0">{{ message }}</p>
-        </div>
-  
-      </div>
+  <div class="login-card">
+    <div class="login-header">
+      <h2>Headwear</h2>
+      <p>Zaloguj się do swojego konta</p>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue';
-  import axios from 'axios';
-  
-  // Stan formularza
-  const email = ref('');
-  const haslo = ref('');
-  
-  // Stan komunikacji
-  const isLoading = ref(false);
-  const token = ref(null);
-  const tokenType = ref(null);
-  const error = ref(null);
-  const message = ref(null);
-  
-  // Adres endpointu logowania
-  const LOGIN_URL = 'http://localhost:8080/api/auth/login';
-  
-  const handleLogin = async () => {
-      // Resetowanie stanu
-      token.value = null;
-      tokenType.value = null;
-      error.value = null;
-      message.value = null;
-      isLoading.value = true;
-  
-      try {
-          const response = await axios.post(LOGIN_URL, {
-              email: email.value,
-              haslo: haslo.value
-          });
-          
-          // Zapis tokenu i typu
-          token.value = response.data.token;
-          tokenType.value = response.data.typTokenu;
-          message.value = `Zalogowano pomyślnie jako ${email.value}! Token jest gotowy do użycia.`;
-          
-          // Opcjonalne zapisanie tokenu do localStorage
-          localStorage.setItem('jwtToken', token.value);
-  
-      } catch (err) {
     
-        console.error("Błąd Axios:", err);
+    <form @submit.prevent="handleLogin">
+      
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          type="email" 
+          id="email" 
+          v-model="email" 
+          required 
+          class="form-control"
+          placeholder="twoj@email.com">
+      </div>
+
+      <div class="form-group">
+        <label for="haslo">Hasło</label>
+        <input 
+          type="password" 
+          id="haslo" 
+          v-model="haslo" 
+          required 
+          class="form-control"
+          placeholder="••••••••">
+      </div>
+
+      <button type="submit" :disabled="isLoading" class="btn-login">
+        <span v-if="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+        {{ isLoading ? 'Logowanie...' : 'Zaloguj się' }}
+      </button>
+    </form>
+
+    <!-- Komunikaty błędów -->
+    <div v-if="error" class="alert-error">
+      <i class="bi bi-exclamation-circle"></i>
+      {{ error }}
+    </div>
+
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
+
+const router = useRouter();
+
+// Stan formularza
+const email = ref('');
+const haslo = ref('');
+const isLoading = ref(false);
+const error = ref(null);
+
+const LOGIN_URL = 'http://localhost:8080/api/auth/login';
+
+const handleLogin = async () => {
+  error.value = null;
+  isLoading.value = true;
+
+  try {
+    const response = await axios.post(LOGIN_URL, {
+      email: email.value,
+      haslo: haslo.value
+    });
+    
+    // Zapis tokenu
+    const token = response.data.token;
+    localStorage.setItem('jwtToken', token);
+    localStorage.setItem('userEmail', email.value);
+
+    // PRZEKIEROWANIE DO DASHBOARD! 🎉
+    router.push('/dashboard');
+
+  } catch (err) {
+    console.error("Błąd logowania:", err);
     
     if (err.response) {
-      console.error("Błąd Axios:", err);
-    
-    let errorMessage = "Wystąpił nieznany błąd serwera."; 
-    
-    if (err.response) {
-        const status = err.response.status;
-        
-        if (status === 401) {
-            errorMessage = "Nieprawidłowy email lub hasło.";
-        } else if (status === 429) {
-            errorMessage = "Za dużo prób logowania. Spróbuj później.";
-        } else if (err.response.data?.message) {
-            errorMessage = err.response.data.message;
-        } else {
-            errorMessage = `Błąd serwera (${status})`;
-        }
-    } else if (err.request) {
-        errorMessage = "Brak połączenia z serwerem. Sprawdź, czy backend działa.";
+      const status = err.response.status;
+      
+      if (status === 401) {
+        error.value = "Nieprawidłowy email lub hasło";
+      } else if (status === 429) {
+        error.value = "Za dużo prób. Spróbuj za chwilę";
+      } else {
+        error.value = err.response.data?.message || `Błąd serwera (${status})`;
+      }
+    } else {
+      error.value = "Brak połączenia z serwerem";
     }
-    
-    error.value = errorMessage;
-  
+  } finally {
+    isLoading.value = false;
   }
-      } finally {
-          isLoading.value = false;
-      }
-  };
-  
-  const copyToClipboard = async () => {
-      if (token.value) {
-          try {
-              await navigator.clipboard.writeText(token.value);
-              message.value = "Token JWT skopiowany do schowka!";
-              error.value = null;
-          } catch (err) {
-              error.value = "Błąd kopiowania (wymagany https lub uprawnienia). Spróbuj ręcznie.";
-          }
-      }
-  };
-  </script>
-  
-  <style scoped>
-  /* Dodatkowe style dla tego komponentu, używającej klas Bootstrapa */
-  .card-title {
-    font-weight: 600;
-  }
-  </style>
+};
+</script>
+
+<style scoped>
+.login-card {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.login-header h2 {
+  color: #1f5a96;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.login-header p {
+  color: #8896ab;
+  font-size: 14px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  color: #4a5568;
+  font-weight: 500;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.btn-login {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #66a8ea 0%, #4b79a2 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-top: 10px;
+}
+
+.btn-login:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.btn-login:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.alert-error {
+  margin-top: 20px;
+  padding: 12px 16px;
+  background: #fee;
+  border-left: 4px solid #e53e3e;
+  border-radius: 8px;
+  color: #c53030;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+</style>
