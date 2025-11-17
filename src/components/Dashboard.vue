@@ -193,7 +193,7 @@
   }
   
   .stat-card {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #1b80b254 0%, #1981b1 100%);
     padding: 25px;
     border-radius: 12px;
     text-align: center;
