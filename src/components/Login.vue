@@ -51,7 +51,6 @@ import axios from 'axios';
 
 const router = useRouter();
 
-// Stan formularza
 const email = ref('');
 const haslo = ref('');
 const isLoading = ref(false);
