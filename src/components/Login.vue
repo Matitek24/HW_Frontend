@@ -27,6 +27,9 @@
           required 
           class="form-control"
           placeholder="••••••••">
+          <router-link to="/forgot-password" class="forgot-link">
+            Zapomniałeś hasła?
+          </router-link>
       </div>
 
       <button type="submit" :disabled="isLoading" class="btn-login">
@@ -47,31 +50,36 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
+import { authAPI } from '../utils/axios';
+import { saveToken, isTokenValid } from '../utils/jwt';
 
 const router = useRouter();
 
+// Stan formularza
 const email = ref('');
 const haslo = ref('');
 const isLoading = ref(false);
 const error = ref(null);
-
-const LOGIN_URL = 'http://localhost:8080/api/auth/login';
 
 const handleLogin = async () => {
   error.value = null;
   isLoading.value = true;
 
   try {
-    const response = await axios.post(LOGIN_URL, {
-      email: email.value,
-      haslo: haslo.value
-    });
+    // Użyj authAPI zamiast bezpośrednio axios
+    const response = await authAPI.login(email.value, haslo.value);
     
-    // Zapis tokenu
+    // Bezpieczne zapisanie tokenu z walidacją
     const token = response.data.token;
-    localStorage.setItem('jwtToken', token);
-    localStorage.setItem('userEmail', email.value);
+    
+    if (!isTokenValid(token)) {
+      throw new Error('Otrzymano nieprawidłowy token');
+    }
+    
+    const saved = saveToken(token);
+    if (!saved) {
+      throw new Error('Nie udało się zapisać tokenu');
+    }
 
     // PRZEKIEROWANIE DO DASHBOARD! 🎉
     router.push('/dashboard');
@@ -79,19 +87,8 @@ const handleLogin = async () => {
   } catch (err) {
     console.error("Błąd logowania:", err);
     
-    if (err.response) {
-      const status = err.response.status;
-      
-      if (status === 401) {
-        error.value = "Nieprawidłowy email lub hasło";
-      } else if (status === 429) {
-        error.value = "Za dużo prób. Spróbuj za chwilę";
-      } else {
-        error.value = err.response.data?.message || `Błąd serwera (${status})`;
-      }
-    } else {
-      error.value = "Brak połączenia z serwerem";
-    }
+    // Axios interceptor już obsłużył większość błędów
+    error.value = err.message || "Wystąpił nieoczekiwany błąd";
   } finally {
     isLoading.value = false;
   }
@@ -99,6 +96,25 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.forgot-link {
+  font-size: 12px;
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.forgot-link:hover {
+  color: #5a67d8;
+  text-decoration: underline;
+}
 .login-card {
   background: white;
   border-radius: 20px;
@@ -114,7 +130,7 @@ const handleLogin = async () => {
 }
 
 .login-header h2 {
-  color: #1f5a96;
+  color: #667eea;
   font-size: 28px;
   font-weight: 600;
   margin-bottom: 8px;
@@ -155,7 +171,7 @@ const handleLogin = async () => {
 .btn-login {
   width: 100%;
   padding: 12px;
-  background: linear-gradient(135deg, #66a8ea 0%, #4b79a2 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
   border-radius: 10px;

@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 import LoginPage from '../pages/LoginPage.vue';
 import DashboardPage from '../pages/Dashboard.vue';
 import Czapka from '../pages/Czapka.vue';
+import ForgotPassword from '../pages/ForgotPassword.vue';
+import ResetPassword from '../pages/ResetPassword.vue';
 
 const routes = [
   {
@@ -19,7 +21,9 @@ const routes = [
     path: '/czapka',
     name: 'Czapka',
     component: Czapka,
-  }
+  },
+  { path: '/forgot-password', component: ForgotPassword },
+  { path: '/reset-password', component: ResetPassword },
 ];
 
 const router = createRouter({
@@ -27,7 +31,6 @@ const router = createRouter({
   routes
 });
 
-// Guard - sprawdza token przed wejściem na chronioną stronę
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('jwtToken');
   
