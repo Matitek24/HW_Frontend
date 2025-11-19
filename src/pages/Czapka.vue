@@ -7,7 +7,6 @@
   
   <script setup>
   import Czapka from '../components/CzapkaComp.vue';
-  import warptest from '../components/warptest.vue';
   </script>
   
   <style scoped>

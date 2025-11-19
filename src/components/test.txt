@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Warstwa_1" data-name="Warstwa 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080.93 187.5">
+  <ellipse cx="61.42" cy="15" rx="61.42" ry="15"/>
+  <ellipse cx="196.45" cy="15" rx="61.42" ry="15"/>
+  <ellipse cx="334.87" cy="15" rx="61.42" ry="15"/>
+  <ellipse cx="469.9" cy="15" rx="61.42" ry="15"/>
+  <ellipse cx="604.93" cy="15" rx="61.42" ry="15"/>
+  <ellipse cx="739.97" cy="15" rx="61.42" ry="15"/>
+  <ellipse cx="878.39" cy="15" rx="61.42" ry="15"/>
+  <ellipse cx="1013.42" cy="15" rx="61.42" ry="15"/>
+  <ellipse cx="67.52" cy="172.5" rx="61.42" ry="15"/>
+  <ellipse cx="202.55" cy="172.5" rx="61.42" ry="15"/>
+  <ellipse cx="340.97" cy="172.5" rx="61.42" ry="15"/>
+  <ellipse cx="476" cy="172.5" rx="61.42" ry="15"/>
+  <ellipse cx="611.03" cy="172.5" rx="61.42" ry="15"/>
+  <ellipse cx="746.07" cy="172.5" rx="61.42" ry="15"/>
+  <ellipse cx="884.48" cy="172.5" rx="61.42" ry="15"/>
+  <ellipse cx="1019.52" cy="172.5" rx="61.42" ry="15"/>
+</svg>
