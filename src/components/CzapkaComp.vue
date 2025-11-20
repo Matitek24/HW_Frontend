@@ -4,7 +4,7 @@
     <Formularz :config="hatConfig" />
     
     
-    <div class="svg-wrapper">
+    <div class="svg-wrapper d-flex align-items-end">
       <svg id="Warstwa_1" data-name="Warstwa 1" xmlns="http://www.w3.org/2000/svg"
         xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1144.47 664.47">
         <defs>
@@ -218,11 +218,10 @@
 <script setup>
 import Formularz from './Formularz.vue';
 import { reactive } from 'vue';
-import { ref, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import Warp from 'warpjs';
 
-
-const hatConfig = reactive({
+const defaultConfig = {
   text: {
     content: 'HELSINKI HELSINKI',
     color: '#1797ff',
@@ -234,8 +233,8 @@ const hatConfig = reactive({
     bottom: '#1797ff'
   },
   pattern: {
-    main: '#1797ff', 
-    top: '#8ad4f1'  
+    main: '#1797ff',
+    top: '#8ad4f1'
   },
   pompons: {
     p1: '#000000',
@@ -243,7 +242,33 @@ const hatConfig = reactive({
     p3: '#f0f0f0',
     p4: '#f0f0f0'
   }
+};
+
+const STORAGE_KEY = 'moj_projekt_czapki_v1';
+
+const hatConfig = reactive(JSON.parse(JSON.stringify(defaultConfig)));
+onMounted(() => {
+  const savedData = localStorage.getItem(STORAGE_KEY);
+  if (savedData) {
+    try {
+      const parsed = JSON.parse(savedData);
+      Object.assign(hatConfig, parsed);
+    } catch (e) {
+      console.error('Błąd odczytu konfiguracji:', e);
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }
 });
+
+watch(hatConfig, (newVal) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(newVal));
+}, { deep: true });
+
+const resetToDefault = () => {
+  localStorage.removeItem(STORAGE_KEY);
+  Object.assign(hatConfig, defaultConfig);
+};
+
 
 
 const warpInstances = new Map();
@@ -941,24 +966,58 @@ onMounted(() => {
   position: relative;
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
-  padding: 20px;
-  background-color: #ffffff;
+  gap: 30px; /* Zwiększyłem odstęp, żeby cienie 3D miały miejsce */
+  /* Usunąłem padding i background-color stąd, żeby nie psuć efektu tła */
+  justify-content: center; /* Wyśrodkowanie elementów */
 }
 
+
+/* STANDARDOWY WRAPPER (Glassmorphism) */
 .svg-wrapper {
+  /* Twoje wymiary */
   min-width: 300px;
   width: 546px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 16px;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%); /* Dla Safari */
+  border-radius: 24px;
+  padding: 30px; 
+  box-shadow:
+    0 8px 20px -5px rgba(0, 0, 0, 0.06), /* Miękki cień ogólny */
+    inset 0 1px 2px rgba(255, 255, 255, 0.8); /* Wewnętrzny blask na górnej krawędzi */
+
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
+
+/* EFEKT HOVER (Dla wszystkich) */
+.svg-wrapper:hover {
+  transform: translateY(-4px); /* Lekkie uniesienie */
+  background: rgba(255, 255, 255, 0.75); /* Trochę jaśniejsze szkło */
+  box-shadow:
+    0 12px 30px -8px rgba(0, 0, 0, 0.1),
+    inset 0 1px 2px rgba(255, 255, 255, 1);
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+
+/* Reszta twojego CSS */
 .svg-wrapper svg {
   width: 100%;
   height: auto;
   display: block;
+  /* Opcjonalnie: zaokrąglenie samego SVG jeśli jest prostokątne */
+  border-radius: 16px;
+}
+body {
+  min-height: 100vh;
+  /* Przykładowy nowoczesny gradient */
+  background: linear-gradient(135deg, #f6f8fd 0%, #e2e8f0 100%);
+  /* Opcjonalnie: jakieś "bloby" w tle dla lepszego efektu */
+  background-image:
+    radial-gradient(at 10% 10%, rgba(99, 179, 237, 0.2) 0px, transparent 50%),
+    radial-gradient(at 90% 90%, rgba(91, 144, 215, 0.243) 0px, transparent 50%);
+  padding: 40px;
 }
 </style>
