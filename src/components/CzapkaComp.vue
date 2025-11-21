@@ -71,13 +71,10 @@
             </g>
           </g>
         </g>
-        <text :x="572.23" :y="326.69" :fill="hatConfig.text.color" :font-family="hatConfig.text.font" font-size="100" font-weight="bold"
-          text-anchor="middle" dominant-baseline="middle">
-          {{ hatConfig.text.content }}
-        </text>
+      
         <g class="prostokat">
-          <g class="fls-2" :fill=hatConfig.pattern.top>
-            <g v-html="wzor_gora"></g>
+          <g class="fls-2" :fill=hatConfig.pattern.top >
+            <g v-html="wzor_gora" transform="translate(0, 40)"></g>
           </g>
         </g>
 
@@ -86,6 +83,11 @@
             <g v-html="svgGraphic"> </g>
          </g>
          </g>
+
+         <text :x="572.23" :y="326.69" :fill="hatConfig.text.color" :font-family="hatConfig.text.font" font-size="100" font-weight="bold"
+          text-anchor="middle" dominant-baseline="middle">
+          {{ hatConfig.text.content }}
+        </text>
       </svg>
     </div>
 
@@ -178,7 +180,23 @@
           <path id="curvePath" d="M -53 265 Q 297 300 650 265" />
         </defs>
 
-        <g clip-path="url(#clippath3)">
+       
+        <!-- NAPIS -->
+      <g class="dolnamaska" :fill=hatConfig.pattern.top>
+        <g class="fls-4" >
+          <g transform="translate(-40, 0)" id="target-wzor">
+            <g v-html="wzor_gora"></g> 
+          </g>
+         </g>
+      </g>
+          <g clip-path="url(#clippath3)" :fill="hatConfig.pattern.main">
+            <g transform="translate(-200, 150) scale(0.88)" id="target-graphic">
+              <g v-html="svgGraphic"> </g>
+            </g>
+          </g>
+
+
+          <g clip-path="url(#clippath3)">
           <text :font-family="hatConfig.text.font" font-weight="bold" font-size="100" :fill="hatConfig.text.color"
             text-anchor="middle" letter-spacing="2">
 
@@ -187,19 +205,6 @@
             </textPath>
           </text>
         </g>
-        <!-- NAPIS -->
-      <g class="dolnamaska" :fill=hatConfig.pattern.top>
-        <g class="fls-4" >
-          <g transform="translate(0, -50)" id="target-wzor">
-            <g v-html="wzor_gora"></g> 
-          </g>
-         </g>
-      </g>
-          <g clip-path="url(#clippath3)" :fill="hatConfig.pattern.main">
-            <g transform="translate(0, 150) scale(0.88)" id="target-graphic">
-              <g v-html="svgGraphic"> </g>
-            </g>
-          </g>
       </svg>
     </div>
   </div>
@@ -721,8 +726,8 @@ onMounted(() => {
   setTimeout(() => {
     const secondSvg = document.querySelector('#Warstwa_1_Obrazek_2');
     if (secondSvg) {
-      bendIt(secondSvg, '#target-wzor', 297, -0.0001);
-      bendIt(secondSvg, '#target-graphic', 297, -0.0001);
+      bendIt(secondSvg, '#target-wzor', 500, -0.0001);
+      bendIt(secondSvg, '#target-graphic', 510, -0.0001);
     }
   }, 100); 
 });
@@ -737,7 +742,7 @@ watch(
     setTimeout(() => {
       const secondSvg = document.querySelector('#Warstwa_1_Obrazek_2');
       if (secondSvg) {
-        bendIt(secondSvg, '#target-graphic', 297, -0.0001);
+        bendIt(secondSvg, '#target-graphic', 510, -0.0001);
       }
     }, 30);
   }

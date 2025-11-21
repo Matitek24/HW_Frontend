@@ -95,7 +95,7 @@
 
         <div class="group-section">
   <div class="group-header">
-    <span class="icon">🎨</span> Wzory
+    <span class="icon"></span> Wzory
   </div>
   <div class="controls-row">
     
@@ -105,8 +105,8 @@
       <select v-model="config.patterns.top" class="input-pill select-pill">
         <option value="none">Brak</option>
         <option value="snowflakes">Śnieżynki</option>
-        <option value="triangles">Trójkąty</option>
-        <option value="diamonds">Diamenty</option>
+        <option value="gora1">gora1</option>
+        <option value="gora2">gora2</option>
       </select>
     </div>
     
@@ -115,9 +115,9 @@
       <label class="mini-label"></label>
       <select v-model="config.patterns.bottom" class="input-pill select-pill">
         <option value="none">Brak</option>
-        <option value="snowflakes">Śnieżynki</option>
+        <option value="triangles2">Usmiech</option>
         <option value="triangles">Trójkąty</option>
-        <option value="diamonds">Diamenty</option>
+        <option value="smile">Trójkat_v2</option>
       </select>
     </div>
     
