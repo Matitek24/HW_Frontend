@@ -1,6 +1,7 @@
 <template>
   <div class="svg-container">
 
+    <TopBar />
     <Formularz :config="hatConfig" />
     
     
@@ -85,16 +86,13 @@
             <g v-html="svgGraphic"> </g>
          </g>
          </g>
-       
       </svg>
-
-
     </div>
 
     <div class="svg-wrapper position-relative" style="padding-top:150px;">
 
       <div class="pompon" style="position:absolute; top:60px; transform: scale(2.5) ">
-        <svg id="Warstwa_1" data-name="Warstwa 1" xmlns="http://www.w3.org/2000/svg" viewBox="173 0 934.77 259.81">
+        <svg id="Warstwa_1" data-name="Warstwa 1" xmlns="http://www.w3.org/2000/svg" viewBox="182 0 934.77 259.81">
           <g v-html="pompon"></g>
         </svg>
       </div>
@@ -217,6 +215,7 @@
 
 <script setup>
 import Formularz from './Formularz.vue';
+import TopBar from './TopBar.vue';
 import { reactive } from 'vue';
 import { ref, watch, onMounted } from 'vue';
 import Warp from 'warpjs';
@@ -902,22 +901,20 @@ onMounted(() => {
 .dolnamaska{
   clip-path: url(#dolnamaskaprawa);
 }
-    .fls-1 {
-        fill: none;
-      }
+  .fls-1 {
+    fill: none;
+  }
 
-      .fls-2 {
-        clip-path: url(#clippath2);
+  .fls-2 {
+    clip-path: url(#clippath2);
        
-      }
-      .fls-4 {
-        clip-path: url(#clippath3);
-        
-        
-      }
-      .prostokat{
-        clip-path: url(#prostokat);
-      }
+  }
+  .fls-4 {
+    clip-path: url(#clippath3);  
+  }
+  .prostokat{
+    clip-path: url(#prostokat);
+  }
 .cls-7 {
   fill: none;
 }
@@ -934,7 +931,7 @@ onMounted(() => {
 }
 
 .gls-1 {
-  fill: v-bind('hatConfig.pompons.p1'); /* Uwaga na cudzysłów! */
+  fill: v-bind('hatConfig.pompons.p1'); 
 }
 .gls-2 {
   fill: v-bind('hatConfig.pompons.p2');
@@ -945,7 +942,6 @@ onMounted(() => {
 .gls-4{
   fill: v-bind('hatConfig.pompons.p4');
 }
-/* Klasy techniczne (bez zmian) */
 .cls-2 {
   fill: none;
 }
@@ -966,58 +962,44 @@ onMounted(() => {
   position: relative;
   display: flex;
   flex-wrap: wrap;
-  gap: 30px; /* Zwiększyłem odstęp, żeby cienie 3D miały miejsce */
-  /* Usunąłem padding i background-color stąd, żeby nie psuć efektu tła */
-  justify-content: center; /* Wyśrodkowanie elementów */
+  gap: 30px; 
+  justify-content: center;
+  padding-bottom:8rem;
 }
 
-
-/* STANDARDOWY WRAPPER (Glassmorphism) */
 .svg-wrapper {
-  /* Twoje wymiary */
   min-width: 300px;
   width: 546px;
-
   background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(16px) saturate(120%);
-  -webkit-backdrop-filter: blur(16px) saturate(120%); /* Dla Safari */
+  -webkit-backdrop-filter: blur(16px) saturate(120%); 
   border-radius: 24px;
   padding: 30px; 
   box-shadow:
-    0 8px 20px -5px rgba(0, 0, 0, 0.06), /* Miękki cień ogólny */
-    inset 0 1px 2px rgba(255, 255, 255, 0.8); /* Wewnętrzny blask na górnej krawędzi */
-
+    0 8px 20px -5px rgba(0, 0, 0, 0.06), 
+    inset 0 1px 2px rgba(255, 255, 255, 0.8);
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-
-/* EFEKT HOVER (Dla wszystkich) */
 .svg-wrapper:hover {
-  transform: translateY(-4px); /* Lekkie uniesienie */
-  background: rgba(255, 255, 255, 0.75); /* Trochę jaśniejsze szkło */
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.75); 
   box-shadow:
     0 12px 30px -8px rgba(0, 0, 0, 0.1),
     inset 0 1px 2px rgba(255, 255, 255, 1);
   border-color: rgba(255, 255, 255, 0.8);
 }
 
-
-/* Reszta twojego CSS */
 .svg-wrapper svg {
   width: 100%;
   height: auto;
   display: block;
-  /* Opcjonalnie: zaokrąglenie samego SVG jeśli jest prostokątne */
   border-radius: 16px;
 }
 body {
-  min-height: 100vh;
-  /* Przykładowy nowoczesny gradient */
   background: linear-gradient(135deg, #f6f8fd 0%, #e2e8f0 100%);
-  /* Opcjonalnie: jakieś "bloby" w tle dla lepszego efektu */
   background-image:
     radial-gradient(at 10% 10%, rgba(99, 179, 237, 0.2) 0px, transparent 50%),
     radial-gradient(at 90% 90%, rgba(91, 144, 215, 0.243) 0px, transparent 50%);
-  padding: 40px;
 }
 </style>

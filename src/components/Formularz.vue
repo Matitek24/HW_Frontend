@@ -1,5 +1,6 @@
 <template>
     <div class="config-bar-container">
+      
       <div class="config-bar">
         
         <!-- SEKCJA 1: TEKST -->

@@ -1,8 +1,7 @@
 <template>
-    <div class="dashboard-page">
+
       <Czapka />
-      <!-- <warptest /> -->
-    </div>
+ 
   </template>
   
   <script setup>
@@ -10,7 +9,5 @@
   </script>
   
   <style scoped>
-  .dashboard-page {
-    min-height: 100vh;
-  }
+
   </style>
