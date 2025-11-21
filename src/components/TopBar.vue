@@ -62,8 +62,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 2px;
-    /* Subtelna kreska na górze symulująca krawędź */
-    border-top: 4px solid #1797ff; 
+    border-top: 4px solid #569abf; 
   }
   
   .tag-label {
@@ -75,14 +74,13 @@
   }
   
   .tag-value {
-    font-family: 'Courier New', monospace; /* Techniczny font */
+    font-family: 'Courier New', monospace;
     font-size: 16px;
     font-weight: 700;
     color: #1f2937;
     letter-spacing: -0.5px;
   }
   
-  /* --- STYLIZACJA PRAWEJ STRONY --- */
   .actions-container {
     display: flex;
     gap: 12px;

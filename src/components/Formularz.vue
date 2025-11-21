@@ -92,6 +92,38 @@
             </div>
           </div>
         </div>
+
+        <div class="group-section">
+  <div class="group-header">
+    <span class="icon">🎨</span> Wzory
+  </div>
+  <div class="controls-row">
+    
+    <!-- Select dla wzoru góra -->
+    <div class="select-wrapper">
+      <label class="mini-label"></label>
+      <select v-model="config.patterns.top" class="input-pill select-pill">
+        <option value="none">Brak</option>
+        <option value="snowflakes">Śnieżynki</option>
+        <option value="triangles">Trójkąty</option>
+        <option value="diamonds">Diamenty</option>
+      </select>
+    </div>
+    
+    <!-- Select dla wzoru dół -->
+    <div class="select-wrapper">
+      <label class="mini-label"></label>
+      <select v-model="config.patterns.bottom" class="input-pill select-pill">
+        <option value="none">Brak</option>
+        <option value="snowflakes">Śnieżynki</option>
+        <option value="triangles">Trójkąty</option>
+        <option value="diamonds">Diamenty</option>
+      </select>
+    </div>
+    
+  </div>
+</div>
+
   
       </div>
     </div>
@@ -104,10 +136,11 @@
       required: true
     }
   });
+
+
   </script>
   
   <style scoped>
-  /* Kontener główny - pozycjonowanie na dole ekranu */
   .config-bar-container {
     position: fixed;
     bottom: 30px;
@@ -291,7 +324,6 @@
     border: 2px solid #fff;
   }
   
-  /* Input ukryty wewnątrz kółka, ale klikalny */
   .color-ring input[type="color"] {
     position: absolute;
     top: 50%;
@@ -301,7 +333,7 @@
     height: 150%;
     padding: 0;
     margin: 0;
-    opacity: 0; /* Input jest niewidoczny, ale przejmuje kliknięcie */
+    opacity: 0;
     cursor: pointer;
   }
   
