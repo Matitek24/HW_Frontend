@@ -9,7 +9,7 @@ const routes = [
   {
     path: '/',
     name: 'Login',
-    component: LoginPage
+    component: Czapka
   },
   {
     path: '/dashboard',
@@ -18,9 +18,9 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/czapka',
+    path: '/login',
     name: 'Czapka',
-    component: Czapka,
+    component: LoginPage,
   },
   { path: '/forgot-password', component: ForgotPassword },
   { path: '/reset-password', component: ResetPassword },

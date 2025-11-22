@@ -84,8 +84,16 @@
          </g>
          </g>
 
-         <text :x="572.23" :y="326.69" :fill="hatConfig.text.color" :font-family="hatConfig.text.font" font-size="100" font-weight="bold"
-          text-anchor="middle" dominant-baseline="middle">
+         <text 
+            :x="572.23" 
+            :y="315.69" 
+            :fill="hatConfig.text.color" 
+            :font-family="hatConfig.text.font" 
+            :font-size="hatConfig.text.fontSize" 
+            font-weight="bold"
+            text-anchor="middle" 
+            dominant-baseline="central" 
+          >
           {{ hatConfig.text.content }}
         </text>
       </svg>
@@ -93,8 +101,8 @@
 
     <div class="svg-wrapper position-relative" style="padding-top:150px;">
 
-      <div class="pompon" style="position:absolute; top:60px; transform: scale(2.5) ">
-        <svg id="Warstwa_1" data-name="Warstwa 1" xmlns="http://www.w3.org/2000/svg" viewBox="190 0 934.77 259.81">
+      <div class="pompon" style="position:absolute; top:60px; transform: scale(3) ">
+        <svg id="Warstwa_1" data-name="Warstwa 1" xmlns="http://www.w3.org/2000/svg" viewBox="213 0 934.77 259.81">
           <g v-html="pompon"></g>
         </svg>
       </div>
@@ -179,12 +187,10 @@
         <defs>
           <path id="curvePath" d="M -53 265 Q 297 300 650 265" />
         </defs>
-
-       
         <!-- NAPIS -->
       <g class="dolnamaska" :fill=hatConfig.pattern.top>
         <g class="fls-4" >
-          <g transform="translate(-40, 0)" id="target-wzor">
+          <g transform="translate(-260, 0)" id="target-wzor">
             <g v-html="wzor_gora"></g> 
           </g>
          </g>
@@ -195,12 +201,14 @@
             </g>
           </g>
 
-
           <g clip-path="url(#clippath3)">
-          <text :font-family="hatConfig.text.font" font-weight="bold" font-size="100" :fill="hatConfig.text.color"
-            text-anchor="middle" letter-spacing="2">
-
-            <textPath xlink:href="#curvePath" startOffset="50%" method="align" spacing="auto">
+          <text  :dy="calculateTextPathOffset - 40" :font-family="hatConfig.text.font" 
+                font-weight="bold" :font-size="hatConfig.text.fontSize" 
+                :fill="hatConfig.text.color"
+                text-anchor="middle" letter-spacing="2">
+            <textPath xlink:href="#curvePath" startOffset="50%" 
+                      method="align" spacing="auto"
+                     >
               {{ hatConfig.text.content }}
             </textPath>
           </text>
@@ -223,7 +231,8 @@ const defaultConfig = {
   text: {
     content: 'HELSINKI HELSINKI',
     color: '#1797ff',
-    font: 'Arial, sans-serif'
+    font: 'Arial, sans-serif',
+    fontSize: 100
   },
   base: {
     top: '#1797ff',
@@ -247,9 +256,9 @@ const defaultConfig = {
 };
 
 
-
-
-
+const calculateTextPathOffset = computed(() => {
+  return hatConfig.text.fontSize * 0.35;
+});
 
 // COMPUTED dla wzorów
 const wzor_gora = computed(() => {
@@ -726,7 +735,7 @@ onMounted(() => {
   setTimeout(() => {
     const secondSvg = document.querySelector('#Warstwa_1_Obrazek_2');
     if (secondSvg) {
-      bendIt(secondSvg, '#target-wzor', 500, -0.0001);
+      bendIt(secondSvg, '#target-wzor', 800, -0.0001);
       bendIt(secondSvg, '#target-graphic', 510, -0.0001);
     }
   }, 100); 
@@ -758,7 +767,7 @@ watch(
     setTimeout(() => {
       const secondSvg = document.querySelector('#Warstwa_1_Obrazek_2');
       if (secondSvg) {
-        bendIt(secondSvg, '#target-wzor', 297, -0.0001);
+        bendIt(secondSvg, '#target-wzor', 510, -0.0001);
       }
     }, 30);
   }
