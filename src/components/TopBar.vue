@@ -8,15 +8,19 @@
       </div>
     </div>
 
-    <div class="actions-container">
+    <div class="d-flex justify-content-center">
       
-      <button class="glass-btn icon-only" @click="downloadVisualization" title="Pobierz wizualizację">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-          <polyline points="7 10 12 15 17 10"></polyline>
-          <line x1="12" y1="15" x2="12" y2="3"></line>
-        </svg>
-      </button>
+
+      <button class="glass-btn with-text me-3" @click="$emit('download')">
+          <span class="btn-text">Pobierz wizualizację</span>
+          <span class="btn-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+          </span>
+        </button>
 
       <button class="glass-btn with-text" @click="openModal">
         <span class="btn-text">Wyślij wizualizację</span>
@@ -27,25 +31,29 @@
           </svg>
         </span>
       </button>
+    </div>
+    <div class="actions-container">
+    
 
       <button class="logo-btn">
-        <img src="../assets/Headwear_COLOR_CMYK_logo-1.png.webp" width="70" alt="hw">
+        <img src="../assets/Headwear_COLOR_CMYK_logo-1.png.webp" width="120" alt="hw">
       </button>
     </div>
   </div>
 
   <Transition name="fade">
     <div v-if="isModalOpen" class="modal-overlay" @click.self="closeModal">
+      
       <div class="glass-modal-content container p-4">
-        
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <button class="close-btn d-flex" @click="closeModal">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        <div class="d-flex justify-content-center align-items-center mb-4 mt-4">
           <div>
             <h3 class="modal-title">Wyślij zapytanie</h3>
             <p class="modal-subtitle">Otrzymaj wycenę dla Twojej konfiguracji</p>
           </div>
-          <button class="close-btn" @click="closeModal">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-          </button>
+         
         </div>
 
         <form @submit.prevent="submitForm" class="row g-3">
@@ -54,14 +62,19 @@
             <input type="text" class="input-pill w-100" placeholder="Wpisz nazwę..." required>
           </div>
 
-          <div class="col-md-6">
+          <div class="col-md-4">
             <label class="form-label">E-mail</label>
             <input type="email" class="input-pill w-100" placeholder="twoj@email.com" required>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-4">
             <label class="form-label">Numer telefonu</label>
             <input type="tel" class="input-pill w-100" placeholder="+48 000 000 000">
           </div>
+          <div class="col-md-4">
+            <label class="form-label">Ilośc czapek</label>
+            <input type="number" class="input-pill w-100" placeholder="100">
+          </div>
+
 
           <div class="col-12">
             <label class="form-label">Uwagi do zamówienia</label>
@@ -71,7 +84,7 @@
           <div class="col-12 mt-2">
             <div class="form-check">
               <input class="form-check-input" type="checkbox" id="rodoCheck" required>
-              <label class="form-check-label small text-muted" for="rodoCheck">
+              <label class="form-check-label small text-muted d-flex ms-2 mt-4 fw-lighter" for="rodoCheck">
                 Akceptuję politykę prywatności i przetwarzanie danych w celu wyceny.
               </label>
             </div>
@@ -89,11 +102,15 @@
       </div>
     </div>
   </Transition>
+
+  
 </template>
 
 <script setup>
 import { ref } from 'vue';
 
+
+defineEmits(['download']);
 // Stan modala
 const isModalOpen = ref(false);
 
@@ -111,10 +128,6 @@ const submitForm = () => {
   closeModal();
 };
 
-const downloadVisualization = () => {
-  // Tutaj logika pobierania obrazka/PDF
-  alert('Pobieranie wizualizacji...');
-};
 </script>
 
 <style scoped>
@@ -201,8 +214,8 @@ const downloadVisualization = () => {
 /* Logo Button (lekko zmniejszony względem oryginału, żeby pasował do guzików) */
 .logo-btn {
   background: rgba(255, 255, 255, 0.9);
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   border: none;
   display: flex; align-items: center; justify-content: center;

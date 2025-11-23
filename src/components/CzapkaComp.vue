@@ -1,8 +1,14 @@
 <template>
   <div class="svg-container">
 
-    <TopBar />
+    <TopBar @download="handleDownloadRequest"/>
     <Formularz :config="hatConfig" />
+
+    <!-- <ExportVisualization 
+      v-if="hatConfig && hatConfig.base"
+      ref="exportComponentRef" 
+      :hatConfig="hatConfig" 
+    /> -->
     
     
     <div class="svg-wrapper d-flex align-items-end">
@@ -185,7 +191,7 @@
 
         <!-- NAPIS -->
         <defs>
-          <path id="curvePath" d="M -53 265 Q 297 300 650 265" />
+          <path id="curvePath" d="M -53 269 Q 297 300 650 265" />
         </defs>
         <!-- NAPIS -->
       <g class="dolnamaska" :fill=hatConfig.pattern.top>
@@ -226,6 +232,7 @@ import TopBar from './TopBar.vue';
 import {ref, reactive, computed, watch, onMounted, nextTick } from 'vue';
 import Warp from 'warpjs';
 import { PATTERN_LIBRARY } from '../utils/patterns.js';
+// import ExportVisualization from './ExportVisualization.vue';
 
 const defaultConfig = {
   text: {
@@ -270,6 +277,19 @@ const svgGraphic = computed(() => {
   
 });
 
+
+
+// const exportComponentRef = ref(null);
+// const handleDownloadRequest = () => {
+//   console.log("Rodzic: Otrzymałem prośbę o pobranie!");
+  
+//   if (exportComponentRef.value) {
+//     // Rodzic mówi do dziecka: "Zrób zdjęcie!"
+//     exportComponentRef.value.generateImage();
+//   } else {
+//     console.error("Komponent eksportu nie jest jeszcze gotowy.");
+//   }
+// };
 
 const STORAGE_KEY = 'moj_projekt_czapki_v1';
 
