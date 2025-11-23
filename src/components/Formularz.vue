@@ -337,7 +337,6 @@ const toggleExpand = () => {
     0 0 0 1px rgba(0, 0, 0, 0.03);
   
   max-width: 100%;
-  transition: all 0.3s ease;
 }
 
 .config-bar-container.expanded .config-bar {
@@ -496,7 +495,7 @@ const toggleExpand = () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #f9fafb; /* Bardzo jasne tło dla wiersza */
+  background: #f9fafb; 
   padding: 8px 12px;
   border-radius: 12px;
   border: 1px solid transparent;
