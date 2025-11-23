@@ -42,7 +42,7 @@
   </div>
 
   <Transition name="fade">
-    <div v-if="isModalOpen" class="modal-overlay" @click.self="closeModal">
+    <div v-show="isModalOpen" class="modal-overlay" @click.self="closeModal">
       
       <div class="glass-modal-content container p-4">
         <button class="close-btn d-flex" @click="closeModal">
@@ -154,7 +154,7 @@ const submitForm = () => {
   border-radius: 0 0 12px 12px;
   padding: 12px 16px;
   display: flex; flex-direction: column;
-  border-top: 4px solid #569abf;
+  border-top: 4px solid #296088;
 }
 .tag-label { font-size: 9px; color: #9ca3af; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
 .tag-value { font-family: 'Courier New', monospace; font-size: 16px; font-weight: 700; color: #1f2937; }

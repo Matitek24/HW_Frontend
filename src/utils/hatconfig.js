@@ -4,7 +4,7 @@ const STORAGE_KEY = 'moj_projekt_czapki_v1';
 
 export const defaultConfig = {
   text: {
-    content: 'HELSINKI HELSINKI',
+    content: 'HEADWEAR',
     color: '#1797ff',
     font: 'Arial, sans-serif',
     fontSize: 100

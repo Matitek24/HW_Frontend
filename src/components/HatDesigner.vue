@@ -1,4 +1,5 @@
 <template>
+    
     <div class="svg-container">
       <TopBar @download="handleDownloadRequest" />
       <Formularz :config="hatConfig" />
@@ -12,7 +13,7 @@
   </template>
   
   <script setup>
-  import { reactive, watch, onMounted } from 'vue';
+  import { reactive, watch, onMounted, computed } from 'vue';
   import Formularz from './Formularz.vue';
   import TopBar from './TopBar.vue';
   import HatFlat from './hat/HatFlat.vue';
@@ -64,9 +65,41 @@
   };
   
   const downloadAsPNG = () => {
-    // Logika eksportu do PNG - możesz użyć html2canvas lub podobnej biblioteki
     console.log('PNG export - to implement');
   };
+
+  const hexToRgbString = (hex) => {
+  if (!hex) return '255, 255, 255'; 
+  
+  hex = hex.replace(/^#/, '');
+  
+  if (hex.length === 3) {
+    hex = hex.split('').map(c => c + c).join('');
+  }
+  
+  const num = parseInt(hex, 16);
+  const r = (num >> 16) & 255;
+  const g = (num >> 8) & 255;
+  const b = num & 255;
+  
+  return `${r}, ${g}, ${b}`;
+};
+
+watch(
+  () => hatConfig.base,
+  (newBase) => {
+    if (newBase?.top && newBase?.bottom) {
+      const topRgb = hexToRgbString(newBase.top);
+      const bottomRgb = hexToRgbString(newBase.bottom);
+
+      // Ustawiamy same cyferki RGB jako zmienne
+      document.body.style.setProperty('--rgb-top', topRgb);
+      document.body.style.setProperty('--rgb-bottom', bottomRgb);
+    }
+  },
+  { deep: true, immediate: true }
+);
+
   </script>
   
   <style>
@@ -110,11 +143,18 @@
   }
   
   body {
-    background: linear-gradient(135deg, #f6f8fd 0%, #e2e8f0 100%);
+    --rgb-top: 255, 255, 255;  
+    --rgb-bottom: 255, 255, 255;
+
+    background-color: #ffffff;
     background-image:
-      radial-gradient(at 10% 10%, rgba(99, 179, 237, 0.2) 0px, transparent 50%),
-      radial-gradient(at 90% 90%, rgba(91, 144, 215, 0.243) 0px, transparent 50%);
-  }
+  radial-gradient(at 10% 10%, rgba(var(--rgb-top), 0.20) 0px, transparent 50%),
+  radial-gradient(at 90% 90%, rgba(var(--rgb-bottom), 0.20) 0px, transparent 50%);
+
+    background-attachment: fixed;
+    min-height: 100vh;
+    transition: background-image 0.5s ease-in-out;
+}
   
   .pasek {
     fill: var(--kolor-pasek);

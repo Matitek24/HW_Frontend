@@ -9,7 +9,7 @@
 
     <div class="config-bar">
       
-      <div v-if="!isExpanded" class="view-compact">
+      <div v-show="!isExpanded" class="view-compact">
         
         <div class="group-section">
           <div class="group-header"><span class="icon"></span> Personalizacja</div>
@@ -109,7 +109,7 @@
 
       </div>
 
-      <div v-else class="view-expanded">
+      <div v-show="isExpanded" class="view-expanded">
         
         <div class="expanded-grid">
           
