@@ -23,7 +23,6 @@
         <rect :fill="config.base.middle" class="cls-1" x="1.66" y="206.8" width="1142.81" height="225.78" />
         <rect class="cls-2" x="1.66" y="0" width="1142.81" height="508.09" />
         
-        <!-- Paski (stripes) -->
         <g>
           <g>
             <rect class="pasek" x="50.54" y="432.58" width="2.75" height="231.26" />

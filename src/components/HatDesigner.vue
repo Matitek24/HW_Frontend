@@ -1,27 +1,60 @@
 <template>
-    
     <div class="svg-container">
-      <TopBar @download="handleDownloadRequest" />
+      <TopBar 
+        @download="handleDownloadRequest" 
+        :isDownloading="isDownloading"
+      />
+  
       <Formularz :config="hatConfig" />
       
-      <!-- Płaska wizualizacja -->
-      <HatFlat :config="hatConfig" />
+      <div id="print-flat-container" >
+        <HatFlat :config="hatConfig" />
+      </div>
+  
+      <div id="print-front-container" >
+        <HatFront :config="hatConfig" :show-pompon="true" />
+      </div>
       
-      <!-- Widok z przodu z pomponem -->
+      <!-- <HatFlat :config="hatConfig" />
       <HatFront :config="hatConfig" :show-pompon="true" />
+      -->
     </div>
   </template>
-  
   <script setup>
-  import { reactive, watch, onMounted, computed } from 'vue';
+  import { reactive, watch, onMounted, ref } from 'vue';
   import Formularz from './Formularz.vue';
   import TopBar from './TopBar.vue';
   import HatFlat from './hat/HatFlat.vue';
   import HatFront from './hat/HatFront.vue';
   import { defaultConfig, loadConfig, saveConfig } from '../utils/hatConfig.js';
+  import { usePdfGenerator } from '../utils/usePdfGenerator.js'; 
   
-  // Konfiguracja czapki
+  const isDownloading = ref(false);
+  
+  const { generatePdf } = usePdfGenerator();
+  
   const hatConfig = reactive(JSON.parse(JSON.stringify(defaultConfig)));
+
+  const handleDownloadRequest = async (type) => {
+    if (type === "pdf") {
+      // 1. Włączamy loading
+      isDownloading.value = true;
+      
+      try {
+        // 2. Wywołujemy funkcję z oddzielnego pliku
+        // setTimeout daje czas Vue na odświeżenie UI (pokazanie spinnera)
+        setTimeout(async () => {
+           await generatePdf();
+           // 3. Wyłączamy loading po zakończeniu
+           isDownloading.value = false;
+        }, 100);
+        
+      } catch (e) {
+        console.error(e);
+        isDownloading.value = false;
+      }
+    }
+  };
   
   // Wczytanie zapisanej konfiguracji przy starcie
   onMounted(() => {
@@ -36,18 +69,7 @@
     saveConfig(newVal);
   }, { deep: true });
   
-  // Obsługa pobierania
-  const handleDownloadRequest = (type) => {
-    // Implementacja pobierania - możesz dodać różne typy eksportu
-    console.log('Download request:', type);
-    
-    // Przykład: pobranie jako SVG
-    if (type === 'svg') {
-      downloadAsSVG();
-    } else if (type === 'png') {
-      downloadAsPNG();
-    }
-  };
+  // --- USUNĄŁEM STARĄ FUNKCJĘ handleDownloadRequest STĄD ---
   
   const downloadAsSVG = () => {
     // Logika eksportu do SVG
@@ -67,39 +89,38 @@
   const downloadAsPNG = () => {
     console.log('PNG export - to implement');
   };
-
+  
   const hexToRgbString = (hex) => {
-  if (!hex) return '255, 255, 255'; 
-  
-  hex = hex.replace(/^#/, '');
-  
-  if (hex.length === 3) {
-    hex = hex.split('').map(c => c + c).join('');
-  }
-  
-  const num = parseInt(hex, 16);
-  const r = (num >> 16) & 255;
-  const g = (num >> 8) & 255;
-  const b = num & 255;
-  
-  return `${r}, ${g}, ${b}`;
-};
-
-watch(
-  () => hatConfig.base,
-  (newBase) => {
-    if (newBase?.top && newBase?.bottom) {
-      const topRgb = hexToRgbString(newBase.top);
-      const bottomRgb = hexToRgbString(newBase.bottom);
-
-      // Ustawiamy same cyferki RGB jako zmienne
-      document.body.style.setProperty('--rgb-top', topRgb);
-      document.body.style.setProperty('--rgb-bottom', bottomRgb);
+    if (!hex) return '255, 255, 255'; 
+    
+    hex = hex.replace(/^#/, '');
+    
+    if (hex.length === 3) {
+      hex = hex.split('').map(c => c + c).join('');
     }
-  },
-  { deep: true, immediate: true }
-);
-
+    
+    const num = parseInt(hex, 16);
+    const r = (num >> 16) & 255;
+    const g = (num >> 8) & 255;
+    const b = num & 255;
+    
+    return `${r}, ${g}, ${b}`;
+  };
+  
+  watch(
+    () => hatConfig.base,
+    (newBase) => {
+      if (newBase?.top && newBase?.bottom) {
+        const topRgb = hexToRgbString(newBase.top);
+        const bottomRgb = hexToRgbString(newBase.bottom);
+  
+        // Ustawiamy same cyferki RGB jako zmienne
+        document.body.style.setProperty('--rgb-top', topRgb);
+        document.body.style.setProperty('--rgb-bottom', bottomRgb);
+      }
+    },
+    { deep: true, immediate: true }
+  );
   </script>
   
   <style>
@@ -148,8 +169,8 @@ watch(
 
     background-color: #ffffff;
     background-image:
-  radial-gradient(at 10% 10%, rgba(var(--rgb-top), 0.20) 0px, transparent 50%),
-  radial-gradient(at 90% 90%, rgba(var(--rgb-bottom), 0.20) 0px, transparent 50%);
+  radial-gradient(at 10% 10%, rgba(var(--rgb-top), 0.14) 0px, transparent 50%),
+  radial-gradient(at 90% 90%, rgba(var(--rgb-bottom), 0.14) 0px, transparent 50%);
 
     background-attachment: fixed;
     min-height: 100vh;

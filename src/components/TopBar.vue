@@ -11,16 +11,27 @@
     <div class="d-flex justify-content-center">
       
 
-      <button class="glass-btn with-text me-3" @click="$emit('download')">
-          <span class="btn-text">Pobierz wizualizację</span>
-          <span class="btn-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7 10 12 15 17 10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
-            </svg>
-          </span>
-        </button>
+      <button 
+        class="glass-btn with-text me-3" 
+        :class="{ 'disabled-btn': isDownloading }"
+        :disabled="isDownloading"
+        @click="$emit('download', 'pdf')"
+      >
+        <span class="btn-text">
+          {{ isDownloading ? 'Pobieram...' : 'Pobierz wizualizację' }}
+        </span>
+        
+        <span class="btn-icon">
+          <svg v-if="!isDownloading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <svg v-else class="animate-spin" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+             <line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+          </svg>
+        </span>
+      </button>
 
       <button class="glass-btn with-text" @click="openModal">
         <span class="btn-text">Wyślij wizualizację</span>
@@ -110,8 +121,15 @@
 import { ref } from 'vue';
 
 
+defineProps({
+  isDownloading: {
+    type: Boolean,
+    default: false
+  }
+});
+
 defineEmits(['download']);
-// Stan modala
+
 const isModalOpen = ref(false);
 
 const openModal = () => {
@@ -131,6 +149,13 @@ const submitForm = () => {
 </script>
 
 <style scoped>
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
 /* --- GŁÓWNY LAYOUT NAGŁÓWKA --- */
 .top-header {
   position: fixed;
@@ -154,7 +179,7 @@ const submitForm = () => {
   border-radius: 0 0 12px 12px;
   padding: 12px 16px;
   display: flex; flex-direction: column;
-  border-top: 4px solid #296088;
+  border-top: 4px solid #1f293798;
 }
 .tag-label { font-size: 9px; color: #9ca3af; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
 .tag-value { font-family: 'Courier New', monospace; font-size: 16px; font-weight: 700; color: #1f2937; }
