@@ -4,13 +4,11 @@
     <div class="model-tag-container">
       <div class="tag-ribbon">
         <span class="tag-label">MODEL</span>
-        <span class="tag-value">#M38 - H</span>
+        <span class="tag-value">#HEADWEAR</span>
       </div>
     </div>
 
     <div class="d-flex justify-content-center">
-      
-
       <button 
         class="glass-btn with-text me-3" 
         :class="{ 'disabled-btn': isDownloading }"
