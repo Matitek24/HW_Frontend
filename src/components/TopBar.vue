@@ -56,16 +56,18 @@
     <div v-show="isModalOpen" class="modal-overlay" @click.self="closeModal">
       
       <div class="glass-modal-content container p-4">
-        <button class="close-btn d-flex" @click="closeModal">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-          </button>
-        <div class="d-flex justify-content-center align-items-center mb-4 mt-4">
-          <div>
+        <div class="position-relative text-center py-4">
+            <button class="btn position-absolute top-0 end-0 m-3" @click="closeModal">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1f2937"
+                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
             <h3 class="modal-title">Wyślij zapytanie</h3>
             <p class="modal-subtitle">Otrzymaj wycenę dla Twojej konfiguracji</p>
-          </div>
-         
         </div>
+
 
         <form @submit.prevent="submitForm" class="row g-3">
           <div class="col-12">

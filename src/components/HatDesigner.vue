@@ -7,7 +7,7 @@
   
       <Formularz :config="hatConfig" />
       
-      <div id="print-flat-container" >
+      <div id="print-flat-container" class="d-flex" >
         <HatFlat :config="hatConfig" />
       </div>
   
@@ -169,8 +169,8 @@
 
     background-color: #ffffff;
     background-image:
-  radial-gradient(at 10% 10%, rgba(var(--rgb-top), 0.14) 0px, transparent 50%),
-  radial-gradient(at 90% 90%, rgba(var(--rgb-bottom), 0.14) 0px, transparent 50%);
+  radial-gradient(at 10% 10%, rgba(var(--rgb-top), 0.2) 0px, transparent 50%),
+  radial-gradient(at 90% 90%, rgba(var(--rgb-bottom), 0.2) 0px, transparent 50%);
 
     background-attachment: fixed;
     min-height: 100vh;

@@ -38,8 +38,8 @@ router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('jwtToken');
   
   if (to.meta.requiresAuth && !token) {
-    next('/');
-  } else if (to.path === '/' && token) {
+    next('/login');
+  } else if (to.path === '/login' && token) {
     next('/dashboard');
   } else {
     next();

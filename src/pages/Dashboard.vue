@@ -1,7 +1,7 @@
 <template>
-    <div class="dashboard-page">
+ 
       <Dashboard />
-    </div>
+
   </template>
   
   <script setup>
@@ -9,7 +9,5 @@
   </script>
   
   <style scoped>
-  .dashboard-page {
-    min-height: 100vh;
-  }
+
   </style>
