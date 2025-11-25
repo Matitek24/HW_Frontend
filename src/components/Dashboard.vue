@@ -160,7 +160,7 @@
 
                          <div class="col-md-3">
                           <h6 class="detail-header">Uwagi Klienta</h6>
-                          <div class="mt-3 p-3 bg-white border rounded-3 text-muted fst-italic text-sm h-100">
+                          <div class="mt-3 p-3 bg-white border rounded-3 text-muted fst-italic text-sm h-50">
                              "{{ project.order.notes }}"
                           </div>
                         </div>
@@ -185,17 +185,15 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
-// Import statycznego obrazka (zgodnie z życzeniem)
 import thumbnailImg from '../assets/miniaturka.jpg'; 
-import { getStoredToken, removeStoredToken, isTokenValid } from '../utils/jwt';
-
-// Stała konfiguracja (domyślna) do mockowania danych - normalnie przyszłaby z bazy
-import { defaultConfig } from '../utils/hatConfig'; 
+import { getStoredToken, removeStoredToken, isTokenValid, isAdmin } from '../utils/jwt';
+import { adminAPI } from '../utils/axios'; // Import API
 
 const router = useRouter();
 const projects = ref([]);
 const expandedRows = ref([]);
 const thumbnailUrl = ref(thumbnailImg);
+const isLoading = ref(false); // Dodajmy loader
 
 const toggleRow = (id) => {
   if (expandedRows.value.includes(id)) {
@@ -206,14 +204,15 @@ const toggleRow = (id) => {
 };
 
 const newProjectsCount = computed(() => 
-  projects.value.filter(p => p.status === 'Nowy').length
+  projects.value.filter(p => p.status === 'NOWY').length
 );
 
+// Mapowanie statusów z bazy (NOWY) na klasy CSS
 const getStatusClass = (status) => {
   switch(status) {
-    case 'Nowy': return 'status-new';
-    case 'W realizacji': return 'status-progress';
-    case 'Zakończony': return 'status-done';
+    case 'NOWY': return 'status-new';
+    case 'W_REALIZACJI': return 'status-progress';
+    case 'ZAKONCZONY': return 'status-done';
     default: return 'status-default';
   }
 };
@@ -224,58 +223,73 @@ const handleLogout = () => {
 };
 
 const exportCSV = () => {
-  console.log('Eksport CSV...');
+  console.log('Eksport CSV - do zrobienia');
 };
 
-// Mockowanie danych (Struktura formularza + hatConfig)
-onMounted(() => {
+// Formatowanie daty z Javy (ISO string)
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  return new Date(dateString).toLocaleDateString('pl-PL', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+// --- POBIERANIE DANYCH Z BAZY ---
+onMounted(async () => {
   const token = getStoredToken();
+  
+  // Walidacja tokenu i roli
   if (!token || !isTokenValid(token)) {
     router.push('/');
     return;
   }
+  
+  if (!isAdmin(token)) {
+    alert("Brak uprawnień administratora");
+    router.push('/'); // lub gdzieś indziej
+    return;
+  }
 
-  // Symulacja pobrania danych z bazy
-  projects.value = [
-    {
-      id: 'CMD-2481',
-      createdAt: '24.11.2025',
-      status: 'Nowy',
-      // Dane z formularza
+  isLoading.value = true;
+
+  try {
+    // Pobierz projekty z API
+    const response = await adminAPI.getAllProjects();
+    
+    // Mapujemy dane z backendu na strukturę widoku
+    projects.value = response.data.map(p => ({
+      id: p.id, // UUID
+      createdAt: formatDate(p.createdAt),
+      status: p.status, // np. "NOWY"
+      
+      // Dane klienta z relacji
       client: {
-        name: 'Jan Kowalski',
-        company: 'Klub Sportowy "Orzeł"',
-        email: 'jan@orzel.pl',
-        phone: '+48 600 700 800'
+        name: p.klient.imieNazwisko || 'Brak danych',
+        company: p.klient.firma || '',
+        email: p.klient.email,
+        phone: p.klient.telefon
       },
+      
+      // Ilość i uwagi z głównej tabeli
       order: {
-        quantity: 150,
-        notes: 'Proszę o sprawdzenie czy kolor granatowy pasuje do nici nr 44.'
+        quantity: p.iloscSztuk || 0,
+        notes: p.uwagiKlienta || 'Brak uwag'
       },
-      // Dane techniczne czapki (JSON z bazy)
-      config: { ...defaultConfig } 
-    },
-    {
-      id: 'CMD-2480',
-      createdAt: '23.11.2025',
-      status: 'W realizacji',
-      client: {
-        name: 'Anna Nowak',
-        company: '',
-        email: 'anna.nowak@gmail.com',
-        phone: '+48 500 400 300'
-      },
-      order: {
-        quantity: 50,
-        notes: 'Bez pompona jeśli to możliwe.'
-      },
-      config: { 
-        ...defaultConfig, 
-        base: { top: '#ff0000', middle: '#ffffff', bottom: '#ff0000' },
-        text: { content: 'SKI TEAM', color: '#000000', font: 'Arial', fontSize: 100 }
-      }
-    }
-  ];
+      
+      // Konfiguracja z JSONB (Spring automatycznie zamienił to na obiekt)
+      config: p.konfiguracja || {} 
+    }));
+
+  } catch (error) {
+    console.error("Błąd pobierania projektów:", error);
+    // Opcjonalnie: obsługa 403 jeśli token wygasł
+  } finally {
+    isLoading.value = false;
+  }
 });
 </script>
 

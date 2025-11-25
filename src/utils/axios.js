@@ -121,11 +121,6 @@ export const userAPI = {
   updateProfile: (data) => api.put('/user/profile', data),
 };
 
-export const adminAPI = {
-  getAllUsers: () => api.get('/admin/users'),
-  deleteUser: (id) => api.delete(`/admin/users/${id}`),
-};
-
 export const dictionaryAPI = {
   getColors: () => api.get('/public/dictionary/colors'),
   getPatterns: () => api.get('/public/dictionary/patterns'),
@@ -133,6 +128,14 @@ export const dictionaryAPI = {
 };
 
 export const projectAPI = {
-
   submitProject: (data) => api.post('/public/project', data)
+};
+
+// utils/axios.js
+
+export const adminAPI = {
+  getAllUsers: () => api.get('/admin/users'),
+  deleteUser: (id) => api.delete(`/admin/users/${id}`),
+  
+  getAllProjects: () => api.get('/admin/projects') 
 };
