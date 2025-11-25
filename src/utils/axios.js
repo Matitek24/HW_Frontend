@@ -43,11 +43,9 @@ api.interceptors.response.use(
     
 
     
-    // 401 Unauthorized - token wygasł lub jest nieprawidłowy
     if (status === 401) {
       removeStoredToken();
       
-      // Jeśli nie jesteś już na stronie logowania
       if (router.currentRoute.value.path !== '/') {
         router.push('/');
       }
@@ -123,4 +121,10 @@ export const userAPI = {
 export const adminAPI = {
   getAllUsers: () => api.get('/admin/users'),
   deleteUser: (id) => api.delete(`/admin/users/${id}`),
+};
+
+export const dictionaryAPI = {
+  getColors: () => api.get('/public/dictionary/colors'),
+  getPatterns: () => api.get('/public/dictionary/patterns'),
+  getFonts: () => api.get('/public/dictionary/fonts'),
 };
