@@ -70,31 +70,30 @@
         <form @submit.prevent="submitForm" class="row g-3">
           <div class="col-12">
             <label class="form-label">Imię i Nazwisko / Firma</label>
-            <input type="text" class="input-pill w-100" placeholder="Wpisz nazwę..." required>
+            <input type="text" v-model="formData.imieNazwisko" class="input-pill w-100" placeholder="Wpisz nazwę..." required>
           </div>
 
           <div class="col-md-4">
             <label class="form-label">E-mail</label>
-            <input type="email" class="input-pill w-100" placeholder="twoj@email.com" required>
+            <input type="email" v-model="formData.email" class="input-pill w-100" placeholder="twoj@email.com" required>
           </div>
           <div class="col-md-4">
             <label class="form-label">Numer telefonu</label>
-            <input type="tel" class="input-pill w-100" placeholder="+48 000 000 000">
+            <input type="tel" v-model="formData.telefon" class="input-pill w-100" placeholder="+48 000 000 000">
           </div>
           <div class="col-md-4">
             <label class="form-label">Ilośc czapek</label>
-            <input type="number" class="input-pill w-100" placeholder="100">
+            <input type="number" v-model="formData.ilosc" class="input-pill w-100" placeholder="100">
           </div>
-
 
           <div class="col-12">
             <label class="form-label">Uwagi do zamówienia</label>
-            <textarea class="input-pill w-100" rows="4" placeholder="Dodatkowe informacje o hafcie, terminie itp."></textarea>
+            <textarea v-model="formData.uwagi" class="input-pill w-100" rows="4" placeholder="Dodatkowe informacje o hafcie, terminie itp."></textarea>
           </div>
 
           <div class="col-12 mt-2">
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="rodoCheck" required>
+              <input class="form-check-input" type="checkbox" id="rodoCheck" v-model="formData.rodo" required>
               <label class="form-check-label small text-muted d-flex ms-2 mt-4 fw-lighter" for="rodoCheck">
                 Akceptuję politykę prywatności i przetwarzanie danych w celu wyceny.
               </label>
@@ -103,9 +102,12 @@
 
           <div class="col-12 mt-4 d-flex justify-content-end gap-3">
             <button type="button" class="glass-btn secondary" @click="closeModal">Anuluj</button>
-            <button type="submit" class="action-btn-primary">
-              Wyślij zapytanie
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ms-2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            <button type="submit" class="action-btn-primary" :disabled="isSubmitting">
+              <template v-if="!isSubmitting">
+                Wyślij zapytanie
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ms-2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              </template>
+              <span v-else>Wysyłanie...</span>
             </button>
           </div>
         </form>
@@ -118,19 +120,39 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
+import { projectAPI } from '../utils/axios.js'; // Import API
 
 
-defineProps({
+const props = defineProps({
   isDownloading: {
     type: Boolean,
     default: false
+  },
+  hatConfig: {
+    type: Object,
+    required: true
   }
+
 });
+
+
+const formData = reactive({
+  imieNazwisko: '',
+  email: '',
+  telefon: '',
+  firma: '', // Opcjonalnie dodaj input w HTML jeśli chcesz
+  ilosc: '',
+  uwagi: '',
+  rodo: false
+});
+
 
 defineEmits(['download']);
 
 const isModalOpen = ref(false);
+const isSubmitting = ref(false);
+
 
 const openModal = () => {
   isModalOpen.value = true;
@@ -140,10 +162,44 @@ const closeModal = () => {
   isModalOpen.value = false;
 };
 
-const submitForm = () => {
-  // Tutaj logika wysyłania (np. axios.post)
-  alert('Formularz został wysłany! (Demo)');
-  closeModal();
+const submitForm = async () => {
+  if (!formData.rodo) {
+    alert("Musisz zaakceptować zgodę RODO.");
+    return;
+  }
+
+  isSubmitting.value = true;
+
+  try {
+    // 1. Budujemy obiekt do wysyłki (zgodny z Java ProjectRequest)
+    const payload = {
+      imieNazwisko: formData.imieNazwisko,
+      email: formData.email,
+      telefon: formData.telefon,
+      firma: formData.firma, // Upewnij się, że masz to pole w modelu lub formularzu
+      ilosc: parseInt(formData.ilosc) || 0,
+      uwagi: formData.uwagi,
+      zgodaRodo: formData.rodo,
+      // 2. Dopinamy konfigurację czapki
+      config: props.hatConfig 
+    };
+
+    // 3. Wysyłamy do backendu
+    await projectAPI.submitProject(payload);
+
+    alert('Dziękujemy! Twoje zapytanie zostało wysłane.');
+    closeModal();
+    
+    // Opcjonalnie: Reset formularza
+    formData.uwagi = '';
+    formData.rodo = false;
+
+  } catch (error) {
+    console.error(error);
+    alert('Wystąpił błąd podczas wysyłania. Spróbuj ponownie.');
+  } finally {
+    isSubmitting.value = false;
+  }
 };
 
 </script>

@@ -16,6 +16,11 @@ const api = axios.create({
 // REQUEST INTERCEPTOR - dodaj token do każdego requesta
 api.interceptors.request.use(
   (config) => {
+
+    if (config.url && config.url.includes('/public/')) {
+        return config;
+    }
+
     const token = getStoredToken();
     
     // Jeśli jest token i jest ważny, dodaj do headers
@@ -23,11 +28,9 @@ api.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
     
-    
     return config;
   },
   (error) => {
-   
     return Promise.reject(error);
   }
 );
@@ -127,4 +130,9 @@ export const dictionaryAPI = {
   getColors: () => api.get('/public/dictionary/colors'),
   getPatterns: () => api.get('/public/dictionary/patterns'),
   getFonts: () => api.get('/public/dictionary/fonts'),
+};
+
+export const projectAPI = {
+
+  submitProject: (data) => api.post('/public/project', data)
 };

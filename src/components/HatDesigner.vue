@@ -3,6 +3,7 @@
       <TopBar 
         @download="handleDownloadRequest" 
         :isDownloading="isDownloading"
+        :hatConfig="hatConfig"
       />
       <Formularz 
       :config="hatConfig" 
