@@ -135,76 +135,90 @@
       </svg>
     </div>
   </template>
-  
-  <script setup>
-  import { ref, computed, watch, onMounted, nextTick } from 'vue';
-  import { PATTERN_LIBRARY } from '../../utils/patterns.js';
-  import { bendIt, resetWarp } from '../../utils/warpTransform.js';
-  import HatPompon from './HatPompon.vue';
-  
-  const props = defineProps({
-    config: {
-      type: Object,
-      required: true
-    },
-    showPompon: {
-      type: Boolean,
-      default: true
-    }
-  });
-  
-  const svgRef = ref(null);
-  
-  const topPatternSvg = computed(() => {
-    return PATTERN_LIBRARY[props.config.patterns.top]?.svg || '';
-  });
-  
-  const mainPatternSvg = computed(() => {
-    return PATTERN_LIBRARY[props.config.patterns.bottom]?.svg || '';
-  });
-  
-  const calculateTextPathOffset = computed(() => {
-    return props.config.text.fontSize * 0.35;
-  });
-  
-  // Aplikuj warp po zamontowaniu
-  onMounted(() => {
-    setTimeout(() => {
-      if (svgRef.value) {
-        bendIt(svgRef.value, '#target-wzor', 800, -0.0001);
-        bendIt(svgRef.value, '#target-graphic', 510, -0.0001);
-      }
-    }, 100);
-  });
-  
-  // Obsługa zmiany wzoru dolnego
-  watch(
-    () => props.config.patterns.bottom, 
-    async () => {
-      resetWarp('#target-graphic');
-      await nextTick();
-      setTimeout(() => {
-        if (svgRef.value) {
-          bendIt(svgRef.value, '#target-graphic', 510, -0.0001);
-        }
-      }, 30);
-    }
-  );
-  
-  // Obsługa zmiany wzoru górnego
-  watch(
-    () => props.config.patterns.top,
-    async () => {
+<script setup>
+import { ref, computed, watch, nextTick } from 'vue';
+import { bendIt, resetWarp } from '../../utils/warpTransform.js';
+import HatPompon from './HatPompon.vue';
+
+const props = defineProps({
+  config: {
+    type: Object,
+    required: true
+  },
+  showPompon: {
+    type: Boolean,
+    default: true
+  },
+  patternsDict: {
+    type: Array,
+    default: () => []
+  }
+});
+
+const svgRef = ref(null);
+
+const topPatternSvg = computed(() => {
+  const selectedId = props.config.patterns.top;
+  if (!selectedId || selectedId === 'none') return '';
+  const pattern = props.patternsDict.find(p => p.id === selectedId);
+  return pattern ? pattern.kodSvg : '';
+});
+
+const mainPatternSvg = computed(() => {
+  const selectedId = props.config.patterns.bottom;
+  if (!selectedId || selectedId === 'none') return '';
+  const pattern = props.patternsDict.find(p => p.id === selectedId);
+  return pattern ? pattern.kodSvg : '';
+});
+
+const calculateTextPathOffset = computed(() => {
+  return props.config.text.fontSize * 0.35;
+});
+
+// Funkcja dla górnego wzoru
+const applyTopWarp = async () => {
+  await nextTick();
+  setTimeout(() => {
+    if (svgRef.value) {
       resetWarp('#target-wzor');
-      await nextTick();
-      setTimeout(() => {
-        if (svgRef.value) {
-          bendIt(svgRef.value, '#target-wzor', 510, -0.0001);
-        }
-      }, 30);
+      bendIt(svgRef.value, '#target-wzor', 800, -0.0001);
     }
-  );
-  </script>
+  }, 100);
+};
+
+// Funkcja dla dolnego wzoru
+const applyBottomWarp = async () => {
+  await nextTick();
+  setTimeout(() => {
+    if (svgRef.value) {
+      resetWarp('#target-graphic');
+      bendIt(svgRef.value, '#target-graphic', 510, -0.0001);
+    }
+  }, 100);
+};
+
+// ⭐ Osobny watch dla górnego wzoru
+watch(
+  () => topPatternSvg.value,
+  (newValue) => {
+    if (newValue) {
+      applyTopWarp();
+    }
+  },
+  { immediate: true }
+);
+
+// ⭐ Osobny watch dla dolnego wzoru
+watch(
+  () => mainPatternSvg.value,
+  (newValue) => {
+    if (newValue) {
+      applyBottomWarp();
+    }
+  },
+  { immediate: true }
+);
+</script>
   
   <style scoped>
   .dolnamaska {

@@ -111,15 +111,32 @@ const props = defineProps({
   config: {
     type: Object,
     required: true
+  },
+  patternsDict: {
+    type: Array,
+    default: () => []
   }
 });
 
 const topPatternSvg = computed(() => {
-  return PATTERN_LIBRARY[props.config.patterns.top]?.svg || '';
+  const selectedId = props.config.patterns.top;
+  
+  if (!selectedId || selectedId === 'none') return null;
+
+  // 2. Szukamy tego ID w słowniku z bazy
+  const patternObj = props.patternsDict.find(p => p.id === selectedId);
+  
+  // 3. Zwracamy kod SVG (string) lub null
+  return patternObj ? patternObj.kodSvg : null;
 });
 
+// LOGIKA DLA WZORU DOLNEGO
 const mainPatternSvg = computed(() => {
-  return PATTERN_LIBRARY[props.config.patterns.bottom]?.svg || '';
+  const selectedId = props.config.patterns.bottom;
+  if (!selectedId || selectedId === 'none') return null;
+
+  const patternObj = props.patternsDict.find(p => p.id === selectedId);
+  return patternObj ? patternObj.kodSvg : null;
 });
 </script>
 

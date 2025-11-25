@@ -4,30 +4,37 @@
         @download="handleDownloadRequest" 
         :isDownloading="isDownloading"
       />
+      <Formularz 
+      :config="hatConfig" 
+      :dictionaries="dictionaryData"
+    />
+    
+    <div id="print-flat-container" class="d-flex">
+      <HatFlat 
+        :config="hatConfig" 
+        :patternsDict="dictionaryData.patterns" 
+      />
+    </div>
+
+    <div id="print-front-container">
+      <HatFront 
+        :config="hatConfig" 
+        :show-pompon="true"
+        :patternsDict="dictionaryData.patterns"
+      />
+    </div>
   
-      <Formularz :config="hatConfig" />
-      
-      <div id="print-flat-container" class="d-flex" >
-        <HatFlat :config="hatConfig" />
-      </div>
-  
-      <div id="print-front-container" >
-        <HatFront :config="hatConfig" :show-pompon="true" />
-      </div>
-      
-      <!-- <HatFlat :config="hatConfig" />
-      <HatFront :config="hatConfig" :show-pompon="true" />
-      -->
     </div>
   </template>
   <script setup>
-  import { reactive, watch, onMounted, ref } from 'vue';
+  import { reactive, watch, onMounted, ref, computed } from 'vue';
   import Formularz from './Formularz.vue';
   import TopBar from './TopBar.vue';
   import HatFlat from './hat/HatFlat.vue';
   import HatFront from './hat/HatFront.vue';
   import { defaultConfig, loadConfig, saveConfig } from '../utils/hatConfig.js';
   import { usePdfGenerator } from '../utils/usePdfGenerator.js'; 
+  import { dictionaryAPI } from '../utils/axios.js';
   
   const isDownloading = ref(false);
   
@@ -35,6 +42,11 @@
   
   const hatConfig = reactive(JSON.parse(JSON.stringify(defaultConfig)));
 
+  const dictionaryData = ref({
+  colors: [],
+  patterns: [],
+  fonts: []
+});
   const handleDownloadRequest = async (type) => {
     if (type === "pdf") {
       // 1. Włączamy loading
@@ -86,9 +98,6 @@
     }
   };
   
-  const downloadAsPNG = () => {
-    console.log('PNG export - to implement');
-  };
   
   const hexToRgbString = (hex) => {
     if (!hex) return '255, 255, 255'; 
@@ -121,6 +130,24 @@
     },
     { deep: true, immediate: true }
   );
+
+  // pobiera dane z API słowników
+  onMounted(async () => {
+  try {
+    const [colorsRes, patternsRes, fontsRes] = await Promise.all([
+      dictionaryAPI.getColors(),
+      dictionaryAPI.getPatterns(),
+      dictionaryAPI.getFonts()
+    ]);
+    
+    dictionaryData.value.colors = colorsRes.data;
+    dictionaryData.value.patterns = patternsRes.data;
+    dictionaryData.value.fonts = fontsRes.data;
+    
+  } catch (e) {
+    console.error("Błąd pobierania słowników", e);
+  }
+});
   </script>
   
   <style>

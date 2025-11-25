@@ -22,14 +22,21 @@
             />
             <div class="select-wrapper">
               <select v-model="config.text.font" class="input-pill select-pill">
-                <option value="Arial, sans-serif">Arial</option>
-                <option value="'Times New Roman', serif">Times New Roman</option>
-                <option value="'Courier New', monospace">Courier</option>
-                <option value="Verdana, sans-serif">Verdana</option>
+                <option 
+                  v-for="font in dictionaries.fonts" 
+                  :key="font.id" 
+                  :value="font.wartosc"
+                >
+                  {{ font.nazwa }}
+                </option>
               </select>
             </div>
             <div class="color-pill">
-              <input type="color" v-model="config.text.color" class="color-circle" />
+              <ColorPicker
+                v-model="config.text.color"
+                :color-options="dictionaries.colors"
+                title="Kolor tekstu"
+              />
               <input type="text" v-model="config.text.color" class="hex-input" maxlength="7" />
             </div>
           </div>
@@ -41,19 +48,25 @@
           <div class="group-header">Kolory Czapki</div>
           <div class="controls-row compact-gap">
             <div class="mini-color-stack" title="Góra">
-              <div class="color-ring" :style="{ backgroundColor: config.base.top }">
-                <input type="color" v-model="config.base.top" />
-              </div>
+              <ColorPicker
+                v-model="config.base.top"
+                :color-options="dictionaries.colors"
+                title="Góra czapki"
+              />
             </div>
             <div class="mini-color-stack" title="Środek">
-              <div class="color-ring" :style="{ backgroundColor: config.base.middle }">
-                <input type="color" v-model="config.base.middle" />
-              </div>
+              <ColorPicker
+                v-model="config.base.middle"
+                :color-options="dictionaries.colors"
+                title="Środek czapki"
+              />
             </div>
             <div class="mini-color-stack" title="Dół">
-              <div class="color-ring" :style="{ backgroundColor: config.base.bottom }">
-                <input type="color" v-model="config.base.bottom" />
-              </div>
+              <ColorPicker
+                v-model="config.base.bottom"
+                :color-options="dictionaries.colors"
+                title="Dół czapki"
+              />
             </div>
           </div>
         </div>
@@ -63,33 +76,46 @@
         <div class="group-section">
           <div class="group-header">Wzory</div>
           <div class="controls-row compact-gap">
-             <div class="mini-color-stack" title="Wzór Główny">
-              <div class="color-ring pattern" :style="{ backgroundColor: config.pattern.top }">
-                <input type="color" v-model="config.pattern.top" />
-              </div>
+            <div class="mini-color-stack" title="Wzór Główny">
+              <ColorPicker
+                v-model="config.pattern.top"
+                :color-options="dictionaries.colors"
+                title="Kolor wzoru góra"
+              />
             </div>
-             <div class="select-wrapper">
-               <select v-model="config.patterns.top" class="input-pill select-pill short">
-                <option value="none">Brak</option>
-                <option value="gora1">gora1</option>
-                <option value="gora2">gora2</option>
-               </select>
-             </div>
+            <div class="select-wrapper">
+              <select v-model="config.patterns.top" class="input-pill select-pill short">
+                <option :value="null">Brak</option> 
+                <option 
+                  v-for="pattern in topPatterns" 
+                  :key="pattern.id" 
+                  :value="pattern.id" 
+                >
+                  {{ pattern.nazwa }}
+                </option>
+              </select>
+            </div>
           </div>
           <div class="controls-row compact-gap">
-             <div class="mini-color-stack" title="Wzór Główny">
-              <div class="color-ring pattern" :style="{ backgroundColor: config.pattern.main }">
-                <input type="color" v-model="config.pattern.main" />
-              </div>
+            <div class="mini-color-stack" title="Wzór Główny">
+              <ColorPicker
+                v-model="config.pattern.main"
+                :color-options="dictionaries.colors"
+                title="Kolor wzoru dół"
+              />
             </div>
-             <div class="select-wrapper">
-               <select v-model="config.patterns.bottom" class="input-pill select-pill short">
-                <option value="none">Brak</option>
-                <option value="triangles2">Usmiech</option>
-                <option value="triangles">Trójkąty</option>
-                <option value="smile">Trójkat_v2</option>
-               </select>
-             </div>
+            <div class="select-wrapper">
+              <select v-model="config.patterns.bottom" class="input-pill select-pill short">
+                <option :value="null">Brak</option> 
+                <option 
+                  v-for="pattern in bottomPatterns" 
+                  :key="pattern.id" 
+                  :value="pattern.id" 
+                >
+                  {{ pattern.nazwa }}
+                </option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -99,10 +125,26 @@
           <div class="group-header">Pompony</div>
           <div class="pompon-carousel">
             <div class="color-pill compact">
-              <input type="color" v-model="config.pompons.p1" class="color-circle small" />
-              <input type="color" v-model="config.pompons.p2" class="color-circle small" />
-              <input type="color" v-model="config.pompons.p3" class="color-circle small" />
-              <input type="color" v-model="config.pompons.p4" class="color-circle small" />
+              <ColorPicker
+                v-model="config.pompons.p1"
+                :color-options="dictionaries.colors"
+                title="Pompon 1"
+              />
+              <ColorPicker
+                v-model="config.pompons.p2"
+                :color-options="dictionaries.colors"
+                title="Pompon 2"
+              />
+              <ColorPicker
+                v-model="config.pompons.p3"
+                :color-options="dictionaries.colors"
+                title="Pompon 3"
+              />
+              <ColorPicker
+                v-model="config.pompons.p4"
+                :color-options="dictionaries.colors"
+                title="Pompon 4"
+              />
             </div>
           </div>
         </div>
@@ -131,59 +173,78 @@
                 <label>Czcionka</label>
                 <div class="select-wrapper">
                   <select v-model="config.text.font" class="input-pill select-pill full-width">
-                    <option value="Arial, sans-serif">Arial</option>
-                    <option value="'Times New Roman', serif">Times New Roman</option>
-                    <option value="'Courier New', monospace">Courier</option>
-                    <option value="Verdana, sans-serif">Verdana</option>
+                    <option 
+                      v-for="font in dictionaries.fonts" 
+                      :key="font.id" 
+                      :value="font.wartosc"
+                    >
+                      {{ font.nazwa }}
+                    </option>
                   </select>
                 </div>
               </div>
               <div class="expanded-field half">
-                 <label>Kolor tekstu</label>
-                 <div class="color-pill full-width space-between">
-                    <input type="color" v-model="config.text.color" class="color-circle" />
-                    <span class="hex-display">{{ config.text.color }}</span>
-                 </div>
+                <label>Kolor tekstu</label>
+                <div class="color-pill full-width space-between">
+                  <ColorPicker
+                    v-model="config.text.color"
+                    :color-options="dictionaries.colors"
+                    title="Kolor tekstu"
+                  />
+                  <span class="hex-display">{{ config.text.color }}</span>
+                </div>
               </div>
-             
             </div>
+            
             <div class="expanded-row">
               <div class="expanded-field half">
-              <label>Rozmiar Czcionki: {{ config.text.fontSize }}px</label>
-              <input 
-                type="range" 
-                v-model.number="config.text.fontSize" 
-                min="30" 
-                max="150" 
-                step="5"
-                class="slider"
-              />
-            </div>
+                <label>Rozmiar Czcionki: {{ config.text.fontSize }}px</label>
+                <input 
+                  type="range" 
+                  v-model.number="config.text.fontSize" 
+                  min="30" 
+                  max="150" 
+                  step="5"
+                  class="slider"
+                />
+              </div>
             </div>
           </div>
 
           <div class="expanded-column">
             <h3 class="column-title">Konfiguracja Bazy</h3>
-            
             <div class="color-list-rows">
+              
+              <!-- Góra -->
               <div class="color-row-item">
                 <span class="label-text">Góra czapki</span>
-                <div class="color-ring static" :style="{ backgroundColor: config.base.top }">
-                   <input type="color" v-model="config.base.top" />
-                </div>
+                <ColorPicker
+                  v-model="config.base.top"
+                  :color-options="dictionaries.colors"
+                  label="Góra czapki"
+                />
               </div>
+              
+              <!-- Środek -->
               <div class="color-row-item">
                 <span class="label-text">Pasek Środkowy</span>
-                <div class="color-ring static" :style="{ backgroundColor: config.base.middle }">
-                   <input type="color" v-model="config.base.middle" />
-                </div>
+                <ColorPicker
+                  v-model="config.base.middle"
+                  :color-options="dictionaries.colors"
+                  label="Środek czapki"
+                />
               </div>
+              
+              <!-- Dół -->
               <div class="color-row-item">
                 <span class="label-text">Dół czapki</span>
-                <div class="color-ring static" :style="{ backgroundColor: config.base.bottom }">
-                   <input type="color" v-model="config.base.bottom" />
-                </div>
+                <ColorPicker
+                  v-model="config.base.bottom"
+                  :color-options="dictionaries.colors"
+                  label="Dół czapki"
+                />
               </div>
+              
             </div>
           </div>
 
@@ -191,54 +252,86 @@
             <h3 class="column-title">Wzory i Pompony</h3>
             
             <div class="expanded-row">
-               <div class="expanded-field half">
-                  <label>Wzór Góra</label>
-                  <div class="select-wrapper">
-                    <select v-model="config.patterns.top" class="input-pill select-pill full-width">
-                      <option value="none">Brak</option>
-                      <option value="gora1">Wzór G1</option>
-                      <option value="gora2">Wzór G2</option>
-                    </select>
-                  </div>
-               </div>
-               <div class="expanded-field half">
-                  <label>Kolor Wz. Góra</label>
-                  <div class="color-pill justify-center">
-                    <input type="color" v-model="config.pattern.top" class="color-circle" />
-                  </div>
-               </div>
+              <div class="expanded-field half">
+                <label>Wzór Góra</label>
+                <div class="select-wrapper">
+                  <select v-model="config.patterns.top" class="input-pill select-pill full-width">
+                    <option :value="null">Brak</option> 
+                    <option 
+                  v-for="pattern in topPatterns" 
+                  :key="pattern.id" 
+                  :value="pattern.id" 
+                >
+                  {{ pattern.nazwa }}
+                </option>
+                  </select>
+                </div>
+              </div>
+              <div class="expanded-field half">
+                <label>Kolor Wz. Góra</label>
+                <div class="color-pill justify-center">
+                  <ColorPicker
+                    v-model="config.pattern.top"
+                    :color-options="dictionaries.colors"
+                    title="Kolor wzoru góra"
+                  />
+                </div>
+              </div>
             </div>
 
             <div class="expanded-row mt-2">
-               <div class="expanded-field half">
-                  <label>Wzór Dół</label>
-                  <div class="select-wrapper">
-                    <select v-model="config.patterns.bottom" class="input-pill select-pill full-width">
-                      <option value="none">Brak</option>
-                <option value="triangles2">Usmiech</option>
-                <option value="triangles">Trójkąty</option>
-                <option value="smile">Trójkat_v2</option>
-                    </select>
-                  </div>
-               </div>
-               <div class="expanded-field half">
-                  <label>Kolor Wz. Dół</label>
-                  <div class="color-pill justify-center">
-                    <input type="color" v-model="config.pattern.main" class="color-circle" />
-                  </div>
-               </div>
+              <div class="expanded-field half">
+                <label>Wzór Dół</label>
+                <div class="select-wrapper">
+                  <select v-model="config.patterns.bottom" class="input-pill select-pill full-width">
+                    <option :value="null">Brak</option> 
+                    <option 
+                  v-for="pattern in bottomPatterns" 
+                  :key="pattern.id" 
+                  :value="pattern.id" 
+                >
+                  {{ pattern.nazwa }}
+                </option>
+                  </select>
+                </div>
+              </div>
+              <div class="expanded-field half">
+                <label>Kolor Wz. Dół</label>
+                <div class="color-pill justify-center">
+                  <ColorPicker
+                    v-model="config.pattern.main"
+                    :color-options="dictionaries.colors"
+                    title="Kolor wzoru dół"
+                  />
+                </div>
+              </div>
             </div>
             
             <div class="expanded-field mt-3">
               <label>Kolory Pomponów</label>
               <div class="color-pill full-width space-around">
-                 <input type="color" v-model="config.pompons.p1" class="color-circle small" />
-                 <input type="color" v-model="config.pompons.p2" class="color-circle small" />
-                 <input type="color" v-model="config.pompons.p3" class="color-circle small" />
-                 <input type="color" v-model="config.pompons.p4" class="color-circle small" />
+                <ColorPicker
+                  v-model="config.pompons.p1"
+                  :color-options="dictionaries.colors"
+                  title="Pompon 1"
+                />
+                <ColorPicker
+                  v-model="config.pompons.p2"
+                  :color-options="dictionaries.colors"
+                  title="Pompon 2"
+                />
+                <ColorPicker
+                  v-model="config.pompons.p3"
+                  :color-options="dictionaries.colors"
+                  title="Pompon 3"
+                />
+                <ColorPicker
+                  v-model="config.pompons.p4"
+                  :color-options="dictionaries.colors"
+                  title="Pompon 4"
+                />
               </div>
             </div>
-           
           </div>
         </div>
       </div>
@@ -247,12 +340,21 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import ColorPicker from '../components/utils/ColorPicker.vue'; // lub gdzie masz komponenty
 
-defineProps({
+const props = defineProps({
   config: {
     type: Object,
     required: true
+  },
+  dictionaries: {
+    type: Object,
+    default: () => ({
+      colors: [],
+      patterns: [],
+      fonts: []
+    })
   }
 });
 
@@ -261,10 +363,152 @@ const isExpanded = ref(false);
 const toggleExpand = () => {
   isExpanded.value = !isExpanded.value;
 };
+
+const topPatterns = computed(() => 
+  props.dictionaries.patterns.filter(p => p.kategoria === 'TOP')
+);
+
+const bottomPatterns = computed(() => 
+  props.dictionaries.patterns.filter(p => p.kategoria === 'BOTTOM')
+);
 </script>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* Color Picker Dropdown */
+.color-picker-wrapper {
+  position: relative;
+}
+
+.color-ring.clickable {
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.color-ring.clickable:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.color-dropdown {
+  position: absolute;
+  bottom: calc(100% + 8px); 
+  right: 0;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
+  padding: 12px;
+  z-index: 200000;
+  min-width: 240px;
+}
+
+.color-dropdown-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.color-dropdown-header span {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.color-dropdown-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.color-dropdown-swatch {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+  transition: all 0.2s;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.color-dropdown-swatch:hover {
+  transform: scale(1.15);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 10;
+}
+
+.color-dropdown-swatch.active {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.checkmark {
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.slide-fade-enter-active {
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.slide-fade-leave-active {
+  transition: all 0.2s ease;
+}
+
+.slide-fade-enter-from {
+  transform: translateY(10px) scale(0.95);  /* zmienione z -10px na 10px */
+  opacity: 0;
+}
+
+.slide-fade-leave-to {
+  transform: translateY(5px);  /* zmienione z -5px na 5px */
+  opacity: 0;
+}
+
+/* Usuń stare elementy */
+.db-color-palette { display: none; }
+.color-ring input[type="color"] { display: none; }
+
+@media (max-width: 768px) {
+  .color-dropdown {
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .color-dropdown-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
 
 /* --- KONTENER GŁÓWNY --- */
 .config-bar-container {
@@ -290,19 +534,19 @@ const toggleExpand = () => {
 
 .toggle-wrapper {
   position: absolute;
-  top: -30px; 
+  top: -40px; 
   left: 0; 
   right: 0;
   display: flex;
   justify-content: center;
-  z-index: 101;
+  z-index: -1;
   pointer-events: none; /* Żeby kliknięcie obok nie łapało */
 }
 
 .toggle-btn {
   pointer-events: auto;
   width: 64px;
-  height: 34px;
+  height: 45px;
   background: #ffffff;
   border-top-left-radius: 40px;
   border-top-right-radius: 40px;
@@ -337,6 +581,7 @@ const toggleExpand = () => {
     0 0 0 1px rgba(0, 0, 0, 0.03);
   
   max-width: 100%;
+  
 }
 
 .config-bar-container.expanded .config-bar {
@@ -423,7 +668,7 @@ const toggleExpand = () => {
   display: flex;
   align-items: center;
   gap: 24px;
-  overflow-x: auto;
+  overflow-x: visible;
   scrollbar-width: none;
 }
 
@@ -518,4 +763,5 @@ const toggleExpand = () => {
     overflow-y: auto;
   }
 }
+
 </style>
