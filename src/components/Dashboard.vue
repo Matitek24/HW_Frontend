@@ -19,7 +19,7 @@
         
         <div class="d-flex justify-content-between align-items-center mb-5">
           <div class="d-flex gap-3 align-items-center">
-            <span class="badge glass-badge text-dark px-3 py-2 rounded-pill">Wszystkie: {{ projects.length }}</span>
+            <span class="badge glass-badge text-dark px-3 py-2 rounded-pill">Wszystkie: {{ totalProjects }}</span>
             <span class="badge glass-badge text-success px-3 py-2 rounded-pill">Nowe: {{ newProjectsCount }}</span>
           </div>
           <div>
@@ -29,7 +29,7 @@
           </div>
         </div>
 
-        <div class="table-responsive">
+        <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
           <table class="table table-hover align-middle custom-table">
             <thead>
               <tr>
@@ -43,20 +43,31 @@
               </tr>
             </thead>
             <tbody>
-              <template v-for="project in projects" :key="project.id">
+              <template v-for="project in paginatedProjects" :key="project.id">
                 <tr 
                   class="main-row" 
                   :class="{ 'expanded': expandedRows.includes(project.id) }"
                   @click="toggleRow(project.id)"
                 >
                   <td class="ps-4">
-                    <div class="fw-bold text-dark">#{{ project.id }}</div>
+                    <router-link
+                      :to="`/projekt/${project.id}`"
+                      class="fw-bold text-dark text-decoration-none underline-hover"
+                    >
+                      #{{ project.id }}
+                    </router-link>
+
+                    <br>
+
                     <small class="text-muted fw-light">{{ project.createdAt }}</small>
                   </td>
-                  
+
                   <td>
-                    <div class="img-wrapper">
-                      <img :src="thumbnailUrl" alt="Projekt" class="project-thumb">
+                    <div class="img-wrapper" style="width: 60px; height: 60px; padding: 5px">
+                      <HatThumbnail 
+                        :config="project.config" 
+                        :patternsDict="patternsDict"
+                        class="d-flex"/>
                     </div>
                   </td>
 
@@ -69,10 +80,10 @@
 
                   <td>
                     <div class="d-flex flex-column gap-1">
-                      <a :href="`mailto:${project.client.email}`" class="text-decoration-none text-secondary fs-7">
+                      <a class="text-decoration-none text-secondary fs-7">
                         {{ project.client.email }}
                       </a>
-                      <a :href="`tel:${project.client.phone}`" class="text-decoration-none text-secondary fs-7">
+                      <a class="text-decoration-none text-secondary fs-7">
                         {{ project.client.phone }}
                       </a>
                     </div>
@@ -84,13 +95,20 @@
                   </td>
                   
                   <td>
-                    <span :class="['status-pill', getStatusClass(project.status)]">
-                      {{ project.status }}
-                    </span>
+                    <div @click.stop>
+                      <StatusBadge 
+                        :model-value="project.status" 
+                        :project-id="project.id"
+                        @statusChanged="handleStatusChange"
+                      />
+                    </div>
                   </td>
 
                   <td class="text-end pe-4">
-                    <button class="icon-btn me-2" title="Pobierz PDF" @click.stop>
+                    <button 
+                class="icon-btn me-2" 
+                title="Pobierz Kartę Produkcyjną" 
+                @click.stop="downloadProductionPdf(project)" >
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
                     </button>
                     <button class="icon-btn transition-transform" :class="{'rotate-180': expandedRows.includes(project.id)}">
@@ -176,23 +194,98 @@
             Brak zamówień do wyświetlenia.
           </div>
         </div>
+
+        <!-- PAGINACJA -->
+        <div class="d-flex justify-content-between align-items-center mt-4">
+          <div class="text-muted small">
+            Wyświetlono {{ showingStart }}-{{ showingEnd }} z {{ totalProjects }} zamówień
+          </div>
+          
+          <nav>
+            <ul class="pagination mb-0">
+              <li class="page-item" :class="{ disabled: currentPage === 1 }">
+                <button class="page-link" @click="changePage(currentPage - 1)">
+                  &laquo;
+                </button>
+              </li>
+              
+              <li v-for="page in pages" :key="page" class="page-item" :class="{ active: page === currentPage }">
+                <button class="page-link" @click="changePage(page)">
+                  {{ page }}
+                </button>
+              </li>
+              
+              <li class="page-item" :class="{ disabled: currentPage === totalPages }">
+                <button class="page-link" @click="changePage(currentPage + 1)">
+                  &raquo;
+                </button>
+              </li>
+            </ul>
+          </nav>
+
+          <div class="d-flex align-items-center gap-2">
+            <span class="text-muted small">Pozycji na stronie:</span>
+            <select v-model="itemsPerPage" class="form-select form-select-sm" style="width: 80px;">
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+            </select>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import thumbnailImg from '../assets/miniaturka.jpg'; 
 import { getStoredToken, removeStoredToken, isTokenValid, isAdmin } from '../utils/jwt';
-import { adminAPI } from '../utils/axios'; // Import API
+import { adminAPI, dictionaryAPI } from '../utils/axios'; 
+import HatThumbnail from './hat/HatThumbnail.vue';
+import { exportProjectsToCSV } from '../utils/csvExport.js';
+import { useProductionCard } from '../utils/useProductionCard';
+import StatusBadge from '../components/admin/StatusBadge.vue';
 
 const router = useRouter();
 const projects = ref([]);
+const patternsDict = ref([]);
 const expandedRows = ref([]);
-const thumbnailUrl = ref(thumbnailImg);
-const isLoading = ref(false); // Dodajmy loader
+const isLoading = ref(false);
+const { generateProductionCard } = useProductionCard();
+
+const handleStatusChange = async ({ id, status, done }) => {
+  try {
+    // 1. Wywołaj API
+    await adminAPI.updateProjectStatus(id, status);
+    
+    // 2. Zaktualizuj lokalnie w tabeli (żeby nie odświeżać wszystkiego)
+    const project = projects.value.find(p => p.id === id);
+    if (project) {
+      project.status = status;
+    }
+    
+    // Opcjonalnie: Toast notification "Status zaktualizowany"
+  } catch (error) {
+    console.error("Błąd zmiany statusu:", error);
+    alert("Nie udało się zmienić statusu.");
+  } finally {
+    // Wyłącz loader wewnątrz badge'a
+    done();
+  }
+};
+
+// Funkcja wywoływana przyciskiem "Pobierz PDF" w tabeli
+const downloadProductionPdf = (project) => {
+    // Możemy tu dodać mapowanie nazw wzorów (ID -> Nazwa) jeśli masz patternsDict pod ręką
+    // Ale na start wystarczy wersja podstawowa
+    generateProductionCard(project);
+};
+// PAGINACJA
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
 
 const toggleRow = (id) => {
   if (expandedRows.value.includes(id)) {
@@ -202,11 +295,54 @@ const toggleRow = (id) => {
   }
 };
 
+const changePage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+    // Zwiń wszystkie rozwinięte wiersze przy zmianie strony
+    expandedRows.value = [];
+  }
+};
+
+// COMPUTED PROPERTIES
+const totalProjects = computed(() => projects.value.length);
+const totalPages = computed(() => Math.ceil(totalProjects.value / itemsPerPage.value));
+
+const paginatedProjects = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value;
+  const end = start + itemsPerPage.value;
+  return projects.value.slice(start, end);
+});
+
+const pages = computed(() => {
+  const pages = [];
+  const maxVisiblePages = 5;
+  
+  let startPage = Math.max(1, currentPage.value - Math.floor(maxVisiblePages / 2));
+  let endPage = Math.min(totalPages.value, startPage + maxVisiblePages - 1);
+  
+  if (endPage - startPage + 1 < maxVisiblePages) {
+    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+  }
+  
+  for (let i = startPage; i <= endPage; i++) {
+    pages.push(i);
+  }
+  
+  return pages;
+});
+
+const showingStart = computed(() => {
+  return (currentPage.value - 1) * itemsPerPage.value + 1;
+});
+
+const showingEnd = computed(() => {
+  return Math.min(currentPage.value * itemsPerPage.value, totalProjects.value);
+});
+
 const newProjectsCount = computed(() => 
   projects.value.filter(p => p.status === 'NOWY').length
 );
 
-// Mapowanie statusów z bazy (NOWY) na klasy CSS
 const getStatusClass = (status) => {
   switch(status) {
     case 'NOWY': return 'status-new';
@@ -218,14 +354,12 @@ const getStatusClass = (status) => {
 
 const handleLogout = () => {
   removeStoredToken();
-  router.push('/');
+  router.push('/login');
 };
-
 const exportCSV = () => {
-  console.log('Eksport CSV - do zrobienia');
+  exportProjectsToCSV(projects.value);
 };
 
-// Formatowanie daty z Javy (ISO string)
 const formatDate = (dateString) => {
   if (!dateString) return '';
   return new Date(dateString).toLocaleDateString('pl-PL', {
@@ -236,6 +370,11 @@ const formatDate = (dateString) => {
     minute: '2-digit'
   });
 };
+
+// WATCHER dla itemsPerPage
+watch(itemsPerPage, () => {
+  currentPage.value = 1; // Reset do pierwszej strony przy zmianie ilości na stronie
+});
 
 // --- POBIERANIE DANYCH Z BAZY ---
 onMounted(async () => {
@@ -249,18 +388,24 @@ onMounted(async () => {
   
   if (!isAdmin(token)) {
     alert("Brak uprawnień administratora");
-    router.push('/'); // lub gdzieś indziej
+    router.push('/');
     return;
   }
 
   isLoading.value = true;
 
   try {
-    // Pobierz projekty z API
-    const response = await adminAPI.getAllProjects();
+    // Pobierz projekty i wzory
+    const [projectsRes, patternsRes] = await Promise.all([
+      adminAPI.getAllProjects(),
+      dictionaryAPI.getPatterns()
+    ]);
     
-    // Mapujemy dane z backendu na strukturę widoku
-    projects.value = response.data.map(p => ({
+    // Zapisujemy wzory do zmiennej
+    patternsDict.value = patternsRes.data;
+
+    // Mapujemy dane projektów
+    projects.value = projectsRes.data.map(p => ({
       id: p.id, // UUID
       createdAt: formatDate(p.createdAt),
       status: p.status, // np. "NOWY"
@@ -279,13 +424,12 @@ onMounted(async () => {
         notes: p.uwagiKlienta || 'Brak uwag'
       },
       
-      // Konfiguracja z JSONB (Spring automatycznie zamienił to na obiekt)
+      // Konfiguracja z JSONB
       config: p.konfiguracja || {} 
     }));
 
   } catch (error) {
-    console.error("Błąd pobierania projektów:", error);
-    // Opcjonalnie: obsługa 403 jeśli token wygasł
+    console.error("Błąd pobierania danych:", error);
   } finally {
     isLoading.value = false;
   }
@@ -293,9 +437,34 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-  #app{
-    width: 100% !important;
-  }
+.underline-hover {
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.underline-hover:hover {
+  color: #0d6efd;
+}
+
+.underline-hover::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0;
+  height: 2px;
+  background: #30303071;
+  transition: width 0.3s ease;
+}
+
+.underline-hover:hover::after {
+  width: 100%;
+}
+
+#app{
+  width: 100% !important;
+}
+
 /* --- TŁO & GLASSMORPHISM --- */
 .dashboard-wrapper {
   min-height: 100vh;
@@ -335,6 +504,8 @@ onMounted(async () => {
   border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 24px;
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
+  position: relative; /* DODANE: fix dla scrollbara */
+  overflow: hidden; /* DODANE: fix dla scrollbara */
 }
 
 .glass-badge {
@@ -387,10 +558,34 @@ onMounted(async () => {
   color: #1f2937;
 }
 
+/* --- PAGINACJA --- */
+.page-link {
+  border: 1px solid rgba(0,0,0,0.1);
+  color: #6b7280;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.page-item.active .page-link {
+  background-color: #1f2937;
+  border-color: #1f2937;
+  color: white;
+}
+
+.page-item:not(.active) .page-link:hover {
+  background-color: #f3f4f6;
+}
+
+.page-item.disabled .page-link {
+  background-color: rgba(255, 255, 255, 0.3);
+  color: #9ca3af;
+}
+
 /* --- TABELA --- */
 .custom-table {
   border-collapse: separate;
-  border-spacing: 0 8px; /* Odstęp między wierszami */
+  border-spacing: 0 8px;
+  width: 100%; /* DODANE: fix dla szerokości */
 }
 .custom-table thead th {
   background: transparent;
@@ -401,6 +596,11 @@ onMounted(async () => {
   text-transform: uppercase;
   letter-spacing: 1px;
   padding-bottom: 12px;
+  position: sticky; /* DODANE: nagłówek przyklejony */
+  top: 0;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  z-index: 10;
 }
 
 .main-row {
@@ -410,7 +610,7 @@ onMounted(async () => {
   cursor: pointer;
   border-radius: 16px;
 }
-/* Hack na zaokrąglone rogi wiersza tabeli */
+
 .main-row td:first-child { border-top-left-radius: 16px; border-bottom-left-radius: 16px; }
 .main-row td:last-child { border-top-right-radius: 16px; border-bottom-right-radius: 16px; }
 
@@ -460,11 +660,11 @@ onMounted(async () => {
   background: white;
   border-bottom-left-radius: 16px;
   border-bottom-right-radius: 16px;
-  margin-top: -8px; /* Dosuń do wiersza głównego */
+  margin-top: -8px;
   box-shadow: 0 10px 20px -5px rgba(0,0,0,0.05);
   border-top: 1px solid #f3f4f6;
   position: relative;
-  z-index: 1; /* Poniżej głównego wiersza wizualnie */
+  z-index: 1;
 }
 
 .detail-header {
@@ -507,5 +707,29 @@ onMounted(async () => {
 }
 .rotate-180 {
   transform: rotate(180deg);
+}
+
+/* DODANE: Fix dla kontenera tabeli */
+.table-responsive {
+  border-radius: 12px;
+}
+
+/* DODANE: Custom scrollbar */
+.table-responsive::-webkit-scrollbar {
+  width: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.05);
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.3);
 }
 </style>

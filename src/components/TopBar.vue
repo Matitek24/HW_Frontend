@@ -9,6 +9,7 @@
     </div>
 
     <div class="d-flex justify-content-center">
+      
       <button 
         class="glass-btn with-text me-3" 
         :class="{ 'disabled-btn': isDownloading }"
@@ -20,26 +21,32 @@
         </span>
         
         <span class="btn-icon">
-          <svg v-if="!isDownloading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="7 10 12 15 17 10"></polyline>
-            <line x1="12" y1="15" x2="12" y2="3"></line>
-          </svg>
-          <svg v-else class="animate-spin" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-             <line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
-          </svg>
+          <svg v-if="!isDownloading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <svg v-else class="animate-spin" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
         </span>
       </button>
 
-      <button class="glass-btn with-text" @click="openModal">
-        <span class="btn-text">Wyślij wizualizację</span>
+      <button 
+        class="glass-btn with-text" 
+        @click="handleMainAction"
+        :class="{ 'disabled-btn': !canEdit || isSubmitting }"
+        :disabled="!canEdit || isSubmitting"
+      >
+        <span class="btn-text">
+           {{ isSubmitting ? 'Przetwarzanie...' : buttonText }}
+        </span>
+        
         <span class="btn-icon">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="22" y1="2" x2="11" y2="13"></line>
-            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-          </svg>
+          <svg v-if="isSubmitting" class="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
+          
+          <svg v-else-if="!canEdit" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          
+          <svg v-else-if="isEditMode" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+          
+          <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
         </span>
       </button>
+
     </div>
     <div class="actions-container">
     
@@ -120,49 +127,72 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
-import { projectAPI } from '../utils/axios.js'; // Import API
-
+import { ref, reactive, computed } from 'vue';
+import { projectAPI } from '../utils/axios.js'; 
 
 const props = defineProps({
-  isDownloading: {
-    type: Boolean,
-    default: false
-  },
-  hatConfig: {
-    type: Object,
-    required: true
-  }
-
+  isDownloading: { type: Boolean, default: false },
+  hatConfig: { type: Object, required: true },
+  
+  // ID projektu i Status (z rodzica)
+  projectId: { type: [String, null], default: null },
+  currentStatus: { type: String, default: 'NOWY' }
 });
 
+const emit = defineEmits(['download']);
 
+// Stan UI
+const isModalOpen = ref(false);
+const isSubmitting = ref(false);
+
+// Dane do formularza (tylko dla nowego projektu)
 const formData = reactive({
   imieNazwisko: '',
   email: '',
   telefon: '',
-  firma: '', // Opcjonalnie dodaj input w HTML jeśli chcesz
+  firma: '', 
   ilosc: '',
   uwagi: '',
   rodo: false
 });
 
+// --- LOGIKA STANU (COMPUTED) ---
 
-defineEmits(['download']);
+// 1. Czy edytujemy istniejący projekt?
+const isEditMode = computed(() => !!props.projectId);
 
-const isModalOpen = ref(false);
-const isSubmitting = ref(false);
+// 2. Czy można edytować? (Tylko jeśli to nowy projekt LUB status w bazie to 'NOWY')
+const canEdit = computed(() => {
+  if (!isEditMode.value) return true; // Nowy zawsze można
+  return props.currentStatus === 'NOWY';
+});
 
+// 3. Tekst na guziku
+const buttonText = computed(() => {
+  if (!isEditMode.value) return 'Wyślij wizualizację';
+  return canEdit.value ? 'Zapisz Wersję' : `Status: ${props.currentStatus}`;
+});
 
-const openModal = () => {
-  isModalOpen.value = true;
+// --- GŁÓWNA AKCJA PRZYCISKU ---
+const handleMainAction = () => {
+  if (!canEdit.value) return; // Zabezpieczenie
+
+  if (isEditMode.value) {
+    // Tryb edycji -> Szybki zapis (PUT)
+    submitUpdateDirectly();
+  } else {
+    // Tryb nowy -> Otwórz modal (POST)
+    isModalOpen.value = true;
+  }
 };
 
+// --- LOGIKA MODALA ---
 const closeModal = () => {
   isModalOpen.value = false;
 };
 
-const submitForm = async () => {
+// --- SCENARIUSZ 1: NOWY PROJEKT (POST) ---
+const submitNewProject = async () => {
   if (!formData.rodo) {
     alert("Musisz zaakceptować zgodę RODO.");
     return;
@@ -171,37 +201,66 @@ const submitForm = async () => {
   isSubmitting.value = true;
 
   try {
-    // 1. Budujemy obiekt do wysyłki (zgodny z Java ProjectRequest)
     const payload = {
       imieNazwisko: formData.imieNazwisko,
       email: formData.email,
       telefon: formData.telefon,
-      firma: formData.firma, // Upewnij się, że masz to pole w modelu lub formularzu
+      firma: formData.firma,
       ilosc: parseInt(formData.ilosc) || 0,
       uwagi: formData.uwagi,
       zgodaRodo: formData.rodo,
-      // 2. Dopinamy konfigurację czapki
       config: props.hatConfig 
     };
 
-    // 3. Wysyłamy do backendu
     await projectAPI.submitProject(payload);
 
     alert('Dziękujemy! Twoje zapytanie zostało wysłane.');
     closeModal();
     
-    // Opcjonalnie: Reset formularza
+    // Reset formularza
     formData.uwagi = '';
     formData.rodo = false;
+    // Tutaj opcjonalnie można przekierować usera na widok edycji, ale na razie zostawiamy
 
   } catch (error) {
     console.error(error);
-    alert('Wystąpił błąd podczas wysyłania. Spróbuj ponownie.');
+    alert('Wystąpił błąd podczas wysyłania.');
   } finally {
     isSubmitting.value = false;
   }
 };
 
+// --- SCENARIUSZ 2: AKTUALIZACJA (PUT) ---
+const submitUpdateDirectly = async () => {
+  if (!confirm("Czy chcesz nadpisać zapisaną konfigurację nową wersją?")) return;
+
+  isSubmitting.value = true;
+
+  try {
+    // Wysyłamy tylko konfigurację (backend i tak ignoruje dane osobowe przy update)
+    const payload = {
+       config: props.hatConfig
+    };
+
+    await projectAPI.updateProject(props.projectId, payload);
+    alert('Zapisano nową wersję projektu!');
+    
+  } catch (error) {
+    console.error(error);
+    if (error.response && (error.response.status === 403 || error.response.status === 401)) {
+        alert("Nie można zapisać zmian. Projekt został zablokowany przez administratora.");
+    } else {
+        alert('Błąd zapisu.');
+    }
+  } finally {
+    isSubmitting.value = false;
+  }
+};
+
+// Funkcja wywoływana przez formularz w modalu
+const submitForm = () => {
+  submitNewProject();
+};
 </script>
 
 <style scoped>
@@ -395,5 +454,18 @@ const submitForm = async () => {
   .glass-btn.with-text { padding: 0; width: 48px; border-radius: 50%; justify-content: center; }
   .logo-btn { width: 60px; height: 60px; }
   .logo-btn img { width: 50px; }
+}
+
+.disabled-btn {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: rgba(229, 231, 235, 0.8); /* Szary */
+  border-color: #d1d5db;
+  color: #9ca3af;
+}
+.disabled-btn:hover {
+  transform: none;
+  box-shadow: none;
+  background: rgba(229, 231, 235, 0.8);
 }
 </style>

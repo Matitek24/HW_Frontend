@@ -129,7 +129,8 @@ export const dictionaryAPI = {
 
 export const projectAPI = {
   submitProject: (data) => api.post('/public/project', data),
-  getProject: (uuid) => api.get(`/public/project/${uuid}`)
+  getProject: (uuid) => api.get(`/public/project/${uuid}`),
+  updateProject: (uuid, data) => api.put(`/public/project/${uuid}`, data)
 };
 
 // utils/axios.js
@@ -137,6 +138,8 @@ export const projectAPI = {
 export const adminAPI = {
   getAllUsers: () => api.get('/admin/users'),
   deleteUser: (id) => api.delete(`/admin/users/${id}`),
-  
-  getAllProjects: () => api.get('/admin/projects') 
+  getAllProjects: () => api.get('/admin/projects'),
+  updateProjectStatus: (id, status) => api.patch(`/admin/projects/${id}/status`, status, {
+    headers: { 'Content-Type': 'text/plain' } // Wysyłamy prosty string, nie JSON
+})
 };

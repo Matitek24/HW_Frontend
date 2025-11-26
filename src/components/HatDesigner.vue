@@ -12,6 +12,8 @@
         @download="handleDownloadRequest" 
         :isDownloading="isDownloading"
         :hatConfig="hatConfig"
+        :projectId="route.params.id || null"
+        :currentStatus="projectStatus"
       />
 
       <div class="fade-in-content content-layout">
@@ -63,9 +65,12 @@
   });
   
   // --- GŁÓWNA LOGIKA INICJALIZACJI ---
-  onMounted(async () => {
+ // Upewnij się, że masz zdefiniowaną zmienną na status
+const projectStatus = ref('NOWY');
+
+onMounted(async () => {
   try {
-    // KROK 1: Pobierz Słowniki
+    // KROK 1: Pobierz Słowniki (Bez zmian)
     const [colorsRes, patternsRes, fontsRes] = await Promise.all([
       dictionaryAPI.getColors(),
       dictionaryAPI.getPatterns(),
@@ -79,12 +84,29 @@
     // KROK 2: Sprawdź czy to wejście z Linku
     if (route.params.id) {
       console.log("Tryb odczytu projektu: ", route.params.id);
-      // Tutaj czekamy na odpowiedź z bazy
+      
+      // Pobieramy z bazy (teraz przychodzi wrapper ze statusem)
       const response = await projectAPI.getProject(route.params.id);
       
-      // Podmieniamy konfig ZANIM zdejmiemy loader
-      Object.assign(hatConfig, response.data);
-      console.log("Załadowano konfigurację z serwera!");
+      // 1. Wyciągamy STATUS (do blokowania przycisku)
+      if (response.data.status) {
+         projectStatus.value = response.data.status;
+         console.log("Status projektu:", projectStatus.value);
+      }
+
+      // 2. Wyciągamy KONFIGURACJĘ (jest teraz głębiej, w polu .config)
+      // TU BYŁ BŁĄD: wcześniej brałeś całe response.data
+      const savedConfig = response.data.config; 
+
+      // 3. Nadpisujemy czapkę tylko jeśli config istnieje
+      if (savedConfig) {
+          // Ważne: czyścimy stary config i wpisujemy nowy, 
+          // ale Object.assign jest bezpieczny dla reaktywności
+          Object.assign(hatConfig, savedConfig);
+          console.log("Załadowano konfigurację z serwera!");
+      } else {
+          console.warn("Otrzymano projekt, ale brak w nim konfiguracji JSON!");
+      }
         
     } else {
       // KROK 3: Tryb normalny - wczytaj z LocalStorage
@@ -93,15 +115,16 @@
       if (savedConfig) {
         Object.assign(hatConfig, savedConfig);
       }
+      // Resetujemy status na NOWY dla trybu roboczego
+      projectStatus.value = 'NOWY';
     }
 
   } catch (e) {
     console.error("Błąd krytyczny inicjalizacji:", e);
-    // Opcjonalnie: alert("Błąd ładowania");
+    alert("Nie udało się załadować projektu.");
+    router.push('/');
   } finally {
-    // TO JEST KLUCZOWE:
-    // Niezależnie czy się udało, czy był błąd - zdejmujemy zasłonę.
-    // Dzięki temu użytkownik zobaczy od razu gotową czapkę, bez "migania".
+    // Zdejmujemy loader
     isInitLoading.value = false;
   }
 });
@@ -272,5 +295,7 @@
   from { opacity: 0; } 
   to { opacity: 1; }
 }
+
+
 
   </style>
