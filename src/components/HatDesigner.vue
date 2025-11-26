@@ -1,140 +1,71 @@
 <template>
-    <div class="svg-container">
+  <div class="svg-container">
+    
+    <div v-if="isInitLoading" class="loading-overlay">
+      <div class="spinner"></div>
+      <p>Wczytuję projekt...</p>
+    </div>
+
+    <template v-else>
+      
       <TopBar 
         @download="handleDownloadRequest" 
         :isDownloading="isDownloading"
         :hatConfig="hatConfig"
       />
-      <Formularz 
-      :config="hatConfig" 
-      :dictionaries="dictionaryData"
-    />
-    
-    <div id="print-flat-container" class="d-flex">
-      <HatFlat 
-        :config="hatConfig" 
-        :patternsDict="dictionaryData.patterns" 
-      />
-    </div>
 
-    <div id="print-front-container">
-      <HatFront 
-        :config="hatConfig" 
-        :show-pompon="true"
-        :patternsDict="dictionaryData.patterns"
-      />
-    </div>
-  
-    </div>
-  </template>
+      <div class="fade-in-content content-layout">
+        
+        <Formularz 
+          :config="hatConfig" 
+          :dictionaries="dictionaryData"
+        />
+        
+        <div id="print-flat-container" class="d-flex">
+          <HatFlat :config="hatConfig" :patternsDict="dictionaryData.patterns"/>
+        </div>
+    
+        <div id="print-front-container">
+          <HatFront :config="hatConfig" :show-pompon="true" :patternsDict="dictionaryData.patterns"/>
+        </div>
+
+      </div>
+    </template>
+
+  </div>
+</template>
   <script setup>
-  import { reactive, watch, onMounted, ref, computed } from 'vue';
+  import { reactive, watch, onMounted, ref } from 'vue';
+  import { useRoute, useRouter } from 'vue-router';
   import Formularz from './Formularz.vue';
   import TopBar from './TopBar.vue';
   import HatFlat from './hat/HatFlat.vue';
   import HatFront from './hat/HatFront.vue';
   import { defaultConfig, loadConfig, saveConfig } from '../utils/hatConfig.js';
   import { usePdfGenerator } from '../utils/usePdfGenerator.js'; 
-  import { dictionaryAPI } from '../utils/axios.js';
+  // DODANO IMPORT projectAPI
+  import { dictionaryAPI, projectAPI } from '../utils/axios.js';
   
   const isDownloading = ref(false);
-  
+  const isInitLoading = ref(true);
+  const route = useRoute(); 
+  const router = useRouter();
   const { generatePdf } = usePdfGenerator();
   
+  // Reaktywny konfig
   const hatConfig = reactive(JSON.parse(JSON.stringify(defaultConfig)));
-
-  const dictionaryData = ref({
-  colors: [],
-  patterns: [],
-  fonts: []
-});
-  const handleDownloadRequest = async (type) => {
-    if (type === "pdf") {
-      // 1. Włączamy loading
-      isDownloading.value = true;
-      
-      try {
-        // 2. Wywołujemy funkcję z oddzielnego pliku
-        // setTimeout daje czas Vue na odświeżenie UI (pokazanie spinnera)
-        setTimeout(async () => {
-           await generatePdf();
-           // 3. Wyłączamy loading po zakończeniu
-           isDownloading.value = false;
-        }, 100);
-        
-      } catch (e) {
-        console.error(e);
-        isDownloading.value = false;
-      }
-    }
-  };
   
-  // Wczytanie zapisanej konfiguracji przy starcie
-  onMounted(() => {
-    const savedConfig = loadConfig();
-    if (savedConfig) {
-      Object.assign(hatConfig, savedConfig);
-    }
+  // Słowniki
+  const dictionaryData = ref({
+    colors: [],
+    patterns: [],
+    fonts: []
   });
   
-  // Automatyczny zapis przy każdej zmianie
-  watch(hatConfig, (newVal) => {
-    saveConfig(newVal);
-  }, { deep: true });
-  
-  // --- USUNĄŁEM STARĄ FUNKCJĘ handleDownloadRequest STĄD ---
-  
-  const downloadAsSVG = () => {
-    // Logika eksportu do SVG
-    const svgElement = document.querySelector('#Warstwa_1');
-    if (svgElement) {
-      const svgData = new XMLSerializer().serializeToString(svgElement);
-      const blob = new Blob([svgData], { type: 'image/svg+xml' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'czapka-flat.svg';
-      link.click();
-      URL.revokeObjectURL(url);
-    }
-  };
-  
-  
-  const hexToRgbString = (hex) => {
-    if (!hex) return '255, 255, 255'; 
-    
-    hex = hex.replace(/^#/, '');
-    
-    if (hex.length === 3) {
-      hex = hex.split('').map(c => c + c).join('');
-    }
-    
-    const num = parseInt(hex, 16);
-    const r = (num >> 16) & 255;
-    const g = (num >> 8) & 255;
-    const b = num & 255;
-    
-    return `${r}, ${g}, ${b}`;
-  };
-  
-  watch(
-    () => hatConfig.base,
-    (newBase) => {
-      if (newBase?.top && newBase?.bottom) {
-        const topRgb = hexToRgbString(newBase.top);
-        const bottomRgb = hexToRgbString(newBase.bottom);
-  
-        // Ustawiamy same cyferki RGB jako zmienne
-        document.body.style.setProperty('--rgb-top', topRgb);
-        document.body.style.setProperty('--rgb-bottom', bottomRgb);
-      }
-    },
-    { deep: true, immediate: true }
-  );
-
-  // pobiera dane z API słowników
+  // --- GŁÓWNA LOGIKA INICJALIZACJI ---
   onMounted(async () => {
   try {
+    // KROK 1: Pobierz Słowniki
     const [colorsRes, patternsRes, fontsRes] = await Promise.all([
       dictionaryAPI.getColors(),
       dictionaryAPI.getPatterns(),
@@ -144,11 +75,87 @@
     dictionaryData.value.colors = colorsRes.data;
     dictionaryData.value.patterns = patternsRes.data;
     dictionaryData.value.fonts = fontsRes.data;
-    
+
+    // KROK 2: Sprawdź czy to wejście z Linku
+    if (route.params.id) {
+      console.log("Tryb odczytu projektu: ", route.params.id);
+      // Tutaj czekamy na odpowiedź z bazy
+      const response = await projectAPI.getProject(route.params.id);
+      
+      // Podmieniamy konfig ZANIM zdejmiemy loader
+      Object.assign(hatConfig, response.data);
+      console.log("Załadowano konfigurację z serwera!");
+        
+    } else {
+      // KROK 3: Tryb normalny - wczytaj z LocalStorage
+      console.log("Tryb normalny - wczytuję z LocalStorage");
+      const savedConfig = loadConfig();
+      if (savedConfig) {
+        Object.assign(hatConfig, savedConfig);
+      }
+    }
+
   } catch (e) {
-    console.error("Błąd pobierania słowników", e);
+    console.error("Błąd krytyczny inicjalizacji:", e);
+    // Opcjonalnie: alert("Błąd ładowania");
+  } finally {
+    // TO JEST KLUCZOWE:
+    // Niezależnie czy się udało, czy był błąd - zdejmujemy zasłonę.
+    // Dzięki temu użytkownik zobaczy od razu gotową czapkę, bez "migania".
+    isInitLoading.value = false;
   }
 });
+
+
+  watch(hatConfig, (newVal) => {
+
+  updateCssVariables(newVal.base);
+
+  if (!route.params.id) {
+    saveConfig(newVal);
+  } else {
+    console.log("Tryb podglądu - pomijam auto-zapis do localStorage");
+  }
+}, { deep: true });
+  
+  
+  // --- PDF GENERATOR ---
+  const handleDownloadRequest = async (type) => {
+    if (type === "pdf") {
+      isDownloading.value = true;
+      try {
+        setTimeout(async () => {
+           await generatePdf();
+           isDownloading.value = false;
+        }, 100);
+      } catch (e) {
+        console.error(e);
+        isDownloading.value = false;
+      }
+    }
+  };
+  
+  // --- CSS VARIABLES ---
+  const hexToRgbString = (hex) => {
+    if (!hex) return '255, 255, 255'; 
+    hex = hex.replace(/^#/, '');
+    if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+    const num = parseInt(hex, 16);
+    return `${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}`;
+  };
+  
+  const updateCssVariables = (base) => {
+      if (base?.top && base?.bottom) {
+        const topRgb = hexToRgbString(base.top);
+        const bottomRgb = hexToRgbString(base.bottom);
+        document.body.style.setProperty('--rgb-top', topRgb);
+        document.body.style.setProperty('--rgb-bottom', bottomRgb);
+      }
+  };
+  
+  // Inicjalne ustawienie CSS (jeśli są domyślne wartości)
+  updateCssVariables(hatConfig.base);
+  
   </script>
   
   <style>
@@ -208,4 +215,62 @@
   .pasek {
     fill: var(--kolor-pasek);
   }
+
+  .loading-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #1f2937;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e5e7eb;
+  border-top: 4px solid #1f2937;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.fade-in-content {
+  animation: fadeIn 0.5s ease-out;
+  width: 100%; 
+  display: flex; 
+  flex-wrap: wrap;
+  gap: 30px;
+  justify-content: center;
+}
+
+.content-layout {
+  width: 100%;
+  display: flex;          
+  flex-wrap: wrap;        
+  gap: 30px;              
+  justify-content: center; 
+  padding-top: 100px;     
+}
+
+.fade-in-content {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; } 
+  to { opacity: 1; }
+}
+
   </style>

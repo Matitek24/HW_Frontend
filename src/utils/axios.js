@@ -128,7 +128,8 @@ export const dictionaryAPI = {
 };
 
 export const projectAPI = {
-  submitProject: (data) => api.post('/public/project', data)
+  submitProject: (data) => api.post('/public/project', data),
+  getProject: (uuid) => api.get(`/public/project/${uuid}`)
 };
 
 // utils/axios.js

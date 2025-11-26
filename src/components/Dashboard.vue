@@ -164,7 +164,6 @@
                              "{{ project.order.notes }}"
                           </div>
                         </div>
-
                       </div>
                     </div>
                   </td>

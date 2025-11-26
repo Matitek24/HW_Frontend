@@ -11,6 +11,14 @@ const routes = [
     name: 'Czapka',
     component: Czapka
   },
+
+  {
+    path: '/projekt/:id',
+    name: 'UUID_Project',
+    component: Czapka,
+    props: true
+  },
+
   {
     path: '/dashboard',
     name: 'Dashboard',
