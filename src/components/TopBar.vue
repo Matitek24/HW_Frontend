@@ -51,9 +51,10 @@
     <div class="actions-container">
     
 
-      <button class="logo-btn">
-        <img src="../assets/Headwear_COLOR_CMYK_logo-1.png.webp" width="120" alt="hw">
-      </button>
+      <a href="/" class="logo-btn">
+          <img src="../assets/Headwear_COLOR_CMYK_logo-1.png.webp" width="120" alt="hw" />
+      </a>
+
     </div>
   </div>
 

@@ -203,7 +203,7 @@
                   type="range" 
                   v-model.number="config.text.fontSize" 
                   min="30" 
-                  max="150" 
+                  max="170" 
                   step="5"
                   class="slider"
                 />
