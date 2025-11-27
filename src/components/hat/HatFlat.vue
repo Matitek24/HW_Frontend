@@ -91,7 +91,7 @@
       <!-- Tekst -->
       <text 
         :x="572.23" 
-        :y="370.69" 
+        :y="finalTextPosition"
         :fill="config.text.color" 
         :font-family="config.text.font" 
         :font-size="config.text.fontSize" 
@@ -118,6 +118,17 @@ const props = defineProps({
     type: Array,
     default: () => []
   }
+});
+
+const finalTextPosition = computed(() => {
+  // 1. Twoja bazowa pozycja ze statycznego kodu
+  const baseY = 367.69; 
+  
+  // 2. Przesunięcie z suwaka (zabezpieczone na 0)
+  const offset = props.config.text.offsetY || 0;
+
+  // 3. Suma
+  return baseY + offset * 1.5;
 });
 
 const topPatternSvg = computed(() => {

@@ -156,15 +156,14 @@
         <div class="expanded-grid">
           
           <div class="expanded-column">
-            <h3 class="column-title">Personalizacja Tekstu</h3>
+            <h3 class="column-title">Napis</h3>
             
             <div class="expanded-field">
-              <label>Treść napisu</label>
               <input 
                 type="text" 
                 v-model="config.text.content" 
                 class="input-pill full-width large-text"
-                placeholder="Wpisz tekst..."
+                placeholder="Twój tekst..."
               />
             </div>
 
@@ -184,12 +183,11 @@
                 </div>
               </div>
               <div class="expanded-field half">
-                <label>Kolor tekstu</label>
+                <label>Kolor</label>
                 <div class="color-pill full-width space-between">
                   <ColorPicker
                     v-model="config.text.color"
                     :color-options="dictionaries.colors"
-                    title="Kolor tekstu"
                   />
                   <span class="hex-display">{{ config.text.color }}</span>
                 </div>
@@ -198,141 +196,115 @@
             
             <div class="expanded-row">
               <div class="expanded-field half">
-                <label>Rozmiar Czcionki: {{ config.text.fontSize }}px</label>
+                <label>Rozmiar: {{ config.text.fontSize }}</label>
                 <input 
                   type="range" 
                   v-model.number="config.text.fontSize" 
-                  min="30" 
-                  max="170" 
-                  step="5"
-                  class="slider"
+                  min="30" max="170" step="5"
+                  class="slider compact-slider"
+                />
+              </div>
+              <div class="expanded-field half">
+                <label>Pozycja Y: {{ config.text.offsetY || 0 }}</label>
+                <input 
+                  type="range" 
+                  v-model.number="config.text.offsetY" 
+                  min="-60" max="60" step="2"
+                  class="slider compact-slider"
                 />
               </div>
             </div>
           </div>
 
           <div class="expanded-column">
-            <h3 class="column-title">Konfiguracja Bazy</h3>
+            <h3 class="column-title">Kolory Bazy</h3>
             <div class="color-list-rows">
-              
-              <!-- Góra -->
               <div class="color-row-item">
-                <span class="label-text">Góra czapki</span>
+                <span class="label-text">Góra</span>
                 <ColorPicker
                   v-model="config.base.top"
                   :color-options="dictionaries.colors"
-                  label="Góra czapki"
                 />
               </div>
-              
-              <!-- Środek -->
               <div class="color-row-item">
-                <span class="label-text">Pasek Środkowy</span>
+                <span class="label-text">Środek</span>
                 <ColorPicker
                   v-model="config.base.middle"
                   :color-options="dictionaries.colors"
-                  label="Środek czapki"
                 />
               </div>
-              
-              <!-- Dół -->
               <div class="color-row-item">
-                <span class="label-text">Dół czapki</span>
+                <span class="label-text">Dół</span>
                 <ColorPicker
                   v-model="config.base.bottom"
                   :color-options="dictionaries.colors"
-                  label="Dół czapki"
                 />
               </div>
-              
             </div>
           </div>
 
           <div class="expanded-column">
-            <h3 class="column-title">Wzory i Pompony</h3>
+            <h3 class="column-title">Wzory</h3>
             
             <div class="expanded-row">
-              <div class="expanded-field half">
+              <div class="expanded-field grow">
                 <label>Wzór Góra</label>
                 <div class="select-wrapper">
                   <select v-model="config.patterns.top" class="input-pill select-pill full-width">
                     <option :value="null">Brak</option> 
-                    <option 
-                  v-for="pattern in topPatterns" 
-                  :key="pattern.id" 
-                  :value="pattern.id" 
-                >
-                  {{ pattern.nazwa }}
-                </option>
+                    <option v-for="p in topPatterns" :key="p.id" :value="p.id">{{ p.nazwa }}</option>
                   </select>
                 </div>
               </div>
-              <div class="expanded-field half">
-                <label>Kolor Wz. Góra</label>
+              <div class="expanded-field auto-width">
+                <label>Kolor</label>
                 <div class="color-pill justify-center">
-                  <ColorPicker
-                    v-model="config.pattern.top"
-                    :color-options="dictionaries.colors"
-                    title="Kolor wzoru góra"
-                  />
+                  <ColorPicker v-model="config.pattern.top" :color-options="dictionaries.colors" />
                 </div>
               </div>
             </div>
 
             <div class="expanded-row mt-2">
-              <div class="expanded-field half">
+              <div class="expanded-field grow">
                 <label>Wzór Dół</label>
                 <div class="select-wrapper">
                   <select v-model="config.patterns.bottom" class="input-pill select-pill full-width">
                     <option :value="null">Brak</option> 
-                    <option 
-                  v-for="pattern in bottomPatterns" 
-                  :key="pattern.id" 
-                  :value="pattern.id" 
-                >
-                  {{ pattern.nazwa }}
-                </option>
+                    <option v-for="p in bottomPatterns" :key="p.id" :value="p.id">{{ p.nazwa }}</option>
                   </select>
                 </div>
               </div>
-              <div class="expanded-field half">
-                <label>Kolor Wz. Dół</label>
+              <div class="expanded-field auto-width">
+                <label>Kolor</label>
                 <div class="color-pill justify-center">
-                  <ColorPicker
-                    v-model="config.pattern.main"
-                    :color-options="dictionaries.colors"
-                    title="Kolor wzoru dół"
-                  />
+                  <ColorPicker v-model="config.pattern.main" :color-options="dictionaries.colors" />
                 </div>
               </div>
             </div>
-            
-            <div class="expanded-field mt-3">
-              <label>Kolory Pomponów</label>
-              <div class="color-pill full-width space-around">
-                <ColorPicker
-                  v-model="config.pompons.p1"
-                  :color-options="dictionaries.colors"
-                  title="Pompon 1"
-                />
-                <ColorPicker
-                  v-model="config.pompons.p2"
-                  :color-options="dictionaries.colors"
-                  title="Pompon 2"
-                />
-                <ColorPicker
-                  v-model="config.pompons.p3"
-                  :color-options="dictionaries.colors"
-                  title="Pompon 3"
-                />
-                <ColorPicker
-                  v-model="config.pompons.p4"
-                  :color-options="dictionaries.colors"
-                  title="Pompon 4"
-                />
-              </div>
+          </div>
+
+          <div class="expanded-column">
+            <h3 class="column-title">Pompony</h3>
+            <div class="pompon-grid-display">
+               <div class="pompon-item">
+                 <label>P 1</label>
+                 <ColorPicker v-model="config.pompons.p1" :color-options="dictionaries.colors" />
+               </div>
+               <div class="pompon-item">
+                 <label>P 2</label>
+                 <ColorPicker v-model="config.pompons.p2" :color-options="dictionaries.colors" />
+               </div>
+               <div class="pompon-item">
+                 <label>P 3</label>
+                 <ColorPicker v-model="config.pompons.p3" :color-options="dictionaries.colors" />
+               </div>
+               <div class="pompon-item">
+                 <label>P 4</label>
+                 <ColorPicker v-model="config.pompons.p4" :color-options="dictionaries.colors" />
+               </div>
             </div>
           </div>
+          
         </div>
       </div>
     </div>
@@ -341,7 +313,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import ColorPicker from '../components/utils/ColorPicker.vue'; // lub gdzie masz komponenty
+import ColorPicker from '../components/utils/ColorPicker.vue'; 
 
 const props = defineProps({
   config: {
@@ -375,7 +347,82 @@ const bottomPatterns = computed(() =>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-/* Color Picker Dropdown */
+.expanded-column {
+  display: flex;
+  flex-direction: column;
+  position: relative; /* Kluczowe dla umieszczenia kreski */
+  padding-right: 20px;
+  padding-left: 20px;
+}
+
+
+.expanded-column:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: -12px;      
+  top: 15px;         
+  bottom: 5px;       
+  width: 1px;         
+  background: #e5e7eb;
+}
+
+@media (max-width: 1024px) {
+  .expanded-column::after {
+    display: none;
+  }
+}
+
+.expanded-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr 0.8fr; 
+  gap: 24px;
+}
+
+.compact-slider {
+  width: 100%;
+  margin-top: 4px;
+}
+
+
+.pompon-grid-display {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.pompon-item {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.pompon-item label {
+  font-size: 10px;
+  color: #9ca3af;
+  font-weight: 700;
+}
+
+/* Pomocnicze klasy do układu wzorów */
+.expanded-row { display: flex; gap: 10px; align-items: flex-end;}
+.grow { flex-grow: 1; }
+.auto-width { width: auto; flex-shrink: 0; }
+.mt-2 { margin-top: 12px; }
+
+/* RWD - na tablecie wracamy do 2 kolumn, bo 4 się nie zmieszczą */
+@media (max-width: 1024px) {
+  .expanded-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .expanded-grid {
+    grid-template-columns: 1fr;
+  }
+}
 .color-picker-wrapper {
   position: relative;
 }
@@ -586,10 +633,8 @@ const bottomPatterns = computed(() =>
 
 .config-bar-container.expanded .config-bar {
   width: 100%;
-  max-width: 1000px;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  padding: 30px 40px;
+  max-width: 1200px; 
+  padding: 20px 30px; 
   margin: 0 auto;
   border-radius: 24px 24px 0 0;
 }
@@ -683,11 +728,7 @@ const bottomPatterns = computed(() =>
   to { opacity: 1; transform: translateY(0); }
 }
 
-.expanded-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr; /* Trzy równe kolumny */
-  gap: 40px; /* Dużo powietrza */
-}
+
 
 .column-title {
   font-size: 12px;

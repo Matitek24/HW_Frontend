@@ -114,7 +114,7 @@
         <!-- Tekst na krzywej -->
         <g clip-path="url(#clippath3)">
           <text 
-            :dy="calculateTextPathOffset - 40" 
+            :dy="finalTextPosition"
             :font-family="config.text.font" 
             font-weight="bold" 
             :font-size="config.text.fontSize" 
@@ -171,8 +171,17 @@ const mainPatternSvg = computed(() => {
   return pattern ? pattern.kodSvg : '';
 });
 
-const calculateTextPathOffset = computed(() => {
-  return props.config.text.fontSize * 0.35;
+// HatFront.vue / HatThumbnail.vue
+
+const finalTextPosition = computed(() => {
+  // 1. Bazowa pozycja (żeby tekst nie nachodził na szwy)
+  // To zależy od Twojego SVG, w HatFront miałeś np. calculateTextPathOffset - 40
+  const baseOffset = (props.config.text.fontSize * 0.35) - 40;
+  
+  // 2. Manualne przesunięcie użytkownika (zabezpieczone na 0 jeśli undefined)
+  const manualOffset = props.config.text.offsetY || 0;
+
+  return baseOffset + manualOffset;
 });
 
 // Funkcja dla górnego wzoru

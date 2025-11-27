@@ -45,12 +45,11 @@ export function useProductionCard() {
           font: "Roboto", // Używamy nazwy zarejestrowanej w pkt 3
           fontStyle: "normal"
         },
-        head: [['Klient', 'Firma', 'Kontakt', 'Ilość']],
+        head: [['Klient', 'Firma', 'Kontakt']],
         body: [[
           project.client.name, // Tutaj mogą być polskie znaki (np. "Łukasz")
           project.client.company || '-',
           `${project.client.email}\n${project.client.phone || ''}`,
-          `${project.order.quantity} szt.`
         ]],
         theme: 'grid',
         headStyles: { fillColor: [31, 41, 55] }
@@ -70,6 +69,7 @@ export function useProductionCard() {
       ['Czcionki', conf.text?.font || '-'],
       ['Tekst', conf.text?.content || '-'],
       ['Kolor Tekstu', conf.text?.color || '-'],
+      ['Y Tekstu', conf.text?.offsetY || '-'],
       ['Pompony', conf.pompons ? `1: ${conf.pompons.p1}, 2: ${conf.pompons.p2} 3: ${conf.pompons.p3} 4: ${conf.pompons.p4}` : 'BRAK']
     ];
     autoTable(doc, {
@@ -116,7 +116,7 @@ export function useProductionCard() {
         doc.save(`Karta_Produkcyjna_${project.id}.pdf`);
     });
     
-    doc.save(`Karta_Produkcyjna_${project.id}.pdf`);
+
   };
 
   return { generateProductionCard };

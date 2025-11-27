@@ -7,7 +7,8 @@ export const defaultConfig = {
     content: 'HEADWEAR',
     color: '#1797ff',
     font: 'Arial, sans-serif',
-    fontSize: 100
+    fontSize: 100,
+    offsetY: 0
   },
   base: {
     top: '#1797ff',
