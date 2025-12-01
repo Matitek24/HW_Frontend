@@ -314,7 +314,6 @@
 <script setup>
 import { ref, computed } from 'vue';
 import ColorPicker from '../components/utils/ColorPicker.vue'; 
-
 const props = defineProps({
   config: {
     type: Object,

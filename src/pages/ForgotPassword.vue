@@ -24,15 +24,15 @@
           </button>
           
           <div class="mt-3 text-center">
-            <router-link to="/" class="back-link">← Wróć do logowania</router-link>
-          </div>
+            <router-link to="/login" class="back-link">← Wróć do logowania</router-link>
+          </div> 
         </form>
   
         <div v-else class="success-state">
           <div class="icon">📩</div>
           <h3>Sprawdź skrzynkę!</h3>
           <p>{{ successMessage }}</p>
-          <router-link to="/" class="btn-login" style="text-decoration: none; display: block; text-align: center;">
+          <router-link to="/login" class="btn-login" style="text-decoration: none; display: block; text-align: center;">
             Wróć do logowania
           </router-link>
         </div>

@@ -36,12 +36,30 @@
           <table class="table table-hover align-middle custom-table">
             <thead>
               <tr>
-                <th class="ps-4">ID / Data</th>
+                <th class="ps-4 clickable-header" @click="sort('date')">
+                  <div class="d-flex align-items-center gap-1">
+                    ID / Data
+                    <span class="sort-icon" :class="{ active: currentSort === 'date' }">
+                      <svg v-if="currentSort === 'date' && currentSortDir === 'asc'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                      <svg v-else-if="currentSort === 'date' && currentSortDir === 'desc'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2"><polyline points="7 13 12 18 17 13"></polyline><polyline points="7 11 12 6 17 11"></polyline></svg>
+                    </span>
+                  </div>
+                </th>
                 <th>Wizualizacja</th>
                 <th>Klient</th>
                 <th>Kontakt</th>
                 <th>Ilość</th>
-                <th>Status</th>
+                <th class="clickable-header" @click="sort('status')">
+                  <div class="d-flex align-items-center gap-1">
+                    Status
+                    <span class="sort-icon" :class="{ active: currentSort === 'status' }">
+                      <svg v-if="currentSort === 'status' && currentSortDir === 'asc'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"></polyline></svg>
+                      <svg v-else-if="currentSort === 'status' && currentSortDir === 'desc'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                      <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2"><polyline points="7 13 12 18 17 13"></polyline><polyline points="7 11 12 6 17 11"></polyline></svg>
+                    </span>
+                  </div>
+                </th>
                 <th class="text-end pe-4">Akcje</th>
               </tr>
             </thead>
@@ -259,6 +277,19 @@ const expandedRows = ref([]);
 const isLoading = ref(false);
 const { generateProductionCard } = useProductionCard();
 const searchFilter = ref({ type: 'name', query: '' });
+const currentSort = ref('date');    
+const currentSortDir = ref('desc');
+
+const sort = (column) => {
+  if (currentSort.value === column) {
+    // Jeśli kliknięto w to samo, odwróć kierunek
+    currentSortDir.value = currentSortDir.value === 'asc' ? 'desc' : 'asc';
+  } else {
+    // Jeśli inna kolumna, ustaw nową i domyślnie rosnąco
+    currentSort.value = column;
+    currentSortDir.value = 'asc';
+  }
+};
 
 // Funkcja filtrowania
 const handleSearch = ({ type, query }) => {
@@ -266,25 +297,39 @@ const handleSearch = ({ type, query }) => {
 };
 
 // Zmodyfikowany computed dla paginatedProjects
-const filteredProjects = computed(() => {
-  if (!searchFilter.value.query) return projects.value;
-  
-  const query = searchFilter.value.query.toLowerCase();
-  
-  return projects.value.filter(project => {
-    switch(searchFilter.value.type) {
-      case 'name':
-        return project.client.name.toLowerCase().includes(query);
-      case 'email':
-        return project.client.email.toLowerCase().includes(query);
-      case 'date':
-        return project.createdAt.includes(query);
-      case 'id':
-        return project.id.toString().toLowerCase().includes(query);
-      default:
-        return true;
+const processedProjects = computed(() => {
+  let result = [...projects.value];
+
+  // 1. FILTROWANIE (Twoja stara logika)
+  if (searchFilter.value.query) {
+    const query = searchFilter.value.query.toLowerCase();
+    result = result.filter(project => {
+      switch(searchFilter.value.type) {
+        case 'name': return project.client.name.toLowerCase().includes(query);
+        case 'email': return project.client.email.toLowerCase().includes(query);
+        case 'date': return project.createdAt.includes(query);
+        case 'id': return project.id.toString().toLowerCase().includes(query);
+        default: return true;
+      }
+    });
+  }
+
+  // 2. SORTOWANIE (Nowa logika)
+  result.sort((a, b) => {
+    let modifier = currentSortDir.value === 'desc' ? -1 : 1;
+
+    if (currentSort.value === 'date') {
+      // Sortowanie po dacie (używamy rawDate!)
+      return (new Date(a.rawDate) - new Date(b.rawDate)) * modifier;
+    } 
+    else if (currentSort.value === 'status') {
+      // Sortowanie alfabetyczne po statusie
+      return a.status.localeCompare(b.status) * modifier;
     }
+    return 0;
   });
+
+  return result;
 });
 
 
@@ -336,17 +381,15 @@ const changePage = (page) => {
 };
 
 // COMPUTED PROPERTIES
-const totalProjects = computed(() => filteredProjects.value.length);
+const totalProjects = computed(() => processedProjects.value.length);
 const totalPages = computed(() => Math.ceil(totalProjects.value / parseInt(itemsPerPage.value)));
 
 const paginatedProjects = computed(() => {
-  // 1. Wymuszamy konwersję na liczbę (parseInt), żeby uniknąć "5" + 5 = "55"
   const perPage = parseInt(itemsPerPage.value);
-  
   const start = (currentPage.value - 1) * perPage;
   const end = start + perPage;
-  
-  return filteredProjects.value.slice(start, end);
+
+  return processedProjects.value.slice(start, end); 
 });
 
 const pages = computed(() => {
@@ -431,6 +474,7 @@ onMounted(async () => {
     projects.value = projectsRes.data.map(p => ({
       id: p.id, // UUID
       createdAt: formatDate(p.createdAt),
+      rawDate: p.createdAt,
       status: p.status, 
 
       client: {
@@ -457,6 +501,20 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.clickable-header {
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+}
+
+.clickable-header:hover {
+  background-color: rgba(0,0,0,0.02) !important; /* Delikatne podświetlenie */
+}
+
+.sort-icon svg {
+  display: block;
+}
+
 .underline-hover {
   position: relative;
   transition: color 0.3s ease;
