@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-wrapper">
+  <div class="dashboard-wrapper" style="overflow: hidden;">
     <div class="bg-blob blob-1"></div>
     <div class="bg-blob blob-2"></div>
 
@@ -28,8 +28,11 @@
             </button>
           </div>
         </div>
-
-        <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+        <SearchFilter 
+          :results-count="totalProjects" 
+          @search="handleSearch" 
+        />
+        <div class="table-responsive">
           <table class="table table-hover align-middle custom-table">
             <thead>
               <tr>
@@ -225,7 +228,7 @@
 
           <div class="d-flex align-items-center gap-2">
             <span class="text-muted small">Pozycji na stronie:</span>
-            <select v-model="itemsPerPage" class="form-select form-select-sm" style="width: 80px;">
+            <select v-model.number="itemsPerPage" class="form-select form-select-sm" style="width: 80px;">
               <option value="5">5</option>
               <option value="10">10</option>
               <option value="20">20</option>
@@ -241,13 +244,13 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import thumbnailImg from '../assets/miniaturka.jpg'; 
 import { getStoredToken, removeStoredToken, isTokenValid, isAdmin } from '../utils/jwt';
 import { adminAPI, dictionaryAPI } from '../utils/axios'; 
 import HatThumbnail from './hat/HatThumbnail.vue';
 import { exportProjectsToCSV } from '../utils/csvExport.js';
 import { useProductionCard } from '../utils/useProductionCard';
 import StatusBadge from '../components/admin/StatusBadge.vue';
+import SearchFilter from './SearchFilter.vue';
 
 const router = useRouter();
 const projects = ref([]);
@@ -255,6 +258,35 @@ const patternsDict = ref([]);
 const expandedRows = ref([]);
 const isLoading = ref(false);
 const { generateProductionCard } = useProductionCard();
+const searchFilter = ref({ type: 'name', query: '' });
+
+// Funkcja filtrowania
+const handleSearch = ({ type, query }) => {
+  searchFilter.value = { type, query };
+};
+
+// Zmodyfikowany computed dla paginatedProjects
+const filteredProjects = computed(() => {
+  if (!searchFilter.value.query) return projects.value;
+  
+  const query = searchFilter.value.query.toLowerCase();
+  
+  return projects.value.filter(project => {
+    switch(searchFilter.value.type) {
+      case 'name':
+        return project.client.name.toLowerCase().includes(query);
+      case 'email':
+        return project.client.email.toLowerCase().includes(query);
+      case 'date':
+        return project.createdAt.includes(query);
+      case 'id':
+        return project.id.toString().toLowerCase().includes(query);
+      default:
+        return true;
+    }
+  });
+});
+
 
 const handleStatusChange = async ({ id, status, done }) => {
   try {
@@ -304,13 +336,17 @@ const changePage = (page) => {
 };
 
 // COMPUTED PROPERTIES
-const totalProjects = computed(() => projects.value.length);
-const totalPages = computed(() => Math.ceil(totalProjects.value / itemsPerPage.value));
+const totalProjects = computed(() => filteredProjects.value.length);
+const totalPages = computed(() => Math.ceil(totalProjects.value / parseInt(itemsPerPage.value)));
 
 const paginatedProjects = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value;
-  const end = start + itemsPerPage.value;
-  return projects.value.slice(start, end);
+  // 1. Wymuszamy konwersję na liczbę (parseInt), żeby uniknąć "5" + 5 = "55"
+  const perPage = parseInt(itemsPerPage.value);
+  
+  const start = (currentPage.value - 1) * perPage;
+  const end = start + perPage;
+  
+  return filteredProjects.value.slice(start, end);
 });
 
 const pages = computed(() => {
@@ -343,14 +379,6 @@ const newProjectsCount = computed(() =>
   projects.value.filter(p => p.status === 'NOWY').length
 );
 
-const getStatusClass = (status) => {
-  switch(status) {
-    case 'NOWY': return 'status-new';
-    case 'W_REALIZACJI': return 'status-progress';
-    case 'ZAKONCZONY': return 'status-done';
-    default: return 'status-default';
-  }
-};
 
 const handleLogout = () => {
   removeStoredToken();
@@ -382,15 +410,11 @@ onMounted(async () => {
   
   // Walidacja tokenu i roli
   if (!token || !isTokenValid(token)) {
-    router.push('/');
+    alert("Sesja wygasła. Zaloguj się ponownie.");
+    router.push('/login');
     return;
   }
   
-  if (!isAdmin(token)) {
-    alert("Brak uprawnień administratora");
-    router.push('/');
-    return;
-  }
 
   isLoading.value = true;
 
@@ -404,27 +428,23 @@ onMounted(async () => {
     // Zapisujemy wzory do zmiennej
     patternsDict.value = patternsRes.data;
 
-    // Mapujemy dane projektów
     projects.value = projectsRes.data.map(p => ({
       id: p.id, // UUID
       createdAt: formatDate(p.createdAt),
-      status: p.status, // np. "NOWY"
-      
-      // Dane klienta z relacji
+      status: p.status, 
+
       client: {
         name: p.klient.imieNazwisko || 'Brak danych',
         company: p.klient.firma || '',
         email: p.klient.email,
         phone: p.klient.telefon
       },
-      
-      // Ilość i uwagi z głównej tabeli
+
       order: {
         quantity: p.iloscSztuk || 0,
         notes: p.uwagiKlienta || 'Brak uwag'
       },
-      
-      // Konfiguracja z JSONB
+
       config: p.konfiguracja || {} 
     }));
 
@@ -470,10 +490,11 @@ onMounted(async () => {
   min-height: 100vh;
   background-color: #ffffff;
   position: relative;
-  overflow-x: hidden;
+  /* Usuwamy overflow-x: hidden stąd, bo to czasem psuje scrollowanie na mobile. 
+     Lepiej dać max-width: 100vw na body globalnie */
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  padding-bottom: 40px; /* Margines na dole, żeby tabela nie dotykała krawędzi */
 }
-
 /* Dekoracyjne bloby w tle */
 .bg-blob {
   position: absolute;
@@ -481,31 +502,24 @@ onMounted(async () => {
   filter: blur(80px);
   z-index: 0;
   opacity: 0.6;
+  will-change: transform; /* To pomaga w wydajności */
+  pointer-events: none; /* Żeby nie blokowały kliknięć */
 }
-.blob-1 {
-  width: 400px;
-  height: 400px;
-  background: #9fdae454; /* fiolet */
-  top: -100px;
-  left: -100px;
-}
-.blob-2 {
-  width: 500px;
-  height: 500px;
-  background: #60a5fa45; /* niebieski */
-  bottom: -150px;
-  right: -100px;
-}
+/* Reszta blobów bez zmian */
+.blob-1 { width: 400px; height: 400px; background: #9fdae454; top: -100px; left: -100px; }
+.blob-2 { width: 500px; height: 500px; background: #60a5fa45; bottom: -150px; right: -100px; }
 
 .glass-panel {
   background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  /* ZMNIEJSZ BLUR: 20px na dużym obszarze zabija FPS przy scrollowaniu. 
+     10px wygląda podobnie a działa dużo szybciej. */
+  backdrop-filter: blur(10px); 
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 24px;
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.05);
-  position: relative; /* DODANE: fix dla scrollbara */
-  overflow: hidden; /* DODANE: fix dla scrollbara */
+  position: relative;
+  /* USUŃ overflow: hidden stąd, bo to ucinało dropdowny i cienie */
 }
 
 .glass-badge {
@@ -585,10 +599,13 @@ onMounted(async () => {
 .custom-table {
   border-collapse: separate;
   border-spacing: 0 8px;
-  width: 100%; /* DODANE: fix dla szerokości */
+  width: 100%;
+  margin-bottom: 0; /* Usuń domyślny margines bootstrapa */
 }
 .custom-table thead th {
-  background: transparent;
+  background: transparent; /* Usuwamy tło nagłówka, bo jest w glass-panelu */
+  /* Jeśli chcesz sticky header, musisz dać mu tło, ale bez blura (wydajność) */
+  /* position: sticky; top: 0; <--- Opcjonalnie usuń sticky, jeśli tabela jest długa i scrollujesz stronę */
   border: none;
   color: #6b7280;
   font-weight: 500;
@@ -596,11 +613,6 @@ onMounted(async () => {
   text-transform: uppercase;
   letter-spacing: 1px;
   padding-bottom: 12px;
-  position: sticky; /* DODANE: nagłówek przyklejony */
-  top: 0;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  z-index: 10;
 }
 
 .main-row {
@@ -711,7 +723,16 @@ onMounted(async () => {
 
 /* DODANE: Fix dla kontenera tabeli */
 .table-responsive {
+  /* USUŃ max-height i overflow-y! Niech tabela rośnie naturalnie. */
+  /* max-height: 500px;  <-- USUNIĘTE */
+  /* overflow-y: auto;   <-- USUNIĘTE */
+  
+  overflow-x: auto; /* Tylko poziomy scroll na mobile */
   border-radius: 12px;
+  -webkit-overflow-scrolling: touch; /* Płynne przewijanie na iOS */
+}.main-row {
+  /* ... */
+  transform: translateZ(0); /* Hack na wydajność renderowania wierszy */
 }
 
 /* DODANE: Custom scrollbar */

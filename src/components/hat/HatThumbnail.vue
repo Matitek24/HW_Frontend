@@ -81,11 +81,9 @@ const mainPatternSvg = computed(() => {
 
 // --- LOGIKA POZYCJI TEKSTU ---
 const finalTextPosition = computed(() => {
-  const baseY = 335; 
-  
-  const offset = props.config.text?.offsetY || 0;
-
-  return baseY + offset;
+  const baseY = 330.69; 
+  const offset = props.config.text.offsetY || 0;
+  return baseY + offset * 1.5;
 });
 </script>
 

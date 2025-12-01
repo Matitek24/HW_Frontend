@@ -9,12 +9,17 @@
     >
       <defs>
         <clipPath id="clippath2">
-
           <path class="cls-2"
           d="M1144.45,189.53c-.95-5.3-30.61-167.61-95.19-167.61s-93.4,155.8-95.5,167.09c-2.07-11.29-31.82-167.09-95.1-167.09s-94.3,160.57-95.57,167.51c-1.25-6.94-30.94-167.51-95.17-167.51s-93.66,157.18-95.52,167.24c-1.84-10.06-31.57-167.24-95.12-167.24s-94.63,162.31-95.59,167.61h-.04c-.95-5.3-30.61-167.61-95.19-167.61s-94.63,162.31-95.59,167.61h-.05c-.95-5.3-30.61-167.61-95.19-167.61S.99,184.23.02,189.53h-.02v477.44h1144.47V189.53h-.02Z" />
         </clipPath>
         <clipPath id="prostokat" transform="translate(0, -360)">
           <path d="M1144.45,171.3c-.95-4.95-30.61-156.45-95.19-156.45s-93.4,145.43-95.5,155.97c-2.07-10.54-31.82-155.97-95.1-155.97s-94.3,149.88-95.57,156.36c-1.25-6.48-30.94-156.36-95.17-156.36s-93.66,146.72-95.52,156.11c-1.84-9.39-31.57-156.11-95.12-156.11s-94.63,151.5-95.59,156.45h-.04c-.95-4.95-30.61-156.45-95.19-156.45s-94.63,151.5-95.59,156.45h-.05c-.95-4.95-30.61-156.45-95.19-156.45S.99,166.35.02,171.3h-.02v445.65h1144.47V171.3h-.02Z" />
+        </clipPath>
+        <clipPath id="prostokat2" transform="translate(0, 93) rotate(180, 572, 357) ">
+          <rect class="cls-2" x="1.66" y="6.01" width="1142.81" height="544.33" />
+        </clipPath>
+        <clipPath id="prostokat3" transform="translate(0, -66) ">
+          <rect class="cls-2" x="1.66" y="6.01" width="1142.81" height="544.33" />
         </clipPath>
       </defs>
      
@@ -23,8 +28,7 @@
         <rect :fill="config.base.top" class="cls-3"x="1.85" width="1142.81" height="307.04" />
         <rect :fill="config.base.middle" class="cls-1" x="1.66" y="256.81" width="1142.81" height="225.78" />
         <rect class="cls-2" x="1.66" y="6.01" width="1142.81" height="544.33" />
-        
-    
+  
     <g>
       <g>
         <rect class="pasek" x="50.54" y="482.59" width="2.75" height="231.26"/>
@@ -82,13 +86,17 @@
       </g>
 
       <!-- Główny wzór -->
+      
       <g clip-path="url(#clippath2)">
         <g :fill="config.pattern.main" transform="translate(-10, 257) scale(1.04, 1.05)">
           <g v-html="mainPatternSvg"></g>
         </g>
       </g>
+      
 
       <!-- Tekst -->
+     <g clip-path="url(#prostokat3)">
+      <g clip-path="url(#prostokat2)">
       <text 
         :x="572.23" 
         :y="finalTextPosition"
@@ -101,6 +109,8 @@
       >
         {{ config.text.content }}
       </text>
+      </g>
+     </g>
     </svg>
   </div>
 </template>

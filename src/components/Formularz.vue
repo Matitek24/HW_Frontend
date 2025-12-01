@@ -372,6 +372,56 @@ const bottomPatterns = computed(() =>
   }
 }
 
+.slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #e0e0e0;
+  outline: none;
+  transition: background 0.3s;
+}
+
+.slider:hover {
+  background: #d0d0d0;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #303030;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.slider::-webkit-slider-thumb:hover {
+  background: #484848;
+  transform: scale(1.1);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+}
+
+.slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #667eea;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.slider::-moz-range-thumb:hover {
+  background: #5568d3;
+  transform: scale(1.2);
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+}
+
 .expanded-grid {
   display: grid;
   grid-template-columns: 1.2fr 1fr 1fr 0.8fr; 
