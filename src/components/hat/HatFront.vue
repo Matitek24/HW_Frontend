@@ -49,6 +49,7 @@
             </g>
             
             <!-- Paski (stripes) - SKRÓCONA WERSJA, dodaj wszystkie! -->
+           <g>
             <g>
               <g>
                 <path class="pasek"
@@ -94,6 +95,7 @@
                   d="M595.05,535.4c-1.33.14-2,.2-3.33.34-5.54-68.86-11.09-137.72-16.63-206.58,1.27-.12,1.91-.19,3.18-.31,5.6,68.85,11.19,137.7,16.79,206.55Z" />
               </g>
             </g>
+           </g>
           </g>
         </g>
   
@@ -112,7 +114,7 @@
         
         <!-- Główny wzór -->
         <g clip-path="url(#clippath3)" :fill="config.pattern.main">
-          <g transform="translate(-180, 152) scale(0.87)" id="target-graphic">
+          <g transform="translate(-180, 152.3) scale(0.872)" id="target-graphic">
             <g v-html="mainPatternSvg"></g>
           </g>
         </g>
@@ -196,7 +198,7 @@ const finalTextPosition = computed(() => {
     stala = 0.15;
   }
   const coefficient = stala + (100 - fontSize) * 0.0001;
-  const baseOffset = (fontSize * coefficient) - 32;
+  const baseOffset = (fontSize * coefficient) - 33;
   const manualOffset = (props.config.text.offsetY || 0) * 1.15;
   
   return baseOffset + manualOffset;
@@ -218,12 +220,11 @@ const applyBottomWarp = async () => {
   setTimeout(() => {
     if (svgRef.value) {
       resetWarp('#target-graphic');
-      bendIt(svgRef.value, '#target-graphic', 510, -0.0001);
+      bendIt(svgRef.value, '#target-graphic', 510, -0.00013);
     }
   }, 100);
 };
 
-// ⭐ Osobny watch dla górnego wzoru
 watch(
   () => topPatternSvg.value,
   (newValue) => {

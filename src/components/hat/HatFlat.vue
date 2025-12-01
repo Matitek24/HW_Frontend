@@ -132,7 +132,7 @@ const props = defineProps({
 
 const finalTextPosition = computed(() => {
   // 1. Twoja bazowa pozycja ze statycznego kodu
-  const baseY = 367.69; 
+  const baseY = 374.69; 
   
   // 2. Przesunięcie z suwaka (zabezpieczone na 0)
   const offset = props.config.text.offsetY || 0;

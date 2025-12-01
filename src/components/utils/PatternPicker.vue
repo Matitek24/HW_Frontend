@@ -1,11 +1,6 @@
 <template>
     <div class="pattern-picker-wrapper">
       <div class="pattern-trigger" @click="openModal">
-        <div v-if="selectedPattern" class="pattern-preview-mini">
-          <svg viewBox="0 0 100 100" class="mini-svg">
-             <g v-html="selectedPattern.kodSvg" transform="scale(0.1)"></g> 
-          </svg>
-        </div>
         <span class="pattern-name">{{ selectedPattern ? selectedPattern.nazwa : 'Brak wzoru' }}</span>
         <i class="bi bi-chevron-down ms-auto"></i>
       </div>
@@ -55,10 +50,8 @@
                       <div class="pattern-label">{{ pattern.nazwa }}</div>
                     </div>
                   </div>
-  
                 </div>
               </div>
-  
             </div>
           </div>
         </div>
@@ -70,8 +63,8 @@
   import { ref, computed } from 'vue';
   
   const props = defineProps({
-    modelValue: { type: [Number, String, null], default: null }, // ID wybranego wzoru
-    options: { type: Array, default: () => [] }, // Lista wzorów z bazy
+    modelValue: { type: [Number, String, null], default: null },
+    options: { type: Array, default: () => [] }, 
     title: { type: String, default: 'Wybierz wzór' }
   });
   
@@ -101,6 +94,7 @@
   .pattern-trigger {
     background: #f3f4f6;
     border-radius: 12px;
+    width: 80px;
     padding: 8px 12px;
     display: flex;
     align-items: center;
@@ -166,7 +160,9 @@
   
   .pattern-preview-box {
     width: 100%;
-    height: 80px;
+    height: 60px;
+    padding:5px;
+    padding-left:10px;
     background: #fff;
     border: 1px solid #e5e7eb;
     border-radius: 8px;

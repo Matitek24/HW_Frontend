@@ -84,16 +84,12 @@
               />
             </div>
             <div class="select-wrapper">
-              <select v-model="config.patterns.top" class="input-pill select-pill short">
-                <option :value="null">Brak</option> 
-                <option 
-                  v-for="pattern in topPatterns" 
-                  :key="pattern.id" 
-                  :value="pattern.id" 
-                >
-                  {{ pattern.nazwa }}
-                </option>
-              </select>
+              <div class="select-wrapper w-100"> <PatternPicker 
+                  v-model="config.patterns.top" 
+                  :options="topPatterns" 
+                  title="Wybierz wzór (Góra)"
+                />
+              </div>
             </div>
           </div>
           <div class="controls-row compact-gap">
@@ -105,16 +101,12 @@
               />
             </div>
             <div class="select-wrapper">
-              <select v-model="config.patterns.bottom" class="input-pill select-pill short">
-                <option :value="null">Brak</option> 
-                <option 
-                  v-for="pattern in bottomPatterns" 
-                  :key="pattern.id" 
-                  :value="pattern.id" 
-                >
-                  {{ pattern.nazwa }}
-                </option>
-              </select>
+              <div class="select-wrapper w-100"> <PatternPicker 
+                  v-model="config.patterns.bottom" 
+                  :options="bottomPatterns" 
+                  title="Wybierz wzór (Góra)"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -200,7 +192,7 @@
                 <input 
                   type="range" 
                   v-model.number="config.text.fontSize" 
-                  min="30" max="170" step="5"
+                  min="30" max="200" step="5"
                   class="slider compact-slider"
                 />
               </div>
@@ -314,6 +306,8 @@
 <script setup>
 import { ref, computed } from 'vue';
 import ColorPicker from '../components/utils/ColorPicker.vue'; 
+import PatternPicker from '../components/utils/PatternPicker.vue'; 
+
 const props = defineProps({
   config: {
     type: Object,
