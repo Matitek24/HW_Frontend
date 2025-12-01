@@ -84,9 +84,11 @@
               />
             </div>
             <div class="select-wrapper">
-              <div class="select-wrapper w-100"> <PatternPicker 
+              <div class="select-wrapper w-100"> 
+                <PatternPicker 
                   v-model="config.patterns.top" 
                   :options="topPatterns" 
+                  
                   title="Wybierz wzór (Góra)"
                 />
               </div>
@@ -97,11 +99,13 @@
               <ColorPicker
                 v-model="config.pattern.main"
                 :color-options="dictionaries.colors"
+              
                 title="Kolor wzoru dół"
               />
             </div>
             <div class="select-wrapper">
-              <div class="select-wrapper w-100"> <PatternPicker 
+              <div class="select-wrapper w-100"> 
+                <PatternPicker 
                   v-model="config.patterns.bottom" 
                   :options="bottomPatterns" 
                   title="Wybierz wzór (Góra)"
@@ -241,12 +245,14 @@
             <div class="expanded-row">
               <div class="expanded-field grow">
                 <label>Wzór Góra</label>
-                <div class="select-wrapper">
-                  <select v-model="config.patterns.top" class="input-pill select-pill full-width">
-                    <option :value="null">Brak</option> 
-                    <option v-for="p in topPatterns" :key="p.id" :value="p.id">{{ p.nazwa }}</option>
-                  </select>
-                </div>
+                <div class="select-wrapper w-100"> 
+                  <PatternPicker 
+                  v-model="config.patterns.top" 
+                  :options="topPatterns" 
+                  opt=true
+                  title="Wybierz wzór (Góra)"
+                />
+              </div>
               </div>
               <div class="expanded-field auto-width">
                 <label>Kolor</label>
@@ -259,12 +265,14 @@
             <div class="expanded-row mt-2">
               <div class="expanded-field grow">
                 <label>Wzór Dół</label>
-                <div class="select-wrapper">
-                  <select v-model="config.patterns.bottom" class="input-pill select-pill full-width">
-                    <option :value="null">Brak</option> 
-                    <option v-for="p in bottomPatterns" :key="p.id" :value="p.id">{{ p.nazwa }}</option>
-                  </select>
-                </div>
+                <div class="select-wrapper w-100"> 
+                  <PatternPicker 
+                  v-model="config.patterns.bottom" 
+                  :options="bottomPatterns" 
+                  opt=true
+                  title="Wybierz wzór (Góra)"
+                />
+              </div>
               </div>
               <div class="expanded-field auto-width">
                 <label>Kolor</label>

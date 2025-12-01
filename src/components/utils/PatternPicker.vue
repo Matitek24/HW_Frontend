@@ -1,6 +1,6 @@
 <template>
     <div class="pattern-picker-wrapper">
-      <div class="pattern-trigger" @click="openModal">
+      <div class="pattern-trigger"   :style="{ width: props.opt ? '150px' : '' }"  @click="openModal">
         <span class="pattern-name">{{ selectedPattern ? selectedPattern.nazwa : 'Brak wzoru' }}</span>
         <i class="bi bi-chevron-down ms-auto"></i>
       </div>
@@ -60,14 +60,23 @@
   </template>
   
   <script setup>
-  import { ref, computed } from 'vue';
+  import { ref, computed, onMounted } from 'vue';
   
   const props = defineProps({
     modelValue: { type: [Number, String, null], default: null },
     options: { type: Array, default: () => [] }, 
-    title: { type: String, default: 'Wybierz wzór' }
+    title: { type: String, default: 'Wybierz wzór' },
+    opt: {type:Boolean, default:false},
   });
-  
+
+  const triggerRef = ref(null);
+
+onMounted(() => {
+  if (props.opt && triggerRef.value) {
+    triggerRef.value.style.width = '200px';
+  }
+});
+
   const emit = defineEmits(['update:modelValue']);
   
   const isOpen = ref(false);

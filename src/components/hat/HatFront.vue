@@ -209,7 +209,7 @@ const applyTopWarp = async () => {
   setTimeout(() => {
     if (svgRef.value) {
       resetWarp('#target-wzor');
-      bendIt(svgRef.value, '#target-wzor', 800, -0.0001);
+      bendIt(svgRef.value, '#target-wzor', 570, -0.0001);
     }
   }, 100);
 };

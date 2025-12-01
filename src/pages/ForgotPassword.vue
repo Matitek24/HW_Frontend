@@ -47,7 +47,7 @@
   
   <script setup>
   import { ref } from 'vue';
-  import api from '../utils/axios'; // Używamy twojej instancji axios
+  import api from '../utils/axios';
   
   const email = ref('');
   const isLoading = ref(false);
