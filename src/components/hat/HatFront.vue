@@ -192,10 +192,10 @@ const finalTextPosition = computed(() => {
     stala = 0.34;
   }
   else if(fontSize >= 50 && fontSize < 100){
-    stala = 0.29;
+    stala = 0.33;
   }
   else{
-    stala = 0.15;
+    stala = 0.20;
   }
   const coefficient = stala + (100 - fontSize) * 0.0001;
   const baseOffset = (fontSize * coefficient) - 33;

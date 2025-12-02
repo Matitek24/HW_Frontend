@@ -45,7 +45,6 @@
   import HatFront from './hat/HatFront.vue';
   import { defaultConfig, loadConfig, saveConfig } from '../utils/hatConfig.js';
   import { usePdfGenerator } from '../utils/usePdfGenerator.js'; 
-  // DODANO IMPORT projectAPI
   import { dictionaryAPI, projectAPI } from '../utils/axios.js';
   
   const isDownloading = ref(false);

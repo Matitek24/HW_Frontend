@@ -32,7 +32,11 @@
           :results-count="totalProjects" 
           @search="handleSearch" 
         />
-        <div class="table-responsive">
+        <div v-if="isLoading" class="loading-overlay-table">
+          <div class="spinner text-primary" role="status">
+          </div>
+        </div>
+        <div class="table-responsive" :class="{ 'blur-content': isLoading }">
           <table class="table table-hover align-middle custom-table">
             <thead>
               <tr>
@@ -282,10 +286,8 @@ const currentSortDir = ref('desc');
 
 const sort = (column) => {
   if (currentSort.value === column) {
-    // Jeśli kliknięto w to samo, odwróć kierunek
     currentSortDir.value = currentSortDir.value === 'asc' ? 'desc' : 'asc';
   } else {
-    // Jeśli inna kolumna, ustaw nową i domyślnie rosnąco
     currentSort.value = column;
     currentSortDir.value = 'asc';
   }
@@ -810,5 +812,21 @@ onMounted(async () => {
 
 .table-responsive::-webkit-scrollbar-thumb:hover {
   background: rgba(0,0,0,0.3);
+}
+.loading-overlay-table {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(2px);
+  border-radius: 24px; /* Zgodne z glass-panel */
+}
+
+.blur-content {
+  filter: blur(4px);
+  pointer-events: none;
 }
 </style>

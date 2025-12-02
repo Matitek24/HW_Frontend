@@ -25,9 +25,10 @@ export function usePdfGenerator() {
     console.log("🎨 Start generowania PDF...");
     
     await nextTick();
-
+    await document.fonts.ready;
     const element1 = document.getElementById('print-flat-container');
     const element2 = document.getElementById('print-front-container');
+    
 
     if (!element1 || !element2) {
       alert("Błąd: Nie znaleziono elementów do wydruku.");
@@ -81,7 +82,7 @@ export function usePdfGenerator() {
             ...options,
             onclone: (doc) => prepareClone(doc, 'print-front-container')
         }),
-        loadImageAsBase64('/src/assets/headwearbg.jpg') 
+        loadImageAsBase64('/src/assets/headwearbg2.jpg') 
       ]);
 
       const imgData1 = canvas1.toDataURL('image/png');
@@ -91,15 +92,15 @@ export function usePdfGenerator() {
       const doc = new jsPDF({
         orientation: 'landscape',
         unit: 'px',
-        format: [2250, 1100]
+        format: [2000, 1100]
       });
       const pageWidth = doc.internal.pageSize.getWidth(); 
       const pageHeight = doc.internal.pageSize.getHeight(); 
 
       console.log("🖼️ Dodawanie tła...");
-      doc.addImage(bgImage, 'JPEG', 0, 0, 2250, 1100);
+      doc.addImage(bgImage, 'JPEG', 0, 0, 2000, 1100);
 
-      const margin = 260;
+      const margin = 220;
       // Obliczamy dostępne miejsce
       const availableWidth = pageWidth - (margin * 3); // margines lewy, srodek, prawy
       const boxWidth = availableWidth / 2;
@@ -115,8 +116,8 @@ export function usePdfGenerator() {
       const yPos = (pageHeight - maxHeight) / 2;
 
       // Wrzucamy obrazy czapek
-      doc.addImage(imgData1, 'PNG', margin, yPos - 150, boxWidth, boxHeight1);
-      doc.addImage(imgData2, 'PNG', margin + 800, yPos, boxWidth, boxHeight2);
+      doc.addImage(imgData1, 'PNG', margin + 100, yPos - 150, boxWidth, boxHeight1);
+      doc.addImage(imgData2, 'PNG', margin + 810, yPos, boxWidth, boxHeight2);
 
       // Stopka
       doc.setFontSize(12);
@@ -124,8 +125,7 @@ export function usePdfGenerator() {
       
       doc.setFontSize(10);
       doc.setTextColor(107, 114, 128); 
-      const date = new Date().toLocaleDateString('pl-PL');
-      doc.text(`Data: ${date}`, pageWidth - margin - 100, pageHeight - 30);
+
 
 
       doc.save(`HEADWEAR-Wizualizacja-${Date.now()}.pdf`);
