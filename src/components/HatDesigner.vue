@@ -1,5 +1,5 @@
 <template>
-  <div class="svg-container">
+  <div class="svg-container no-scroll">
     
     <div v-if="isInitLoading" class="loading-overlay">
       <div class="spinner"></div>
@@ -14,21 +14,38 @@
         :hatConfig="hatConfig"
         :projectId="route.params.id || null"
         :currentStatus="projectStatus"
+        :activeView="activeView" 
+        @toggle-view="toggleView"
       />
 
-      <div class="fade-in-content content-layout">
+      <div 
+        class="fade-in-content content-layout" 
+        :class="{ 
+          'shifted': isBarExpanded,        
+          'expanded-margin': isBarExpanded
+        }"
+        >
         
         <Formularz 
           :config="hatConfig" 
           :dictionaries="dictionaryData"
+          @toggle-expand="(val) => isBarExpanded = val"
         />
         
-        <div id="print-flat-container" class="d-flex czapka" >
-          <HatFlat :config="hatConfig" :patternsDict="dictionaryData.patterns" class="czapka2"/>
+        <div 
+            id="print-flat-container" 
+            class="czapka flat-layout" 
+            :class="{ 'is-active': activeView === 'flat' }"
+          > 
+            <HatFlat :config="hatConfig" :patternsDict="dictionaryData.patterns" class="czapka2"/>
         </div>
     
-        <div id="print-front-container" class="czapka ">
-          <HatFront :config="hatConfig" :show-pompon="true" :patternsDict="dictionaryData.patterns" class="czapka2"/>
+        <div 
+            id="print-front-container" 
+            class="czapka front-layout"
+            :class="{ 'is-active': activeView === 'front' }"
+          >
+            <HatFront :config="hatConfig" :show-pompon="true" :patternsDict="dictionaryData.patterns" class="czapka2"/>
         </div>
 
       </div>
@@ -52,7 +69,12 @@
   const route = useRoute(); 
   const router = useRouter();
   const { generatePdf } = usePdfGenerator();
-  
+  const activeView = ref('front');
+  const isBarExpanded = ref(false);
+
+  const toggleView = () => {
+    activeView.value = activeView.value === 'front' ? 'flat' : 'front';
+  };
   // Reaktywny konfig
   const hatConfig = reactive(JSON.parse(JSON.stringify(defaultConfig)));
   
@@ -181,6 +203,15 @@ onMounted(async () => {
   </script>
   
   <style>
+  .flat-layout {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end; /* Opcjonalnie, jeśli potrzebujesz wyrównania do dołu */
+}
+
+  .front-layout {
+    display: block;
+  }
   .svg-container {
     position: relative;
     display: flex;
@@ -226,8 +257,8 @@ onMounted(async () => {
 
     background-color: #ffffff;
     background-image:
-  radial-gradient(at 10% 10%, rgba(var(--rgb-top), 0.1) 0px, transparent 50%),
-  radial-gradient(at 90% 90%, rgba(var(--rgb-bottom), 0.13) 0px, transparent 50%);
+  radial-gradient(at 10% 10%, rgba(var(--rgb-top), 0.20) 0px, transparent 50%),
+  radial-gradient(at 90% 90%, rgba(var(--rgb-bottom), 0.20) 0px, transparent 50%);
 
     background-attachment: fixed;
     min-height: 100vh;
@@ -295,19 +326,42 @@ onMounted(async () => {
   to { opacity: 1; }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
+  .flat-layout, 
+  .front-layout {
+    display: none !important;
+  }
+
+  .flat-layout.is-active {
+    display: flex !important;
+  }
+
+  .front-layout.is-active {
+    display: block !important;
+  }
  .czapka2{
-  width: 250px;
+  width: 330px;
   padding-top:80px !important;
+ }
+ .content-layout {
+   padding-top: 0px; 
+   gap: 10px; 
+   margin-bottom: 0px; 
+   transition: margin-bottom 0.3s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+ }
+
+ .content-layout.expanded-margin {
+   margin-bottom: 110px;
  }
  .czapka2 .pompon{
   transform: scale(2.2) !important;
-  right: 90px;
+  right: 105px;
   top:20px !important;
  }
- .pompon-czapka{
-  display: none !important;
- }
+
+ .mobile-hidden {
+    display: none !important;
+  }
 }
 
 

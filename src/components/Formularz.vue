@@ -316,6 +316,10 @@ import { ref, computed } from 'vue';
 import ColorPicker from '../components/utils/ColorPicker.vue'; 
 import PatternPicker from '../components/utils/PatternPicker.vue'; 
 
+const emit = defineEmits(['toggle-expand']); 
+
+
+
 const props = defineProps({
   config: {
     type: Object,
@@ -335,6 +339,8 @@ const isExpanded = ref(false);
 
 const toggleExpand = () => {
   isExpanded.value = !isExpanded.value;
+  emit('toggle-expand', isExpanded.value);
+
 };
 
 const topPatterns = computed(() => 
@@ -679,6 +685,8 @@ const bottomPatterns = computed(() =>
     0 0 0 1px rgba(0, 0, 0, 0.03);
   
   max-width: 100%;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px); 
   
 }
 
@@ -772,6 +780,7 @@ const bottomPatterns = computed(() =>
 .view-expanded {
   width: 100%;
   animation: fadeIn 0.3s ease;
+ 
 }
 
 @keyframes fadeIn {
@@ -845,7 +854,7 @@ const bottomPatterns = computed(() =>
 
 /* Responsive Mobile */
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   .expanded-grid {
     grid-template-columns: 1fr;
     gap: 24px;
@@ -865,9 +874,7 @@ const bottomPatterns = computed(() =>
   /* 2. WYSOKOŚĆ PANELU PO ROZWINIĘCIU */
   .config-bar-container.expanded .config-bar {
     padding: 24px 24px 80px 24px; /* Większy padding na dole na scroll */
-    
-    /* TU ZMIANA: Zamiast 85vh (prawie cały ekran), dajemy mniej */
-    height: 50vh; 
+    height: 45vh; 
     max-height: 500px; /* Bezpiecznik, żeby na dużych telefonach nie był za wysoki */
     
     overflow-y: auto; /* Scrollowanie wewnątrz paska */

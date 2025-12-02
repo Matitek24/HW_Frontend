@@ -1,5 +1,5 @@
 <template>
-  <div class="svg-wrapper d-flex align-items-end">
+  <div class="svg-wrapper d-flex align-items-end h-100">
     <svg 
       id="Warstwa_1" 
       data-name="Warstwa 1" 
@@ -117,7 +117,6 @@
 
 <script setup>
 import { computed } from 'vue';
-import { PATTERN_LIBRARY } from '../../utils/patterns.js';
 
 const props = defineProps({
   config: {
@@ -164,6 +163,7 @@ const mainPatternSvg = computed(() => {
 </script>
 
 <style scoped>
+
 .fls-2 {
   clip-path: url(#clippath2);
 }

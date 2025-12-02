@@ -9,7 +9,21 @@
     </div>
 
     <div class="d-flex justify-content-center">
-      
+      <button 
+        class="view-toggle-btn mobile-only" 
+        :class="{ 'btn-flat-mode': activeView === 'flat' }"
+        @click="$emit('toggle-view')"
+      >
+        <span v-if="activeView === 'flat'" class="btn-content">
+           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+           <span>2D</span>
+        </span>
+
+        <span v-else class="btn-content">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+          <span>3D</span>
+        </span>
+      </button>
       <button 
         class="glass-btn with-text me-3" 
         :class="{ 'disabled-btn': isDownloading }"
@@ -137,10 +151,10 @@ const props = defineProps({
   
   // ID projektu i Status (z rodzica)
   projectId: { type: [String, null], default: null },
-  currentStatus: { type: String, default: 'NOWY' }
+  currentStatus: { type: String, default: 'NOWY' },
+  activeView: { type: String, default: 'front' }
 });
-
-const emit = defineEmits(['download']);
+const emit = defineEmits(['download', 'toggle-view']); 
 
 // Stan UI
 const isModalOpen = ref(false);
@@ -265,6 +279,61 @@ const submitForm = () => {
 </script>
 
 <style scoped>
+
+.view-toggle-btn {
+  background: #343434;
+  color: rgb(255, 255, 255);
+  border: 1px solid rgba(115, 115, 115, 0.1);
+  margin-right:15px;
+  border-radius: 12px;
+  padding: 0 16px;
+  height: 48px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: all 0.3s ease; /* Płynne przejście koloru */
+}
+
+.view-toggle-btn.btn-flat-mode {
+  background: #ffffff; 
+  color: #1f2937;      
+  border: 2px dotted #434343; 
+}
+
+/* Efekt wciśnięcia */
+.view-toggle-btn:active {
+  transform: scale(0.96);
+}
+
+.btn-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-only {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .mobile-only {
+    display: flex; /* Pokaż przycisk widoku */
+  }
+  
+  .desktop-only {
+    display: none; /* Opcjonalnie: Ukryj przycisk "Pobierz" na mobile, żeby zrobić miejsce */
+  }
+  
+  /* Zmniejszamy padding, żeby 2 przyciski weszły obok siebie */
+  .glass-btn.with-text {
+    padding: 0 16px; 
+  }
+}
+
 .animate-spin {
   animation: spin 1s linear infinite;
 }
@@ -400,7 +469,10 @@ const submitForm = () => {
   box-shadow: 
     0 20px 50px rgba(0, 0, 0, 0.15),
     0 0 0 1px rgba(255, 255, 255, 0.2);
+    
   animation: slideUp 0.3s ease-out;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px); /* KLUCZOWE DLA IOS */
 }
 
 .modal-title { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 22px; color: #111; margin: 0; }
@@ -448,7 +520,7 @@ const submitForm = () => {
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 
 /* RWD */
-@media (max-width: 576px) {
+@media (max-width: 600px) {
   .glass-modal-content { width: 95%; padding: 20px !important; }
   .actions-container { gap: 8px; }
   .glass-btn.with-text .btn-text { display: none; } /* Na mobilu ukryj tekst "Wyślij", zostaw ikonę */
@@ -470,17 +542,51 @@ const submitForm = () => {
   background: rgba(229, 231, 235, 0.8);
 }
 
-@media (max-width: 450px) {
+@media (max-width: 600px) {
  .model-tag-container{
   display: none;
  }
  .logo-btn{
-  transform: scale(1.3);
+  transform: scale(1.2);
   box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  margin-right: 6px;
  }
  .logo-btn img{
   width: 70px !important;
+
  }
+}
+
+@media (max-width: 600px) {
+  /* MODAL */
+  .glass-modal-content {
+    width: 90% !important; /* Zostaw margines po bokach */
+    max-width: 90% !important;
+    margin: 0 auto; /* Wyśrodkuj */
+    padding: 20px !important; /* Mniejszy padding wewnątrz */
+    max-height: 85vh; /* Żeby nie wyszedł poza ekran góra/dół */
+    overflow-y: auto; /* Scrollowanie wewnątrz modala jak jest za wysoki */
+    background-color: rgba(226, 226, 226, 0.844);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px); /* KLUCZOWE DLA IOS */
+  }
+
+  /* INPUTY W MODALU */
+  .input-pill {
+    font-size: 16px; /* Zapobiega zoomowaniu na iOS przy kliknięciu w input */
+    padding: 12px 16px;
+  }
+
+  /* NAGŁÓWEK STRONY (TopBar) */
+  .top-header {
+    padding: 20px 24px;
+    gap: 10px;
+  }
+  
+  /* Ukryj metkę na małym ekranie, żeby zrobić miejsce */
+  .model-tag-container {
+    display: none;
+  }
 }
 
 </style>
