@@ -23,12 +23,12 @@
           :dictionaries="dictionaryData"
         />
         
-        <div id="print-flat-container" class="d-flex">
-          <HatFlat :config="hatConfig" :patternsDict="dictionaryData.patterns"/>
+        <div id="print-flat-container" class="d-flex czapka" >
+          <HatFlat :config="hatConfig" :patternsDict="dictionaryData.patterns" class="czapka2"/>
         </div>
     
-        <div id="print-front-container">
-          <HatFront :config="hatConfig" :show-pompon="true" :patternsDict="dictionaryData.patterns"/>
+        <div id="print-front-container" class="czapka ">
+          <HatFront :config="hatConfig" :show-pompon="true" :patternsDict="dictionaryData.patterns" class="czapka2"/>
         </div>
 
       </div>
@@ -295,6 +295,20 @@ onMounted(async () => {
   to { opacity: 1; }
 }
 
+@media (max-width: 768px) {
+ .czapka2{
+  width: 250px;
+  padding-top:80px !important;
+ }
+ .czapka2 .pompon{
+  transform: scale(2.2) !important;
+  right: 90px;
+  top:20px !important;
+ }
+ .pompon-czapka{
+  display: none !important;
+ }
+}
 
 
   </style>

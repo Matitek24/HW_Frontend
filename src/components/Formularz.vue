@@ -844,6 +844,7 @@ const bottomPatterns = computed(() =>
 .color-ring.static { box-shadow: none; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
 /* Responsive Mobile */
+
 @media (max-width: 768px) {
   .expanded-grid {
     grid-template-columns: 1fr;
@@ -854,6 +855,62 @@ const bottomPatterns = computed(() =>
     height: 85vh;
     overflow-y: auto;
   }
+
+  /* 1. UKŁAD GRID W WIDOKU ROZSZERZONYM */
+  .expanded-grid {
+    grid-template-columns: 1fr; /* Jedna kolumna */
+    gap: 30px;
+  }
+
+  /* 2. WYSOKOŚĆ PANELU PO ROZWINIĘCIU */
+  .config-bar-container.expanded .config-bar {
+    padding: 24px 24px 80px 24px; /* Większy padding na dole na scroll */
+    
+    /* TU ZMIANA: Zamiast 85vh (prawie cały ekran), dajemy mniej */
+    height: 50vh; 
+    max-height: 500px; /* Bezpiecznik, żeby na dużych telefonach nie był za wysoki */
+    
+    overflow-y: auto; /* Scrollowanie wewnątrz paska */
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.15); /* Mocniejszy cień do góry */
+  }
+
+  /* 3. CZYSZCZENIE WIDOKU KOMPAKTOWEGO (Zostaje tylko Tekst) */
+  
+  /* Ukryj wszystkie sekcje grupowe OPRÓCZ pierwszej (Personalizacja) */
+  .view-compact .group-section:not(:first-child) {
+    display: none;
+  }
+
+  /* Ukryj wszystkie pionowe kreski */
+  .view-compact .vertical-divider {
+    display: none;
+  }
+
+  /* Wyśrodkuj tę jedyną sekcję, która została */
+  .view-compact {
+    justify-content: center;
+    width: 100%;
+  }
+
+  /* Lekka korekta inputów, żeby się ładnie mieściły w jednej linii */
+  .text-main {
+    width: 100px; /* Trochę węższy input tekstu */
+  }
+  
+  .select-pill {
+    width: 100px; /* Trochę węższy select czcionki */
+  }
+  
+  /* Przycisk toggle (strzałka) trochę niżej na mobile */
+  .toggle-wrapper {
+    top: -35px;
+  }
+  .toggle-btn {
+    height: 35px;
+    width: 50px;
+  }
 }
+/* --- MOBILE I TABLETY (poniżej 768px) --- */
+
 
 </style>

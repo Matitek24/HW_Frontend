@@ -1,17 +1,20 @@
 <template>
-    <div class="color-picker-wrapper" ref="pickerContainer">
-      
-      <div 
-        class="color-ring clickable" 
-        :style="{ backgroundColor: modelValue }"
-        @click.stop="togglePicker"
-        :title="title"
-      ></div>
-  
-      <transition name="slide-fade">
+  <div class="color-picker-wrapper" ref="pickerTrigger">
+    
+    <div 
+      class="color-ring clickable" 
+      :style="{ backgroundColor: modelValue }"
+      @click.stop="togglePicker"
+      :title="title"
+    ></div>
+
+    <Teleport to="body" :disabled="!isMobile">
+      <transition name="fade">
         <div 
           v-if="isOpen" 
-          class="color-dropdown" 
+          :class="isMobile ? 'color-dropdown-fixed' : 'color-dropdown-absolute'" 
+          :style="isMobile ? dropdownStyle : {}"
+          ref="dropdownEl"
           @click.stop
         >
           <div class="color-dropdown-header">
@@ -25,7 +28,6 @@
               :key="color.id" 
               class="color-dropdown-swatch" 
               :style="{ backgroundColor: color.hex }" 
-              :title="color.nazwa"
               @click="selectColor(color.hex)"
               :class="{ active: modelValue === color.hex }"
             >
@@ -36,191 +38,171 @@
           </div>
         </div>
       </transition>
-    </div>
-  </template>
+    </Teleport>
+  </div>
+</template>
+
+<script>
+import { ref } from 'vue';
+const activePickerId = ref(null);
+</script>
+
+<script setup>
+import { onMounted, onUnmounted, computed, nextTick, ref } from 'vue';
+
+const props = defineProps({
+  modelValue: { type: String, required: true },
+  colorOptions: { type: Array, default: () => [] },
+  label: { type: String, default: '' },
+  title: { type: String, default: '' },
+  pickerId: { type: String, default: () => `cp-${Math.random().toString(36).substr(2, 9)}` }
+});
+
+const emit = defineEmits(['update:modelValue']);
+const pickerTrigger = ref(null);
+const dropdownEl = ref(null);
+const dropdownStyle = ref({});
+
+// Wykrywanie Mobile
+const isMobile = ref(window.innerWidth <= 768);
+
+const isOpen = computed(() => activePickerId.value === props.pickerId);
+
+// --- LOGIKA POZYCJONOWANIA (TYLKO MOBILE) ---
+const updatePosition = () => {
+  // Jeśli to desktop, nie obliczamy pozycji JS (używamy CSS)
+  if (!isMobile.value || !pickerTrigger.value || !isOpen.value) return;
+
+  const rect = pickerTrigger.value.getBoundingClientRect();
+  const dropdownWidth = 240; 
+  const dropdownHeight = 200; 
   
-  <script>
-  import { ref } from 'vue';
-  
-  // To jest "singleton" - jedna zmienna dla wszystkich ColorPickerów na stronie
-  const activePickerId = ref(null);
-  </script>
-  
-  <script setup>
-  import { onMounted, onUnmounted, computed } from 'vue';
-  
-  const props = defineProps({
-    modelValue: { type: String, required: true },
-    colorOptions: { type: Array, default: () => [] },
-    label: { type: String, default: '' },
-    title: { type: String, default: '' },
-    // Generujemy unikalne ID, jeśli nie podano
-    pickerId: { type: String, default: () => `cp-${Math.random().toString(36).substr(2, 9)}` }
-  });
-  
-  const emit = defineEmits(['update:modelValue']);
-  const pickerContainer = ref(null);
-  
-  // Czy TEN picker jest otwarty? Sprawdzamy globalne ID
-  const isOpen = computed(() => activePickerId.value === props.pickerId);
-  
-  const togglePicker = () => {
-    if (isOpen.value) {
-      close();
-    } else {
-      // Otwierając ten, automatycznie nadpisujemy ID, co zamknie inne (dzięki computed)
-      activePickerId.value = props.pickerId;
-    }
+  let left = rect.left + (rect.width / 2) - (dropdownWidth / 2);
+  let top = rect.top - dropdownHeight - 10; 
+
+  if (left < 10) left = 10; 
+  if (left + dropdownWidth > window.innerWidth - 10) {
+    left = window.innerWidth - dropdownWidth - 10; 
+  }
+  if (top < 10) top = rect.bottom + 10;
+
+  dropdownStyle.value = {
+    top: `${top}px`,
+    left: `${left}px`,
+    width: `${dropdownWidth}px`
   };
-  
-  const close = () => {
-    if (isOpen.value) {
-      activePickerId.value = null;
-    }
-  };
-  
-  const selectColor = (hex) => {
-    emit('update:modelValue', hex);
+};
+
+const togglePicker = async () => {
+  if (isOpen.value) {
     close();
-  };
-  
-  // Zamykanie przy kliknięciu na zewnątrz
-  const handleClickOutside = (event) => {
-    if (isOpen.value && pickerContainer.value && !pickerContainer.value.contains(event.target)) {
-      close();
-    }
-  };
-  
-  onMounted(() => {
-    document.addEventListener('click', handleClickOutside);
-  });
-  
-  onUnmounted(() => {
-    document.removeEventListener('click', handleClickOutside);
-    // Jeśli niszczymy komponent, który był otwarty, czyścimy stan
-    if (isOpen.value) {
-      activePickerId.value = null;
-    }
-  });
-  </script>
-  
-  <style scoped>
-  .color-picker-wrapper {
-    position: relative;
-    display: inline-block;
-    vertical-align: middle;
+  } else {
+    activePickerId.value = props.pickerId;
+    await nextTick();
+    if (isMobile.value) updatePosition();
   }
+};
+
+const close = () => {
+  if (isOpen.value) activePickerId.value = null;
+};
+
+const selectColor = (hex) => {
+  emit('update:modelValue', hex);
+  close();
+};
+
+const handleClickOutside = (event) => {
+  if (!isOpen.value) return;
   
-  .color-ring.clickable {
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    width: 32px; 
-    height: 32px; 
-    border-radius: 50%;
-    border: 2px solid #fff;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  }
+  // Musimy sprawdzić oba refy (trigger i dropdown), bo dropdown może być w body (teleport) albo w wrapperze
+  const isClickInDropdown = dropdownEl.value && dropdownEl.value.contains(event.target);
+  const isClickInTrigger = pickerTrigger.value && pickerTrigger.value.contains(event.target);
   
-  .color-ring.clickable:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  if (!isClickInDropdown && !isClickInTrigger) {
+    close();
   }
+};
+
+// Obsługa zmiany rozmiaru okna (przełączanie mobile/desktop)
+const handleResize = () => {
+  isMobile.value = window.innerWidth <= 768;
+  if (isOpen.value && isMobile.value) updatePosition();
+};
+
+const handleScroll = () => {
+  if (isOpen.value && isMobile.value) updatePosition();
+};
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside);
+  window.addEventListener('resize', handleResize);
+  window.addEventListener('scroll', handleScroll, true);
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside);
+  window.removeEventListener('resize', handleResize);
+  window.removeEventListener('scroll', handleScroll, true);
+  if (isOpen.value) activePickerId.value = null;
+});
+</script>
+
+<style scoped>
+.color-picker-wrapper {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.color-ring.clickable {
+  cursor: pointer;
+  width: 32px; 
+  height: 32px; 
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.1s;
+}
+.color-ring.clickable:hover { transform: scale(1.1); }
+
+/* --- STYL 1: MOBILE (FIXED w BODY) --- */
+.color-dropdown-fixed {
+  position: fixed; /* Pozycjonowany przez JS */
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.25), 0 0 0 1px rgba(0,0,0,0.05);
+  padding: 12px;
+  z-index: 99999; 
+}
+
+/* --- STYL 2: DESKTOP (ABSOLUTE w WRAPPERZE) --- */
+/* To jest styl "tak jak było wcześniej" */
+.color-dropdown-absolute {
+  position: absolute;
+  bottom: calc(100% + 10px); 
+  left: 50%;
+  transform: translateX(-50%);
   
-  .color-dropdown {
-    position: absolute;
-    /* Pozycjonowanie względem wrappera */
-    bottom: calc(100% + 10px); 
-    left: 50%;
-    transform: translateX(-50%); /* Centrowanie względem kółka */
-    
-    background: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
-    padding: 12px;
-    z-index: 9999; /* Musi być wyżej niż inne elementy */
-    min-width: 220px;
-  }
-  
-  .color-dropdown-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-bottom: 8px;
-    margin-bottom: 8px;
-    border-bottom: 1px solid #f3f4f6;
-  }
-  
-  .color-dropdown-header span {
-    font-size: 12px;
-    font-weight: 600;
-    color: #6b7280;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  
-  .close-btn {
-    background: none;
-    border: none;
-    font-size: 20px;
-    color: #9ca3af;
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
-    width: 20px;
-    height: 20px;
-    display: flex; align-items: center; justify-content: center;
-    border-radius: 4px;
-  }
-  .close-btn:hover { background: #f3f4f6; color: #374151; }
-  
-  .color-dropdown-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 6px;
-  }
-  
-  .color-dropdown-swatch {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid #fff;
-    box-shadow: 0 0 0 1px #e5e7eb;
-    transition: transform 0.1s;
-    position: relative;
-    display: flex; align-items: center; justify-content: center;
-  }
-  
-  .color-dropdown-swatch:hover {
-    transform: scale(1.15);
-    z-index: 2;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  }
-  
-  .color-dropdown-swatch.active {
-    box-shadow: 0 0 0 2px #3b82f6, 0 0 0 4px #fff;
-  }
-  
-  .checkmark-icon {
-    width: 16px;
-    height: 16px;
-    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
-  }
-  
-  /* Animacje wejścia */
-  .slide-fade-enter-active { transition: all 0.2s ease-out; }
-  .slide-fade-leave-active { transition: all 0.15s ease-in; }
-  .slide-fade-enter-from, .slide-fade-leave-to {
-    transform: translateX(-50%) translateY(10px);
-    opacity: 0;
-  }
-  
-  /* Dostosowanie mobilne */
-  @media (max-width: 768px) {
-    .color-dropdown {
-      /* Na mobile może warto pozycjonować bardziej bezpiecznie */
-      left: 0;
-      transform: translateX(-20%); /* Lekka korekta, żeby nie uciekło z ekranu */
-    }
-  }
-  </style>
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
+  padding: 12px;
+  z-index: 20000;
+  min-width: 240px;
+}
+
+/* Reszta stylów wspólnych */
+.color-dropdown-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid #f3f4f6; }
+.color-dropdown-header span { font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; }
+.close-btn { background: none; border: none; font-size: 20px; color: #9ca3af; cursor: pointer; padding: 0; line-height: 1; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 4px; }
+.close-btn:hover { background: #f3f4f6; }
+
+.color-dropdown-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.color-dropdown-swatch { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 2px solid #fff; box-shadow: 0 0 0 1px #e5e7eb; position: relative; display: flex; align-items: center; justify-content: center; }
+.color-dropdown-swatch.active { box-shadow: 0 0 0 2px #3b82f6, 0 0 0 4px #fff; }
+.checkmark-icon { width: 16px; height: 16px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3)); }
+
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+</style>

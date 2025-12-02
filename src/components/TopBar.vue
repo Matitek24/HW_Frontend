@@ -469,4 +469,18 @@ const submitForm = () => {
   box-shadow: none;
   background: rgba(229, 231, 235, 0.8);
 }
+
+@media (max-width: 450px) {
+ .model-tag-container{
+  display: none;
+ }
+ .logo-btn{
+  transform: scale(1.3);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+ }
+ .logo-btn img{
+  width: 70px !important;
+ }
+}
+
 </style>
