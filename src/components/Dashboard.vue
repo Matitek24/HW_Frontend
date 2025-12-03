@@ -8,7 +8,7 @@
       <header class="d-flex justify-content-between align-items-center py-5 mb-3">
         <div>
           <h1 class="display-6 fw-bold text-dark mb-0" style="letter-spacing: -1px;">Zamówienia</h1>
-          <p class="text-muted fw-light">Panel zarządzania projektami</p>
+          <p class="text-muted fw-light">Panel Headwear</p>
         </div>
         <button @click="handleLogout" class="glass-btn-logout">
           Wyloguj
@@ -37,7 +37,10 @@
           </div>
         </div>
         <div class="table-responsive" :class="{ 'blur-content': isLoading }">
-          <table class="table table-hover align-middle custom-table">
+          <table 
+            class="table align-middle custom-table" 
+            :class="{ 'table-hover': !isMobile }"
+          >
             <thead>
               <tr>
                 <th class="ps-4 clickable-header" @click="sort('date')">
@@ -74,18 +77,19 @@
                   :class="{ 'expanded': expandedRows.includes(project.id) }"
                   @click="toggleRow(project.id)"
                 >
-                  <td class="ps-4">
-                    <router-link
-                      :to="`/projekt/${project.id}`"
-                      class="fw-bold text-dark text-decoration-none underline-hover"
-                    >
-                      #{{ project.id }}
-                    </router-link>
+                <td class="ps-4">
+                  <router-link
+                    :to="`/projekt/${project.id}`"
+                    class="fw-bold text-dark text-decoration-none underline-hover"
+                  >
+                    <span class="d-none d-md-inline">#{{ project.id }}</span>
+                    
+                    <span class="d-inline d-md-none">#{{ project.id.slice(0, 8) }}...</span>
+                  </router-link>
 
-                    <br>
-
-                    <small class="text-muted fw-light">{{ project.createdAt }}</small>
-                  </td>
+                  <br>
+                  <small class="text-muted fw-light">{{ project.createdAt }}</small>
+                </td>
 
                   <td>
                     <div class="img-wrapper" style="width: 60px; height: 60px; padding: 5px">
@@ -221,7 +225,7 @@
         </div>
 
         <!-- PAGINACJA -->
-        <div class="d-flex justify-content-between align-items-center mt-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4">
           <div class="text-muted small">
             Wyświetlono {{ showingStart }}-{{ showingEnd }} z {{ totalProjects }} zamówień
           </div>
@@ -264,7 +268,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed, watch, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getStoredToken, removeStoredToken, isTokenValid, isAdmin } from '../utils/jwt';
 import { adminAPI, dictionaryAPI } from '../utils/axios'; 
@@ -273,6 +277,7 @@ import { exportProjectsToCSV } from '../utils/csvExport.js';
 import { useProductionCard } from '../utils/useProductionCard';
 import StatusBadge from '../components/admin/StatusBadge.vue';
 import SearchFilter from './SearchFilter.vue';
+
 
 const router = useRouter();
 const projects = ref([]);
@@ -283,6 +288,14 @@ const { generateProductionCard } = useProductionCard();
 const searchFilter = ref({ type: 'name', query: '' });
 const currentSort = ref('date');    
 const currentSortDir = ref('desc');
+const isMobile = ref(window.innerWidth <= 650);
+
+const checkMobile = () => {
+  isMobile.value = window.innerWidth <= 650;
+};
+
+onMounted(() => window.addEventListener('resize', checkMobile));
+onUnmounted(() => window.removeEventListener('resize', checkMobile));
 
 const sort = (column) => {
   if (currentSort.value === column) {
@@ -828,5 +841,128 @@ onMounted(async () => {
 .blur-content {
   filter: blur(4px);
   pointer-events: none;
+}
+/* --- MOBILE DASHBOARD (Karty zamiast Tabeli) --- */
+@media (max-width: 600px) {
+  
+  .glass-panel {
+    padding: 15px;
+  }
+
+  /* HEADER: Przycisk CSV mniejszy i obok liczników */
+  .glass-panel .d-flex.justify-content-between {
+    flex-direction: row; /* Wracamy do rzędu */
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  /* Liczniki (Wszystkie/Nowe) */
+  .glass-panel .d-flex.gap-3 {
+    width: auto; /* Nie rozpychaj na 100% */
+    gap: 8px !important;
+  }
+
+  /* Przycisk CSV - mniejszy, auto width */
+  .action-btn-primary {
+    width: auto;
+    padding: 6px 16px;
+    font-size: 0.8rem;
+  }
+
+  /* --- TABELA JAKO KARTY --- */
+  .custom-table thead { display: none; }
+  .custom-table, tbody, tr, td { display: block; width: 100%; }
+
+  .main-row {
+    margin-bottom: 12px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    border: 1px solid rgba(0,0,0,0.05);
+    padding: 12px 16px;
+    
+    /* Reset radiusów z tabeli */
+    border-radius: 16px !important;
+  }
+
+  /* --- UKŁAD WEWNĄTRZ KARTY --- */
+  .main-row td {
+    padding: 6px 0;
+    border: none;
+    display: flex;
+    justify-content: space-between; /* Lewo - Prawo */
+    align-items: center;
+    text-align: right; /* Treść do prawej */
+  }
+
+  /* Etykiety (Po lewej) */
+  .main-row td::before {
+    content: attr(data-label); /* Można użyć data-atrybutów lub sztywno w CSS */
+    font-weight: 600;
+    color: #9ca3af;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    text-align: left;
+    margin-right: auto; /* Popycha treść w prawo */
+  }
+  
+  /* Definicje etykiet dla konkretnych kolumn */
+  .main-row td:nth-of-type(1)::before { content: "ID / Data"; }
+  /* Miniaturka (2) nie ma etykiety */
+  .main-row td:nth-of-type(3)::before { content: "Klient"; }
+  .main-row td:nth-of-type(4)::before { content: "Kontakt"; }
+  .main-row td:nth-of-type(5)::before { content: "Ilość"; }
+  .main-row td:nth-of-type(6)::before { content: "Status"; }
+
+  /* 1. ID (Pierwszy wiersz) */
+  .main-row td:nth-of-type(1) {
+    border-bottom: 1px solid #f3f4f6;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+  }
+
+  /* 2. Miniaturka (Wyrzucamy pod ID, na całą szerokość lub środek) */
+  .main-row td:nth-of-type(2) {
+    justify-content: center; /* Centrujemy miniaturkę */
+    padding: 10px 0;
+  }
+  .main-row td:nth-of-type(2)::before { display: none; } /* Bez etykiety */
+  
+  .thumbnail-container {
+    margin: 0 auto; /* Centrowanie diva z miniaturką */
+  }
+
+
+  /* 4. AKCJE (Ikony na samym dole) */
+  .main-row td:last-child {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #f3f4f6; /* Linia oddzielająca */
+    justify-content: center; /* Wycentrowane ikony */
+    gap: 20px; /* Odstęp między ikonami */
+  }
+  .main-row td:last-child::before { display: none; } /* Bez etykiety */
+
+  /* Style dla przycisków akcji na mobile - trochę większe */
+  .icon-btn {
+    width: 40px;
+    height: 40px;
+    background: #f8f9fa;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* --- PAGINACJA MOBILE --- */
+  .mobile-pagination-row {
+    justify-content: center !important; /* Wycentruj paginację */
+  }
+  .page-link {
+    padding: 4px 10px;
+    font-size: 0.85rem;
+  }
+  header{
+    padding:25px;
+  }
 }
 </style>

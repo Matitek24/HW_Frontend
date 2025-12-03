@@ -287,9 +287,28 @@
       padding: 6px 12px;
       font-size: 0.85rem;
     }
-    
-    .filter-type-btn span {
-      display: none;
-    }
+    .glass-panel {
+    padding: 20px 15px; /* Mniejszy padding panelu */
   }
+  
+  /* Header (Wszystkie / Nowe / CSV) */
+  .glass-panel .d-flex.justify-content-between {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 15px;
+  }
+  
+  .glass-panel .d-flex.gap-3 {
+    justify-content: space-between;
+    width: 100%;
+  }
+  
+  /* Przycisk CSV na całą szerokość */
+  .action-btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+    
+  }
+ 
   </style>

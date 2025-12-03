@@ -9,5 +9,9 @@
   </script>
   
   <style scoped>
-
+@media (max-width: 450px) {
+  html,body{
+    overflow: hidden;
+  }
+}
   </style>
