@@ -1,6 +1,7 @@
 <template>
   <div class="login-card">
     <div class="login-header">
+      <img src="../assets/Headwear_COLOR_CMYK_logo-1.png.webp" alt="logotyp" width="180px">
       <h2>Headwear</h2>
       <p>Zaloguj się do swojego konta</p>
     </div>
@@ -81,13 +82,11 @@ const handleLogin = async () => {
       throw new Error('Nie udało się zapisać tokenu');
     }
 
-    // PRZEKIEROWANIE DO DASHBOARD! 🎉
     router.push('/dashboard');
 
   } catch (err) {
     console.error("Błąd logowania:", err);
     
-    // Axios interceptor już obsłużył większość błędów
     error.value = err.message || "Wystąpił nieoczekiwany błąd";
   } finally {
     isLoading.value = false;
@@ -105,7 +104,7 @@ const handleLogin = async () => {
 
 .forgot-link {
   font-size: 12px;
-  color: #667eea;
+  color: rgb(64, 64, 64);
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s;
@@ -130,7 +129,7 @@ const handleLogin = async () => {
 }
 
 .login-header h2 {
-  color: #667eea;
+  color: #22a5bf;
   font-size: 28px;
   font-weight: 600;
   margin-bottom: 8px;
@@ -171,7 +170,7 @@ const handleLogin = async () => {
 .btn-login {
   width: 100%;
   padding: 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #667eea 0%, #22a5bf 100%);
   color: white;
   border: none;
   border-radius: 10px;

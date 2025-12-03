@@ -1,62 +1,79 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import html2canvas from 'html2canvas';
 import { fontBase64 } from './fonts/Roboto-Regular.js';
 import logo from "../assets/Headwear_COLOR_CMYK_logo-1.png.webp";
 
-
-
 export function useProductionCard() {
 
-  const generateProductionCard = (project) => {
+  const loadImage = (src) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => resolve(img);
+      img.onerror = () => resolve(null);
+    });
+  };
+
+  // ZMIANA: Funkcja przyjmuje teraz drugi argument: elementDoZdjecia
+  const generateProductionCard = async (project, hatDomElement) => {
     const doc = new jsPDF();
-    const addLogo = (doc, callback) => {
-        const img = new Image();
-        img.src = logo;
-        img.onload = () => {
-          callback(img);
-        };
-      };
-    // --- NAGŁÓWEK ---
+
+    // 1. Fonty
     doc.addFileToVFS("Roboto-Regular.ttf", fontBase64);
-    
-    // 3. REJESTRUJEMY CZCIONKĘ
-    // Drugi parametr to nazwa, której będziemy używać w kodzie (np. "Roboto")
     doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+    doc.setFont("Roboto");
 
-    // 4. USTAWIAMY JAKO DOMYŚLNĄ DLA TEKSTU (doc.text)
-    doc.setFont("Roboto"); 
+    // 2. GENEROWANIE OBRAZKA Z DUŻEGO "GHOSTA"
+    let hatImage = null;
+    if (hatDomElement) {
+      try {
+        const canvas = await html2canvas(hatDomElement, {
+          scale: 2, // 2x to aż nadto dla 800px źródła, będzie żyleta
+          backgroundColor: null,
+          logging: false
+        });
+        hatImage = canvas.toDataURL('image/png');
+      } catch (e) {
+        console.error("Błąd html2canvas:", e);
+      }
+    }
 
-    // --- NAGŁÓWEK ---
+    // 3. UKŁAD STRONY
+    
+    // --- Lewa Strona: DANE TEKSTOWE ---
     doc.setFontSize(18);
-    // Teraz polskie znaki w doc.text zadziałają:
-    doc.text("KARTA TECHNOLOGICZNA PRODUKCJI", 105, 20, { align: 'center' });
+    doc.text("KARTA PRODUKCYJNA", 14, 20);
     
     doc.setFontSize(10);
-    doc.text(`ID Zlecenia: ${project.id}`, 14, 30);
-    // Data też często ma polskie znaki w nazwach miesięcy
+    doc.text(`ID: ${project.id}`, 14, 30);
     doc.text(`Data: ${project.createdAt}`, 14, 35); 
     doc.text(`Status: ${project.status}`, 14, 40);
 
-    // --- TABELA 1: DANE ZAMAWIAJĄCEGO ---
+    // --- Prawa Strona: DUŻA MINIATURKA (Wysoka jakość) ---
+    if (hatImage) {
+       // x=130, y=10, szer=70, wys=50 (Dostosuj proporcje do HatThumbnail)
+       // Dzięki temu, że źródło ma 800px, tutaj skalujemy w dół = super jakość
+       doc.addImage(hatImage, 'PNG', 130, 10, 70, 50);
+    }
+
+    // --- TABELA 1: KLIENT ---
+    // Przesuwamy startY niżej, np. 65, żeby nie nachodziło na obrazek
     autoTable(doc, {
-        startY: 45,
-        // 5. WAŻNE: Musimy powiedzieć tabeli, żeby też używała tej czcionki!
-        styles: {
-          font: "Roboto", // Używamy nazwy zarejestrowanej w pkt 3
-          fontStyle: "normal"
-        },
+        startY: 65, 
+        styles: { font: "Roboto", fontStyle: "normal" },
         head: [['Klient', 'Firma', 'Kontakt']],
         body: [[
-          project.client.name, // Tutaj mogą być polskie znaki (np. "Łukasz")
+          project.client.name,
           project.client.company || '-',
           `${project.client.email}\n${project.client.phone || ''}`,
         ]],
         theme: 'grid',
         headStyles: { fillColor: [31, 41, 55] }
-      });
+    });
 
+    // --- TABELA 2: SPECYFIKACJA ---
     const conf = project.config;
-    
     const specsData = [
       ['Gora - Kolor', conf.base?.top || '-'],
       ['Srodek - Kolor', conf.base?.middle || '-'],
@@ -72,54 +89,52 @@ export function useProductionCard() {
       ['Y Tekstu', conf.text?.offsetY || '-'],
       ['Pompony', conf.pompons ? `1: ${conf.pompons.p1}, 2: ${conf.pompons.p2} 3: ${conf.pompons.p3} 4: ${conf.pompons.p4}` : 'BRAK']
     ];
+
     autoTable(doc, {
         startY: doc.lastAutoTable.finalY + 10,
-        // Ponownie ustawiamy font dla tej tabeli
-        styles: {
-          font: "Roboto",
-          fontStyle: "normal"
-        },
+        styles: { font: "Roboto", fontStyle: "normal" },
         head: [['Element', 'Specyfikacja / Kolor (HEX)']],
         body: specsData,
         theme: 'striped',
         headStyles: { fillColor: [100, 100, 100] }
-      });
+    });
 
     // --- UWAGI ---
     if (project.order.notes) {
-        doc.text("Uwagi do zamówienia:", 14, doc.lastAutoTable.finalY + 10);
+        let finalY = doc.lastAutoTable.finalY + 10;
+        if (finalY > 270) { doc.addPage(); finalY = 20; }
+        
+        doc.setFontSize(10);
+        doc.text("Uwagi do zamówienia:", 14, finalY);
         doc.setFontSize(9);
-        doc.setFont("helvetica", "italic");
-        // Split text to fit width
+        doc.setFont("Roboto", "normal"); 
+        
         const splitNotes = doc.splitTextToSize(project.order.notes, 180);
-        doc.text(splitNotes, 14, doc.lastAutoTable.finalY + 15);
+        doc.text(splitNotes, 14, finalY + 5);
     }
 
-    // --- STOPKA ---
+    // --- STOPKA I LOGO ---
+    const logoImg = await loadImage(logo);
     const pageHeight = doc.internal.pageSize.height;
+    const pageWidth = doc.internal.pageSize.width;
+    
+    // Logo na samym dole na środku (lub po prawej)
+    if (logoImg) {
+        const logoWidth = 30;
+        const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
+        
+        // Pozycja X: (SzerokośćStrony - SzerokośćLogo) / 2 = Środek
+        const x = (pageWidth - logoWidth) / 2;
+        const y = pageHeight - logoHeight - 15;
+        
+        doc.addImage(logoImg, "PNG", x, y, logoWidth, logoHeight);
+    }
+    
     doc.setFontSize(8);
-    doc.text("Headwear Professional", 105, pageHeight - 10, { align: 'center' });
-    addLogo(doc, (img) => {
-        const pageHeight = doc.internal.pageSize.height;
-        const pageWidth = doc.internal.pageSize.width;
-    
-        const logoWidth = 40;
-        const logoHeight = (img.height / img.width) * logoWidth;
-    
-        // pozycja na dole strony
-        const x = (pageWidth - logoWidth) / 2;  // na środku
-        const y = pageHeight - logoHeight - 20; // 20px nad krawędzią
-    
-        doc.addImage(img, "PNG", x, y, logoWidth, logoHeight);
-    
-        // po dodaniu obrazu — zapisz PDF
-        doc.save(`Karta_Produkcyjna_${project.id}.pdf`);
-    });
-    
+    doc.text("Headwear Professional", pageWidth / 2, pageHeight - 5, { align: 'center' });
 
+    doc.save(`Karta_Produkcyjna_${project.id}.pdf`);
   };
 
   return { generateProductionCard };
 }
-
-

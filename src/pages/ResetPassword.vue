@@ -2,7 +2,7 @@
     <div class="auth-container">
       <div class="login-card">
         <div class="login-header">
-          <h2>Nowe hasło 🔑</h2>
+          <h2>Nowe hasło </h2>
           <p>Wprowadź nowe hasło dla swojego konta</p>
         </div>
         
@@ -26,10 +26,10 @@
         </form>
   
         <div v-else class="success-state">
-          <div class="icon">✅</div>
+          <div class="icon"></div>
           <h3>Gotowe!</h3>
           <p>Hasło zostało zmienione pomyślnie.</p>
-          <router-link to="/" class="btn-login" style="text-decoration: none; display: block; text-align: center;">
+          <router-link to="/login" class="btn-login" style="text-decoration: none; display: block; text-align: center;">
             Zaloguj się nowym hasłem
           </router-link>
         </div>
@@ -81,7 +81,7 @@
       
       // Opcjonalnie przekieruj automatycznie po 3 sekundach
       setTimeout(() => {
-        router.push('/');
+        router.push('/login');
       }, 3000);
   
     } catch (err) {

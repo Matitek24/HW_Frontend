@@ -263,7 +263,7 @@
 
             <div class="expanded-row mt-2">
               <div class="expanded-field grow">
-                <label>Wzór Dół</label>
+                <label>Wzór Środek</label>
                 <div class="select-wrapper w-100"> 
                   <PatternPicker 
                   v-model="config.patterns.bottom" 

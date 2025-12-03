@@ -92,7 +92,9 @@
                 </td>
 
                   <td>
-                    <div class="img-wrapper" style="width: 60px; height: 60px; padding: 5px">
+                    <div   
+                    :id="`hat-thumb-${project.id}`" 
+                    class="img-wrapper" style="width: 60px; height: 60px; padding: 5px">
                       <HatThumbnail 
                         :config="project.config" 
                         :patternsDict="patternsDict"
@@ -264,6 +266,33 @@
         </div>
       </div>
     </div>
+
+    <div 
+      id="pdf-ghost-container" 
+      style="
+        position: fixed; 
+        left: -9999px; 
+        top: 0; 
+        width: 1200px; /* Szerszy kontener dla HatFlat */
+        height: 800px; 
+        background: transparent; 
+        z-index: -1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      "
+    >
+      <div v-if="pdfProjectData" style="width: 100%; height: 100%;">
+        
+        <HatFlat 
+          :config="pdfProjectData.config" 
+          :patternsDict="patternsDict"
+          style="width: 100%; height: 100%;"
+        />
+
+      </div>
+    </div>
+    
   </div>
 </template>
 
@@ -277,7 +306,8 @@ import { exportProjectsToCSV } from '../utils/csvExport.js';
 import { useProductionCard } from '../utils/useProductionCard';
 import StatusBadge from '../components/admin/StatusBadge.vue';
 import SearchFilter from './SearchFilter.vue';
-
+import { nextTick } from 'vue';
+import HatFlat from './hat/HatFlat.vue';
 
 const router = useRouter();
 const projects = ref([]);
@@ -289,6 +319,35 @@ const searchFilter = ref({ type: 'name', query: '' });
 const currentSort = ref('date');    
 const currentSortDir = ref('desc');
 const isMobile = ref(window.innerWidth <= 650);
+
+const pdfProjectData = ref(null);
+
+const downloadProductionPdf = async (project) => {
+    isLoading.value = true; // Pokaż jakiś loader jeśli chcesz
+
+    try {
+        // 1. Wrzucamy dane projektu do "Ghost Containera"
+        pdfProjectData.value = project;
+
+        // 2. Czekamy aż Vue przerysuje ukryty kontener z nowymi danymi
+        await nextTick();
+        // Czasem warto dać malutki timeout dla pewności, że obrazki/fonty "wskoczyły"
+        await new Promise(r => setTimeout(r, 100));
+
+        // 3. Znajdujemy nasz ukryty element w DOM
+        const ghostElement = document.getElementById('pdf-ghost-container');
+
+        // 4. Generujemy PDF, przekazując ten ukryty element
+        await generateProductionCard(project, ghostElement);
+
+    } catch (e) {
+        console.error("Błąd PDF:", e);
+        alert("Nie udało się wygenerować PDF.");
+    } finally {
+        isLoading.value = false;
+        pdfProjectData.value = null; // Czyścimy ducha
+    }
+};
 
 const checkMobile = () => {
   isMobile.value = window.innerWidth <= 650;
@@ -369,12 +428,6 @@ const handleStatusChange = async ({ id, status, done }) => {
   }
 };
 
-// Funkcja wywoływana przyciskiem "Pobierz PDF" w tabeli
-const downloadProductionPdf = (project) => {
-    // Możemy tu dodać mapowanie nazw wzorów (ID -> Nazwa) jeśli masz patternsDict pod ręką
-    // Ale na start wystarczy wersja podstawowa
-    generateProductionCard(project);
-};
 // PAGINACJA
 const currentPage = ref(1);
 const itemsPerPage = ref(10);

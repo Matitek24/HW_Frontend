@@ -50,7 +50,7 @@ api.interceptors.response.use(
       removeStoredToken();
       
       if (router.currentRoute.value.path !== '/') {
-        router.push('/');
+        router.push('/login');
       }
       
       return Promise.reject({
