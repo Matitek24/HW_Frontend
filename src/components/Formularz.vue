@@ -88,7 +88,6 @@
                 <PatternPicker 
                   v-model="config.patterns.top" 
                   :options="topPatterns" 
-                  
                   title="Wybierz wzór (Góra)"
                 />
               </div>
@@ -249,7 +248,7 @@
                   <PatternPicker 
                   v-model="config.patterns.top" 
                   :options="topPatterns" 
-                  opt=true
+                  :opt=true
                   title="Wybierz wzór (Góra)"
                 />
               </div>
@@ -269,7 +268,7 @@
                   <PatternPicker 
                   v-model="config.patterns.bottom" 
                   :options="bottomPatterns" 
-                  opt=true
+                  :opt=true
                   title="Wybierz wzór (Góra)"
                 />
               </div>

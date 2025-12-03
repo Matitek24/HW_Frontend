@@ -257,8 +257,8 @@ onMounted(async () => {
 
     background-color: #ffffff;
     background-image:
-  radial-gradient(at 10% 10%, rgba(var(--rgb-top), 0.20) 0px, transparent 50%),
-  radial-gradient(at 90% 90%, rgba(var(--rgb-bottom), 0.20) 0px, transparent 50%);
+  radial-gradient(at 10% 10%, rgba(var(--rgb-top), 0.22) 0px, transparent 50%),
+  radial-gradient(at 90% 90%, rgba(var(--rgb-bottom), 0.22) 0px, transparent 50%);
 
     background-attachment: fixed;
     min-height: 100vh;
