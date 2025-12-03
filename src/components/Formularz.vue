@@ -21,7 +21,7 @@
               placeholder="Twój tekst..."
             />
             <div class="select-wrapper">
-              <select v-model="config.text.font" class="input-pill select-pill">
+              <select v-model="config.text.font" class="input-pill select-pill select-pill-font">
                 <option 
                   v-for="font in dictionaries.fonts" 
                   :key="font.id" 
@@ -903,11 +903,9 @@ const bottomPatterns = computed(() =>
   .text-main {
     width: 100px; /* Trochę węższy input tekstu */
   }
-  
-  .select-pill {
-    width: 100px; /* Trochę węższy select czcionki */
+  .select-pill-font{
+    width: 100px;
   }
-  
   /* Przycisk toggle (strzałka) trochę niżej na mobile */
   .toggle-wrapper {
     top: -35px;

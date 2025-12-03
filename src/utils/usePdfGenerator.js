@@ -36,38 +36,154 @@ export function usePdfGenerator() {
     }
 
     try {
-      // Funkcja czyszcząca style w wirtualnej kopii (clone)
-      // To tutaj dzieje się magia usuwania tła i naprawiania wymiarów
+      // ⭐ NOWA funkcja - wymusza widok desktop niezależnie od rozmiaru ekranu
       const prepareClone = (clonedDoc, elementId) => {
+        // 1. Najpierw dodajemy style nadpisujące media queries
+        const style = clonedDoc.createElement('style');
+        style.textContent = `
+          /* Resetujemy WSZYSTKIE media queries */
+          * {
+            max-width: none !important;
+            min-width: 0 !important;
+          }
+          
+          /* Wymuszamy widok desktop dla kontenerów */
+          #${elementId} {
+            display: block !important;
+            visibility: visible !important;
+            width: auto !important;
+            height: auto !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            position: static !important;
+            transform: none !important;
+          }
+          
+          /* Czapka2 - resetujemy mobile styles */
+          #${elementId} .czapka2 {
+            width: auto !important;
+            padding: 0 !important;
+            padding-top: 0 !important;
+            margin-top: 40px !important;
+          }
+          
+          /* Pompon - resetujemy skalowanie mobile */
+          #${elementId} .pompon {
+            right: auto !important;
+            transform: scale(1.33) !important;
+            right: 68px !important;
+            top: 12px !important;
+            position: relative !important;
+          }
+          
+          /* SVG wrapper */
+          #${elementId} .svg-wrapper {
+            width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+          }
+          
+          /* Wymuszamy wyświetlanie obu widoków */
+          .flat-layout, .front-layout {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+          }
+          
+          .flat-layout {
+            align-items: flex-end !important;
+          }
+          
+          .front-layout {
+            display: block !important;
+          }
+          
+          /* Wyłączamy WSZYSTKIE media queries */
+          @media (max-width: 600px) {
+            #${elementId},
+            #${elementId} .czapka2,
+            #${elementId} .pompon {
+              all: revert !important;
+            }
+          }
+        `;
+        clonedDoc.head.appendChild(style);
+        
+        // 2. Teraz modyfikujemy sam element
         const clonedElement = clonedDoc.getElementById(elementId);
         if (clonedElement) {
-            // 1. Usuwamy style kontenera (cienie, tła, radiusy)
-            clonedElement.style.background = 'transparent';
-            clonedElement.style.backgroundColor = 'rgba(0,0,0,0)';
-            clonedElement.style.boxShadow = 'none';
-            clonedElement.style.border = 'none';
-            clonedElement.style.backdropFilter = 'none';
-            
-            clonedElement.style.width = 'auto'; 
-            clonedElement.style.height = 'auto';
-            clonedElement.style.position = 'static';
-            
-            // Jeśli wewnątrz są jakieś wrappery z klasą .svg-wrapper, też je czyścimy
-            const wrappers = clonedElement.querySelectorAll('.svg-wrapper');
-            wrappers.forEach(w => {
-                w.style.background = 'transparent';
-                w.style.boxShadow = 'none';
-                w.style.border = 'none';
-                w.style.width = '100%';
-            });
+          // Usuwamy style kontenera (cienie, tła, radiusy)
+          clonedElement.style.background = 'transparent';
+          clonedElement.style.backgroundColor = 'transparent';
+          clonedElement.style.boxShadow = 'none';
+          clonedElement.style.border = 'none';
+          clonedElement.style.backdropFilter = 'none';
+          clonedElement.style.padding = '0';
+          clonedElement.style.margin = '0';
+          clonedElement.style.width = 'auto';
+          clonedElement.style.height = 'auto';
+          clonedElement.style.position = 'static';
+          clonedElement.style.display = 'block';
+          clonedElement.style.visibility = 'visible';
+          clonedElement.style.overflow = 'visible';
+          
+          // Usuwamy klasy które mogą powodować ukrywanie
+          clonedElement.classList.remove('mobile-hidden', 'hidden');
+          
+          // Wrapper
+          const wrappers = clonedElement.querySelectorAll('.svg-wrapper');
+          wrappers.forEach(w => {
+            w.style.background = 'transparent';
+            w.style.boxShadow = 'none';
+            w.style.border = 'none';
+            w.style.padding = '0';
+            w.style.margin = '0';
+            w.style.width = '100%';
+            w.style.display = 'block';
+          });
+          
+          // Czapka2 - pełny reset
+          const czapki = clonedElement.querySelectorAll('.czapka2');
+          czapki.forEach(c => {
+            c.style.width = 'auto';
+            c.style.padding = '0';
+            c.style.paddingTop = '0';
+            c.style.margin = '0';
+            c.style.transform = 'none';
+          });
+          
+          // Pompony - pełny reset
+          const pompons = clonedElement.querySelectorAll('.pompon');
+          pompons.forEach(p => {
+            p.style.transform = 'none';
+            p.style.right = 'auto';
+            p.style.top = 'auto';
+            p.style.left = 'auto';
+            p.style.bottom = 'auto';
+            p.style.position = 'relative';
+          });
+          
+          // SVG - upewniamy się że są pełne
+          const svgs = clonedElement.querySelectorAll('svg');
+          svgs.forEach(svg => {
+            svg.style.width = '100%';
+            svg.style.height = 'auto';
+            svg.style.display = 'block';
+          });
         }
       };
 
       const options = {
-        scale: 2,
+        scale: 4, 
         useCORS: true,
         backgroundColor: null, 
-        logging: false
+        logging: false,
+        windowWidth: 1920,
+        windowHeight: 1080,
+        allowTaint: false,
+        removeContainer: true,
+        foreignObjectRendering: false
+
       };
 
       console.log("📸 Renderowanie czapek...");
@@ -75,12 +191,12 @@ export function usePdfGenerator() {
       // Generujemy canvasy z użyciem onclone
       const [canvas1, canvas2, bgImage] = await Promise.all([
         html2canvas(element1, {
-            ...options,
-            onclone: (doc) => prepareClone(doc, 'print-flat-container')
+          ...options,
+          onclone: (doc) => prepareClone(doc, 'print-flat-container')
         }),
         html2canvas(element2, {
-            ...options,
-            onclone: (doc) => prepareClone(doc, 'print-front-container')
+          ...options,
+          onclone: (doc) => prepareClone(doc, 'print-front-container')
         }),
         loadImageAsBase64('/src/assets/headwearbg2.jpg') 
       ]);
@@ -92,7 +208,9 @@ export function usePdfGenerator() {
       const doc = new jsPDF({
         orientation: 'landscape',
         unit: 'px',
-        format: [2000, 1100]
+        format: [2000, 1100],
+        putOnlyUsedFonts: true,
+        floatPrecision: 16
       });
       const pageWidth = doc.internal.pageSize.getWidth(); 
       const pageHeight = doc.internal.pageSize.getHeight(); 
@@ -100,7 +218,7 @@ export function usePdfGenerator() {
       console.log("🖼️ Dodawanie tła...");
       doc.addImage(bgImage, 'JPEG', 0, 0, 2000, 1100);
 
-      const margin = 220;
+      const margin = 240;
       // Obliczamy dostępne miejsce
       const availableWidth = pageWidth - (margin * 3); // margines lewy, srodek, prawy
       const boxWidth = availableWidth / 2;
@@ -116,8 +234,17 @@ export function usePdfGenerator() {
       const yPos = (pageHeight - maxHeight) / 2;
 
       // Wrzucamy obrazy czapek
-      doc.addImage(imgData1, 'PNG', margin + 100, yPos - 150, boxWidth, boxHeight1);
-      doc.addImage(imgData2, 'PNG', margin + 810, yPos, boxWidth, boxHeight2);
+      const isSmallScreen = window.innerWidth <= 768;
+
+      if(isSmallScreen){
+        doc.addImage(imgData1, 'JPEG', margin + 60, yPos - 200, boxWidth, boxHeight1);
+        doc.addImage(imgData2, 'JPEG', margin + 810, yPos + 40, boxWidth, boxHeight2);
+      }
+      else{
+        doc.addImage(imgData1, 'JPEG', margin + 100, yPos - 400, boxWidth, boxHeight1);
+        doc.addImage(imgData2, 'JPEG', margin + 810, yPos + 230, boxWidth, boxHeight2);
+      }
+    
 
       // Stopka
       doc.setFontSize(12);
@@ -126,13 +253,12 @@ export function usePdfGenerator() {
       doc.setFontSize(10);
       doc.setTextColor(107, 114, 128); 
 
-
-
       doc.save(`HEADWEAR-Wizualizacja-${Date.now()}.pdf`);
 
+      console.log("✅ PDF wygenerowany pomyślnie!");
       return true;
     } catch (err) {
-     
+      console.error("❌ Błąd generowania PDF:", err);
       alert("Wystąpił błąd podczas generowania pliku PDF.");
       return false;
     }

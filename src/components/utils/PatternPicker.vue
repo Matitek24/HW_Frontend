@@ -1,6 +1,6 @@
 <template>
     <div class="pattern-picker-wrapper">
-      <div class="pattern-trigger"   :style="{ width: props.opt ? '150px' : '' }"  @click="openModal">
+      <div class="pattern-trigger"   :style="{ width: props.opt ? '100%' : '' }"  @click="openModal">
         <span class="pattern-name">{{ selectedPattern ? selectedPattern.nazwa : 'Brak wzoru' }}</span>
         <i class="bi bi-chevron-down ms-auto"></i>
       </div>

@@ -362,6 +362,7 @@ onMounted(async () => {
  .mobile-hidden {
     display: none !important;
   }
+  
 }
 
 
