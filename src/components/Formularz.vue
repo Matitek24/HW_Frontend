@@ -118,7 +118,21 @@
   
         <div class="group-section">
           <div class="group-header">Pompony</div>
-          <div class="pompon-carousel">
+          <div class="form-check form-switch">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  role="switch" 
+                  id="pomponSwitch"
+                  v-model="config.pompons.show"
+                >
+                <label class="form-check-label small text-muted" for="pomponSwitch">
+                  {{ config.pompons.show ? 'Włączony' : 'Wyłączony' }}
+                </label>
+              </div>
+          <div class="pompon-carousel"
+          :class="{ 'disabled-section': !config.pompons.show }"
+          >
             <div class="color-pill compact">
               <ColorPicker
                 v-model="config.pompons.p1"
@@ -284,7 +298,22 @@
 
           <div class="expanded-column">
             <h3 class="column-title">Pompony</h3>
-            <div class="pompon-grid-display">
+            <div class="form-check form-switch">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  role="switch" 
+                  id="pomponSwitch"
+                  v-model="config.pompons.show"
+                >
+                <label class="form-check-label small text-muted" for="pomponSwitch">
+                  {{ config.pompons.show ? 'Włączony' : 'Wyłączony' }}
+                </label>
+              </div>
+              <div 
+              class="pompon-grid-display" 
+              :class="{ 'disabled-section': !config.pompons.show }"
+            >
                <div class="pompon-item">
                  <label>P 1</label>
                  <ColorPicker v-model="config.pompons.p1" :color-options="dictionaries.colors" />
@@ -600,6 +629,20 @@ const bottomPatterns = computed(() =>
 /* Usuń stare elementy */
 .db-color-palette { display: none; }
 .color-ring input[type="color"] { display: none; }
+.disabled-section {
+  opacity: 0.5;
+  pointer-events: none; /* Blokuje klikanie */
+  filter: grayscale(100%);
+}
+
+/* Styl dla switcha (żeby był ładny) */
+.form-check-input:checked {
+  background-color: #5d5d5d;
+  border-color: #1f29374b;
+}
+.form-check{
+  margin-bottom: 0.2rem;
+}
 
 @media (max-width: 768px) {
   .color-dropdown {

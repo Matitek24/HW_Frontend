@@ -45,7 +45,7 @@
             class="czapka front-layout"
             :class="{ 'is-active': activeView === 'front' }"
           >
-            <HatFront :config="hatConfig" :show-pompon="true" :patternsDict="dictionaryData.patterns" class="czapka2"/>
+            <HatFront :config="hatConfig" :show-pompon="hatConfig.pompons.show" :patternsDict="dictionaryData.patterns" class="czapka2"/>
         </div>
 
       </div>
@@ -169,7 +169,7 @@ onMounted(async () => {
       isDownloading.value = true;
       try {
         setTimeout(async () => {
-           await generatePdf();
+           await generatePdf(hatConfig);
            isDownloading.value = false;
         }, 100);
       } catch (e) {

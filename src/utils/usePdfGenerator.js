@@ -21,7 +21,7 @@ export function usePdfGenerator() {
     });
   };
 
-  const generatePdf = async () => {
+  const generatePdf = async (config) => {
     console.log("🎨 Start generowania PDF...");
     
     await nextTick();
@@ -235,14 +235,27 @@ export function usePdfGenerator() {
 
       // Wrzucamy obrazy czapek
       const isSmallScreen = window.innerWidth <= 768;
+      const hasPompon = config?.pompons?.show;
 
       if(isSmallScreen){
+        if(!hasPompon){
         doc.addImage(imgData1, 'JPEG', margin + 60, yPos - 200, boxWidth, boxHeight1);
-        doc.addImage(imgData2, 'JPEG', margin + 810, yPos + 40, boxWidth, boxHeight2);
+        doc.addImage(imgData2, 'JPEG', margin + 810, yPos + 170, boxWidth, boxHeight2);
+        }
+        else{
+          doc.addImage(imgData1, 'JPEG', margin + 60, yPos - 200, boxWidth, boxHeight1);
+          doc.addImage(imgData2, 'JPEG', margin + 810, yPos + 40, boxWidth, boxHeight2);
+        }
       }
       else{
+        if(!hasPompon){
         doc.addImage(imgData1, 'JPEG', margin + 100, yPos - 400, boxWidth, boxHeight1);
+        doc.addImage(imgData2, 'JPEG', margin + 810, yPos + 370, boxWidth, boxHeight2);
+        }
+        else{
+          doc.addImage(imgData1, 'JPEG', margin + 100, yPos - 400, boxWidth, boxHeight1);
         doc.addImage(imgData2, 'JPEG', margin + 810, yPos + 230, boxWidth, boxHeight2);
+        }
       }
     
 

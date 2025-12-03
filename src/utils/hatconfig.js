@@ -20,6 +20,7 @@ export const defaultConfig = {
     top: '#8ad4f1'
   },
   pompons: {
+    show: true,
     p1: '#000000',
     p2: '#f0f0f0',
     p3: '#f0f0f0',

@@ -86,9 +86,16 @@ export function useProductionCard() {
       ['Czcionki', conf.text?.font || '-'],
       ['Tekst', conf.text?.content || '-'],
       ['Kolor Tekstu', conf.text?.color || '-'],
-      ['Y Tekstu', conf.text?.offsetY || '-'],
-      ['Pompony', conf.pompons ? `1: ${conf.pompons.p1}, 2: ${conf.pompons.p2} 3: ${conf.pompons.p3} 4: ${conf.pompons.p4}` : 'BRAK']
+      ['Y Tekstu', conf.text?.offsetY || '0'],
+      ['Czy jest pompon', conf.pompons?.show ? 'TAK' : 'NIE']
     ];
+
+    if (conf.pompons?.show) {
+        specsData.push([
+            'Kolory Pompona', 
+            `1: ${conf.pompons.p1}, 2: ${conf.pompons.p2}, 3: ${conf.pompons.p3}, 4: ${conf.pompons.p4}`
+        ]);
+    }
 
     autoTable(doc, {
         startY: doc.lastAutoTable.finalY + 10,
@@ -120,7 +127,7 @@ export function useProductionCard() {
     
     // Logo na samym dole na środku (lub po prawej)
     if (logoImg) {
-        const logoWidth = 30;
+        const logoWidth = 50;
         const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
         
         // Pozycja X: (SzerokośćStrony - SzerokośćLogo) / 2 = Środek
@@ -131,7 +138,6 @@ export function useProductionCard() {
     }
     
     doc.setFontSize(8);
-    doc.text("Headwear Professional", pageWidth / 2, pageHeight - 5, { align: 'center' });
 
     doc.save(`Karta_Produkcyjna_${project.id}.pdf`);
   };
