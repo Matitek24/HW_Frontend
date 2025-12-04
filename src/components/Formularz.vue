@@ -118,41 +118,45 @@
   
         <div class="group-section">
           <div class="group-header">Pompony</div>
-          <div class="form-check form-switch">
-                <input 
-                  class="form-check-input" 
-                  type="checkbox" 
-                  role="switch" 
-                  id="pomponSwitch"
-                  v-model="config.pompons.show"
-                >
-                <label class="form-check-label small text-muted" for="pomponSwitch">
-                  {{ config.pompons.show ? 'Włączony' : 'Wyłączony' }}
-                </label>
-              </div>
-          <div class="pompon-carousel"
-          :class="{ 'disabled-section': !config.pompons.show }"
-          >
+          
+          <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
+             <div class="form-check form-switch m-0">
+                <input class="form-check-input" type="checkbox" role="switch" v-model="config.pompons.show">
+             </div>
+          </div>
+
+          <div class="pompon-carousel" :class="{ 'disabled-section': !config.pompons.show }">
             <div class="color-pill compact">
+              
               <ColorPicker
-                v-model="config.pompons.p1"
+                :model-value="config.pompons.p1"
                 :color-options="dictionaries.colors"
-                title="Pompon 1"
+                title="Pompon (Główny)"
+                @update:model-value="(hex) => updatePomponColor(1, hex)"
               />
+
               <ColorPicker
-                v-model="config.pompons.p2"
+                v-if="pomponMode !== 'single'"
+                :model-value="config.pompons.p2"
                 :color-options="dictionaries.colors"
-                title="Pompon 2"
+                title="Pompon (Drugi)"
+                @update:model-value="(hex) => updatePomponColor(2, hex)"
               />
+
               <ColorPicker
-                v-model="config.pompons.p3"
+                v-if="pomponMode === 'quad'"
+                :model-value="config.pompons.p3"
                 :color-options="dictionaries.colors"
-                title="Pompon 3"
+                title="Pompon (Trzeci)"
+                @update:model-value="(hex) => updatePomponColor(3, hex)"
               />
+
               <ColorPicker
-                v-model="config.pompons.p4"
+                v-if="pomponMode === 'quad'"
+                :model-value="config.pompons.p4"
                 :color-options="dictionaries.colors"
-                title="Pompon 4"
+                title="Pompon (Czwarty)"
+                @update:model-value="(hex) => updatePomponColor(4, hex)"
               />
             </div>
           </div>
@@ -297,40 +301,69 @@
           </div>
 
           <div class="expanded-column">
-            <h3 class="column-title">Pompony</h3>
-            <div class="form-check form-switch">
-                <input 
-                  class="form-check-input" 
-                  type="checkbox" 
-                  role="switch" 
-                  id="pomponSwitch"
-                  v-model="config.pompons.show"
-                >
-                <label class="form-check-label small text-muted" for="pomponSwitch">
-                  {{ config.pompons.show ? 'Włączony' : 'Wyłączony' }}
-                </label>
+            
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h3 class="column-title mb-0">Pompony</h3>
+              <div class="form-check form-switch mb-0">
+                <input class="form-check-input" type="checkbox" role="switch" id="pomponSwitch" v-model="config.pompons.show">
               </div>
-              <div 
-              class="pompon-grid-display" 
-              :class="{ 'disabled-section': !config.pompons.show }"
-            >
-               <div class="pompon-item">
-                 <label>P 1</label>
-                 <ColorPicker v-model="config.pompons.p1" :color-options="dictionaries.colors" />
-               </div>
-               <div class="pompon-item">
-                 <label>P 2</label>
-                 <ColorPicker v-model="config.pompons.p2" :color-options="dictionaries.colors" />
-               </div>
-               <div class="pompon-item">
-                 <label>P 3</label>
-                 <ColorPicker v-model="config.pompons.p3" :color-options="dictionaries.colors" />
-               </div>
-               <div class="pompon-item">
-                 <label>P 4</label>
-                 <ColorPicker v-model="config.pompons.p4" :color-options="dictionaries.colors" />
-               </div>
             </div>
+            
+            <div :class="{ 'disabled-section': !config.pompons.show }">
+              
+              <div class="mode-selector mb-3">
+                 <button 
+                   v-for="opt in pomponOptions" 
+                   :key="opt.value"
+                   @click="pomponMode = opt.value"
+                   class="mode-btn"
+                   :class="{ active: pomponMode === opt.value }"
+                 >
+                   {{ opt.label }}
+                 </button>
+              </div>
+
+              <div class="pompon-grid-display">
+                 
+                 <div class="pompon-item">
+                   <label>{{ pomponMode === 'single' ? 'Kolor' : 'Kolor A' }}</label>
+                   <ColorPicker 
+                      :model-value="config.pompons.p1" 
+                      :color-options="dictionaries.colors" 
+                      @update:model-value="(hex) => updatePomponColor(1, hex)"
+                   />
+                 </div>
+
+                 <div class="pompon-item" v-if="pomponMode !== 'single'">
+                   <label>Kolor B</label>
+                   <ColorPicker 
+                      :model-value="config.pompons.p2" 
+                      :color-options="dictionaries.colors" 
+                      @update:model-value="(hex) => updatePomponColor(2, hex)"
+                   />
+                 </div>
+
+                 <div class="pompon-item" v-if="pomponMode === 'quad'">
+                   <label>Kolor C</label>
+                   <ColorPicker 
+                      :model-value="config.pompons.p3" 
+                      :color-options="dictionaries.colors" 
+                      @update:model-value="(hex) => updatePomponColor(3, hex)"
+                   />
+                 </div>
+
+                 <div class="pompon-item" v-if="pomponMode === 'quad'">
+                   <label>Kolor D</label>
+                   <ColorPicker 
+                      :model-value="config.pompons.p4" 
+                      :color-options="dictionaries.colors" 
+                      @update:model-value="(hex) => updatePomponColor(4, hex)"
+                   />
+                 </div>
+
+              </div>
+            </div>
+            
           </div>
           
         </div>
@@ -340,13 +373,61 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import ColorPicker from '../components/utils/ColorPicker.vue'; 
 import PatternPicker from '../components/utils/PatternPicker.vue'; 
 
 const emit = defineEmits(['toggle-expand']); 
+const pomponMode = ref('quad');
 
+watch(pomponMode, (newMode) => {
+  
+  const p = props.config.pompons;
 
+  if (newMode === 'single') {
+
+    p.p2 = p.p1;
+    p.p3 = p.p1;
+    p.p4 = p.p1;
+  } 
+  else if (newMode === 'dual') {
+    p.p3 = p.p1;
+    p.p4 = p.p2;
+  }
+});
+
+const updatePomponColor = (index, hex) => {
+  
+  if (pomponMode.value === 'single') {
+     props.config.pompons.p1 = hex;
+     props.config.pompons.p2 = hex;
+     props.config.pompons.p3 = hex;
+     props.config.pompons.p4 = hex;
+  } 
+  else if (pomponMode.value === 'dual') {
+
+     if (index === 1) {
+        props.config.pompons.p1 = hex;
+        props.config.pompons.p3 = hex;
+     } else if (index === 2) {
+        props.config.pompons.p2 = hex;
+        props.config.pompons.p4 = hex;
+     }
+  }
+  else {
+     if (index === 1) props.config.pompons.p1 = hex;
+     if (index === 2) props.config.pompons.p2 = hex;
+     if (index === 3) props.config.pompons.p3 = hex;
+     if (index === 4) props.config.pompons.p4 = hex;
+  }
+};
+
+// Opcje wyboru trybu
+const pomponOptions = [
+  { value: 'single', label: '1' },
+  { value: 'dual',   label: '2' },
+  { value: 'quad',   label: '4' },
+];
 
 const props = defineProps({
   config: {
@@ -381,6 +462,39 @@ const bottomPatterns = computed(() =>
 </script>
 
 <style scoped>
+
+/* Stylowanie przełącznika trybów (pigułki) */
+.mode-selector {
+  display: flex;
+  background: #f3f4f6;
+  padding: 4px;
+  border-radius: 12px;
+  gap: 4px;
+}
+
+.mode-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #6b7280;
+  border-radius: 8px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.mode-btn.active {
+  background: white;
+  color: #1f2937;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.mode-btn:hover:not(.active) {
+  background: rgba(255,255,255,0.5);
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 .expanded-column {
   display: flex;
