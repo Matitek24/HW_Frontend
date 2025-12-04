@@ -1,11 +1,18 @@
 import { nextTick } from 'vue';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import defaultLogo from "../assets/Headwear_COLOR_CMYK_logo-1.png.webp";
 
 export function usePdfGenerator() {
   
   const loadImageAsBase64 = (url) => {
     return new Promise((resolve, reject) => {
+      // Jeśli brak URL, zwracamy null natychmiast
+      if (!url) {
+          resolve(null);
+          return;
+      }
+
       const img = new Image();
       img.crossOrigin = 'Anonymous';
       img.onload = () => {
@@ -14,9 +21,17 @@ export function usePdfGenerator() {
         canvas.height = img.height;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0);
-        resolve(canvas.toDataURL('image/jpeg', 0.95));
+        // Zwracamy obiekt z danymi i wymiarami
+        resolve({
+            data: canvas.toDataURL('image/png'),
+            width: img.width,
+            height: img.height
+        });
       };
-      img.onerror = reject;
+      img.onerror = (e) => {
+          console.warn("Błąd ładowania obrazka:", url);
+          resolve(null); // Nie wysypujemy całego PDF przez brak logo
+      };
       img.src = url;
     });
   };
@@ -183,13 +198,14 @@ export function usePdfGenerator() {
         allowTaint: false,
         removeContainer: true,
         foreignObjectRendering: false
-
       };
 
       console.log("📸 Renderowanie czapek...");
+      const logoUrl = config?.customLogo || defaultLogo;
       
-      // Generujemy canvasy z użyciem onclone
-      const [canvas1, canvas2, bgImage] = await Promise.all([
+      // --- POPRAWKA TUTAJ ---
+      // 1. Dodaliśmy 'logoObj' do tablicy po lewej stronie
+      const [canvas1, canvas2, bgImage, logoObj] = await Promise.all([
         html2canvas(element1, {
           ...options,
           onclone: (doc) => prepareClone(doc, 'print-flat-container')
@@ -198,13 +214,13 @@ export function usePdfGenerator() {
           ...options,
           onclone: (doc) => prepareClone(doc, 'print-front-container')
         }),
-        loadImageAsBase64('/src/assets/headwearbg2.jpg') 
+        loadImageAsBase64('/src/assets/headwearbg2.jpg'),
+        loadImageAsBase64(logoUrl) 
       ]);
 
       const imgData1 = canvas1.toDataURL('image/png');
       const imgData2 = canvas2.toDataURL('image/png');
 
-      // PDF Layout
       const doc = new jsPDF({
         orientation: 'landscape',
         unit: 'px',
@@ -216,11 +232,37 @@ export function usePdfGenerator() {
       const pageHeight = doc.internal.pageSize.getHeight(); 
 
       console.log("🖼️ Dodawanie tła...");
-      doc.addImage(bgImage, 'JPEG', 0, 0, 2000, 1100);
+      
+      // --- POPRAWKA TUTAJ ---
+      // bgImage to teraz obiekt {data, width, height}, więc musimy użyć bgImage.data
+      if (bgImage) {
+          doc.addImage(bgImage.data, 'JPEG', 0, 0, 2000, 1100);
+      }
+
+      // --- POPRAWKA LOGO ---
+      // Teraz logoObj istnieje, więc ten IF zadziała
+      if (logoObj) {
+        const isCustomLogo = !!config?.customLogo;
+        const desiredWidth = isCustomLogo ? 150 : 300;
+        const desiredHeight = (logoObj.height / logoObj.width) * desiredWidth;
+        
+     
+        let logoX, logoY;
+
+        if (isCustomLogo) {
+          logoX = pageWidth - desiredWidth - 50;
+          logoY = 30;
+        } else {
+          logoX = pageWidth - desiredWidth + 10; 
+          logoY = -10;
+        }
+
+       
+        doc.addImage(logoObj.data, 'PNG', logoX, logoY, desiredWidth, desiredHeight);
+      }
 
       const margin = 240;
-      // Obliczamy dostępne miejsce
-      const availableWidth = pageWidth - (margin * 3); // margines lewy, srodek, prawy
+      const availableWidth = pageWidth - (margin * 3);
       const boxWidth = availableWidth / 2;
       
       const ratio1 = canvas1.height / canvas1.width;
@@ -229,18 +271,17 @@ export function usePdfGenerator() {
       const boxHeight1 = boxWidth * ratio1;
       const boxHeight2 = boxWidth * ratio2;
       
-      // Centrowanie w pionie względem wyższego elementu
       const maxHeight = Math.max(boxHeight1, boxHeight2);
       const yPos = (pageHeight - maxHeight) / 2;
 
-      // Wrzucamy obrazy czapek
       const isSmallScreen = window.innerWidth <= 768;
+      // Używamy config przekazanego w argumencie
       const hasPompon = config?.pompons?.show;
 
       if(isSmallScreen){
         if(!hasPompon){
-        doc.addImage(imgData1, 'JPEG', margin + 60, yPos - 200, boxWidth, boxHeight1);
-        doc.addImage(imgData2, 'JPEG', margin + 810, yPos + 170, boxWidth, boxHeight2);
+          doc.addImage(imgData1, 'JPEG', margin + 60, yPos - 200, boxWidth, boxHeight1);
+          doc.addImage(imgData2, 'JPEG', margin + 810, yPos + 170, boxWidth, boxHeight2);
         }
         else{
           doc.addImage(imgData1, 'JPEG', margin + 60, yPos - 200, boxWidth, boxHeight1);
@@ -249,20 +290,17 @@ export function usePdfGenerator() {
       }
       else{
         if(!hasPompon){
-        doc.addImage(imgData1, 'JPEG', margin + 100, yPos - 400, boxWidth, boxHeight1);
-        doc.addImage(imgData2, 'JPEG', margin + 810, yPos + 370, boxWidth, boxHeight2);
+          doc.addImage(imgData1, 'JPEG', margin + 100, yPos - 400, boxWidth, boxHeight1);
+          doc.addImage(imgData2, 'JPEG', margin + 810, yPos + 370, boxWidth, boxHeight2);
         }
         else{
           doc.addImage(imgData1, 'JPEG', margin + 100, yPos - 400, boxWidth, boxHeight1);
-        doc.addImage(imgData2, 'JPEG', margin + 810, yPos + 230, boxWidth, boxHeight2);
+          doc.addImage(imgData2, 'JPEG', margin + 810, yPos + 230, boxWidth, boxHeight2);
         }
       }
-    
 
-      // Stopka
       doc.setFontSize(12);
       doc.setTextColor(31, 41, 55); 
-      
       doc.setFontSize(10);
       doc.setTextColor(107, 114, 128); 
 
