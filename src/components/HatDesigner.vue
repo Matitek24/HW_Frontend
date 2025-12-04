@@ -37,7 +37,10 @@
             class="czapka flat-layout" 
             :class="{ 'is-active': activeView === 'flat' }"
           > 
+          <div class="hat-label mb-2">WIDOK PŁASKI</div>
             <HatFlat :config="hatConfig" :patternsDict="dictionaryData.patterns" class="czapka2"/>
+            
+           
         </div>
     
         <div 
@@ -45,7 +48,10 @@
             class="czapka front-layout"
             :class="{ 'is-active': activeView === 'front' }"
           >
+          <div class="hat-label mb-2">WIDOK PRZÓD CZAPKI</div>
             <HatFront :config="hatConfig" :show-pompon="hatConfig.pompons.show" :patternsDict="dictionaryData.patterns" class="czapka2"/>
+            
+          
         </div>
 
       </div>
@@ -203,6 +209,49 @@ onMounted(async () => {
   </script>
   
   <style>
+  /* --- UKŁAD KONTENERÓW CZAPEK --- */
+.flat-layout, 
+.front-layout {
+  /* To jest KLUCZOWE: ustawia dzieci (czapkę i napis) w pionie */
+  flex-direction: column !important; 
+  align-items: center; /* Centruje w poziomie */
+  justify-content: center; /* Centruje w pionie (opcjonalnie) */
+}
+
+/* Jeśli wcześniej miałeś display: block na front-layout, zmień na flex dla spójności */
+.front-layout {
+  display: flex; 
+}
+
+/* --- STYL NAPISU --- */
+.hat-label {
+  margin-top: 15px; /* Odstęp od czapki */
+  width: 100%;
+  /* Wygląd */
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #6b7280; /* Szary kolor tekstu */
+  
+  /* Tło 'badge' (opcjonalne - jak wolisz sam tekst to usuń background i border) */
+  background: rgba(255, 255, 255, 0.5);
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+/* --- POPRAWKA DLA MOBILE --- */
+@media (max-width: 600px) {
+  /* Upewniamy się, że na mobile też jest kolumna, gdy widoczny */
+  .flat-layout.is-active,
+  .front-layout.is-active {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+}
+
   .flat-layout {
   display: flex;
   justify-content: center;
@@ -314,7 +363,7 @@ onMounted(async () => {
   flex-wrap: wrap;        
   gap: 30px;              
   justify-content: center; 
-  padding-top: 100px;     
+  padding-top: 60px;     
 }
 
 .fade-in-content {
@@ -344,7 +393,7 @@ onMounted(async () => {
   padding-top:80px !important;
  }
  .content-layout {
-   padding-top: 0px; 
+   padding-top: 80px; 
    gap: 10px; 
    margin-bottom: 0px; 
    transition: margin-bottom 0.3s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);

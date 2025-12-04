@@ -226,7 +226,7 @@
           </div>
 
           <div class="expanded-column">
-            <h3 class="column-title">Kolory Bazy</h3>
+            <h3 class="column-title">Kolory Czapki</h3>
             <div class="color-list-rows">
               <div class="color-row-item">
                 <span class="label-text">Góra</span>
@@ -957,7 +957,6 @@ const bottomPatterns = computed(() =>
     width: 50px;
   }
 }
-/* --- MOBILE I TABLETY (poniżej 768px) --- */
 
 
 </style>
