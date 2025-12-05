@@ -23,7 +23,7 @@ export function usePdfGenerator() {
         ctx.drawImage(img, 0, 0);
         // Zwracamy obiekt z danymi i wymiarami
         resolve({
-            data: canvas.toDataURL('image/png'),
+            data: canvas.toDataURL('image/png',1),
             width: img.width,
             height: img.height
         });
@@ -85,8 +85,8 @@ export function usePdfGenerator() {
           /* Pompon - resetujemy skalowanie mobile */
           #${elementId} .pompon {
             right: auto !important;
-            transform: scale(1.33) !important;
-            right: 68px !important;
+            transform: scale(1.36) !important;
+            right: 72px !important;
             top: 12px !important;
             position: relative !important;
           }
@@ -203,8 +203,6 @@ export function usePdfGenerator() {
       console.log("📸 Renderowanie czapek...");
       const logoUrl = config?.customLogo || defaultLogo;
       
-      // --- POPRAWKA TUTAJ ---
-      // 1. Dodaliśmy 'logoObj' do tablicy po lewej stronie
       const [canvas1, canvas2, bgImage, logoObj] = await Promise.all([
         html2canvas(element1, {
           ...options,
@@ -233,14 +231,11 @@ export function usePdfGenerator() {
 
       console.log("🖼️ Dodawanie tła...");
       
-      // --- POPRAWKA TUTAJ ---
-      // bgImage to teraz obiekt {data, width, height}, więc musimy użyć bgImage.data
+
       if (bgImage) {
           doc.addImage(bgImage.data, 'JPEG', 0, 0, 2000, 1100);
       }
 
-      // --- POPRAWKA LOGO ---
-      // Teraz logoObj istnieje, więc ten IF zadziała
       if (logoObj) {
         const isCustomLogo = !!config?.customLogo;
         const desiredWidth = isCustomLogo ? 150 : 300;
@@ -285,7 +280,7 @@ export function usePdfGenerator() {
         }
         else{
           doc.addImage(imgData1, 'JPEG', margin + 60, yPos - 200, boxWidth, boxHeight1);
-          doc.addImage(imgData2, 'JPEG', margin + 810, yPos + 40, boxWidth, boxHeight2);
+          doc.addImage(imgData2, 'JPEG', margin + 810, yPos + 90, boxWidth, boxHeight2);
         }
       }
       else{

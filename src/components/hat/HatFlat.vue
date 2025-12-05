@@ -1,5 +1,5 @@
 <template>
-  <div class="svg-wrapper d-flex align-items-end h-100">
+  <div class="svg-wrapper d-flex align-items-end h-100" color-interpolation-filters="sRGB">
     <svg 
       id="Warstwa_1" 
       data-name="Warstwa 1" 

@@ -376,9 +376,41 @@
 import { ref, computed, watch } from 'vue';
 import ColorPicker from '../components/utils/ColorPicker.vue'; 
 import PatternPicker from '../components/utils/PatternPicker.vue'; 
+const props = defineProps({
+  config: {
+    type: Object,
+    required: true
+  },
+  dictionaries: {
+    type: Object,
+    default: () => ({
+      colors: [],
+      patterns: [],
+      fonts: []
+    })
+  }
+});
 
 const emit = defineEmits(['toggle-expand']); 
-const pomponMode = ref('quad');
+
+const detectInitialMode = () => {
+  const { p1, p2, p3, p4 } = props.config.pompons;
+
+  // Sprawdzamy czy wszystkie 4 kolory są identyczne
+  if (p1 === p2 && p2 === p3 && p3 === p4) {
+    return 'single';
+  }
+
+  // Sprawdzamy układ "na przemian" (1 taki sam jak 3, a 2 taki sam jak 4)
+  if (p1 === p3 && p2 === p4) {
+    return 'dual';
+  }
+
+  // W każdym innym przypadku zakładamy, że to 4 różne kolory
+  return 'quad';
+};
+// 2. Inicjalizacja refa wynikiem tej funkcji
+const pomponMode = ref(detectInitialMode());
 
 watch(pomponMode, (newMode) => {
   
@@ -422,29 +454,15 @@ const updatePomponColor = (index, hex) => {
   }
 };
 
-// Opcje wyboru trybu
 const pomponOptions = [
   { value: 'single', label: '1' },
   { value: 'dual',   label: '2' },
   { value: 'quad',   label: '4' },
 ];
 
-const props = defineProps({
-  config: {
-    type: Object,
-    required: true
-  },
-  dictionaries: {
-    type: Object,
-    default: () => ({
-      colors: [],
-      patterns: [],
-      fonts: []
-    })
-  }
-});
 
 const isExpanded = ref(false);
+
 
 const toggleExpand = () => {
   isExpanded.value = !isExpanded.value;

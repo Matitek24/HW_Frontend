@@ -96,7 +96,7 @@
             <button class="btn position-absolute top-0 end-0 m-3" @click="closeLogoModal">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
-            <h4 class="modal-title fs-5">Logo Klienta</h4>
+            <h4 class="modal-title fs-5">Logo do wizualizacji</h4>
             <p class="modal-subtitle">To logo pojawi się na karcie PDF.</p>
         </div>
 
@@ -106,8 +106,8 @@
                    <img :src="hatConfig.customLogo" alt="Preview" style="max-height: 80px; max-width: 100%;">
                 </div>
                 <br>
-                <button class="btn btn-outline-danger btn-sm" @click="removeLogo">
-                   Usuń Logo
+                <button class="btn btn-danger btn-sm m-3" @click="removeLogo">
+                   Usuń
                 </button>
             </div>
 

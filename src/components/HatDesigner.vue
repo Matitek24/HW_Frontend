@@ -272,7 +272,7 @@ onMounted(async () => {
   
   .svg-wrapper {
     min-width: 300px;
-    width: 546px;
+    width: 516px;
     background: rgba(255, 255, 255, 0.65);
     backdrop-filter: blur(16px) saturate(120%);
     -webkit-backdrop-filter: blur(16px) saturate(120%); 
@@ -393,7 +393,7 @@ onMounted(async () => {
   padding-top:80px !important;
  }
  .content-layout {
-   padding-top: 80px; 
+   padding-top: 140px; 
    gap: 10px; 
    margin-bottom: 0px; 
    transition: margin-bottom 0.3s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -404,7 +404,7 @@ onMounted(async () => {
  }
  .czapka2 .pompon{
   transform: scale(2.2) !important;
-  right: 105px;
+  right: 95px;
   top:20px !important;
  }
 
