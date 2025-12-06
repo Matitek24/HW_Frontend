@@ -127,6 +127,10 @@ export function usePdfGenerator() {
         // 2. Teraz modyfikujemy sam element
         const clonedElement = clonedDoc.getElementById(elementId);
         if (clonedElement) {
+          const labels = clonedElement.querySelectorAll('.hat-label');
+          labels.forEach(label => {
+             label.style.display = 'none';
+          });
           // Usuwamy style kontenera (cienie, tła, radiusy)
           clonedElement.style.background = 'transparent';
           clonedElement.style.backgroundColor = 'transparent';

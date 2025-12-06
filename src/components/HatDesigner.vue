@@ -37,7 +37,7 @@
             class="czapka flat-layout" 
             :class="{ 'is-active': activeView === 'flat' }"
           > 
-          <!-- <div class="hat-label mb-2">WIDOK PŁASKI</div> -->
+          <div class="hat-label mb-2">WIDOK PŁASKI</div>
             <HatFlat :config="hatConfig" :patternsDict="dictionaryData.patterns" class="czapka2"/>
             
            
@@ -48,7 +48,7 @@
             class="czapka front-layout"
             :class="{ 'is-active': activeView === 'front' }"
           >
-          <!-- <div class="hat-label mb-2">WIDOK PRZÓD CZAPKI</div> -->
+          <div class="hat-label mb-2">WIDOK PRZÓD CZAPKI</div>
             <HatFront :config="hatConfig" :show-pompon="hatConfig.pompons.show" :patternsDict="dictionaryData.patterns" class="czapka2"/>
             
           
@@ -285,7 +285,8 @@ onMounted(async () => {
   }
   
   .svg-wrapper:hover {
-    transform: translateY(-4px);
+    transform: translateY(-3px);
+    cursor: pointer;
     background: rgba(255, 255, 255, 0.75); 
     box-shadow:
       0 12px 30px -8px rgba(0, 0, 0, 0.1),
