@@ -73,9 +73,10 @@ const updatePosition = () => {
   // Jeśli to desktop, nie obliczamy pozycji JS (używamy CSS)
   if (!isMobile.value || !pickerTrigger.value || !isOpen.value) return;
 
+ 
   const rect = pickerTrigger.value.getBoundingClientRect();
   const dropdownWidth = 240; 
-  const dropdownHeight = 200; 
+    const dropdownHeight = 300;
   
   let left = rect.left + (rect.width / 2) - (dropdownWidth / 2);
   let top = rect.top - dropdownHeight - 10; 
@@ -205,4 +206,15 @@ onUnmounted(() => {
 
 .fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
+.color-dropdown-grid { 
+  display: grid; 
+  grid-template-columns: repeat(5, 1fr); 
+  gap: 6px; 
+  
+  /* --- DODANE/ZMIENIONE ELEMENTY --- */
+  max-height: 280px; /* Ustawia maksymalną wysokość, np. na 180px */
+  overflow-y: auto;  /* Dodaje pionowy pasek przewijania */
+  padding-right: 8px; /* Dodatkowy padding, by pasek przewijania nie nachodził na kolory */
+  /* ---------------------------------- */
+}
 </style>
