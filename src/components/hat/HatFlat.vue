@@ -125,15 +125,13 @@ const props = defineProps({
   }
 });
 
-const finalTextPosition = computed(() => {
-  // Zaktualizowana bazowa pozycja Y dla nowego SVG (środek geometryczny strefy tekstu)
-  // Wcześniej było 367, teraz skarpetka jest trochę inna, celujemy w okolicę środka "Middle"
-  // y=284 + (228/2) = ~398
-  const baseY = 398; 
-  
-  const offset = props.config.text.offsetY || 0;
+const FLAT_CENTER_Y = 398;
 
-  return baseY + offset * 1.6;
+const finalTextPosition = computed(() => {
+  const userOffset = props.config.text.offsetY || 0;
+  
+  // Po prostu baza + przesunięcie z suwaka. Żadnego mnożenia przez font size!
+  return FLAT_CENTER_Y + userOffset;
 });
 
 const topPatternSvg = computed(() => {

@@ -105,10 +105,10 @@
          <g clip-path="url(#maska-srodek)">
         <g clip-path="url(#clippath3)">
           <text 
-            :dy="finalTextPosition"
+            :dy="finalTextProps.dy"
             :font-family="config.text.font" 
             font-weight="bold" 
-            :font-size="config.text.fontSize * 0.85" 
+            :font-size="finalTextProps.fontSize" 
             :fill="config.text.color"
             text-anchor="middle" 
             letter-spacing="2"
@@ -164,26 +164,26 @@ const mainPatternSvg = computed(() => {
 });
 
 // HatFront.vue / HatThumbnail.vue
+const FLAT_HEIGHT = 79.5;
+const HAT_3D_HEIGHT = 114.74;
 
-const finalTextPosition = computed(() => {
-  const fontSize = props.config.text.fontSize;
-  
-  let stala;
-  
-  if(fontSize >= 100){
-    stala = 0.74;
-  }
-  else if(fontSize >= 50 && fontSize < 100){
-    stala = 0.73;
-  }
-  else{
-    stala = 0.70;
-  }
-  const coefficient = stala + (100 - fontSize) * 0.0004;
-  const baseOffset = (fontSize * coefficient) - 33;
-  const manualOffset = (props.config.text.offsetY || 0) * 1.15;
-  
-  return baseOffset + manualOffset;
+const SCALE_FACTOR = FLAT_HEIGHT / HAT_3D_HEIGHT; 
+
+const CENTER_FROM_BOTTOM = 18; 
+
+const finalTextProps = computed(() => {
+  const userFontSize = props.config.text.fontSize || 40;
+  const userOffset = props.config.text.offsetY || 0;
+
+
+  const finalFontSize = userFontSize * SCALE_FACTOR;
+  const scaledUserOffset = userOffset * SCALE_FACTOR;
+  const fontCenteringCorrection = finalFontSize * 0.35;
+
+  return {
+    fontSize: finalFontSize,
+    dy: CENTER_FROM_BOTTOM + scaledUserOffset + fontCenteringCorrection
+  };
 });
 // Funkcja dla górnego wzoru
 const applyTopWarp = async () => {

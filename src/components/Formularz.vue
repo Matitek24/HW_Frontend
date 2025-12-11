@@ -213,7 +213,7 @@
                 <input 
                   type="range" 
                   v-model.number="config.text.fontSize" 
-                  min="30" max="200" step="5"
+                  min="30" max="100" step="5"
                   class="slider compact-slider"
                 />
               </div>
