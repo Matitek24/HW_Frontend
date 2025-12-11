@@ -3,7 +3,7 @@
     id="pompon_svg" 
     data-name="Pompon" 
     xmlns="http://www.w3.org/2000/svg" 
-    viewBox="213 0 934.77 259.81"
+    viewBox="233 0 904.77 259.81"
     :style="pomponStyles"
   >
     <g v-html="POMPON_SVG"></g>

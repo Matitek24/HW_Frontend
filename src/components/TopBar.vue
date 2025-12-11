@@ -4,7 +4,7 @@
     <div class="model-tag-container">
       <div class="tag-ribbon">
         <span class="tag-label">MODEL</span>
-        <span class="tag-value">#HEADWEAR</span>
+        <span class="tag-value">#M38-H</span>
       </div>
     </div>
 
@@ -24,11 +24,11 @@
           <span>3D</span>
         </span>
       </button>
-      <button 
+        <button 
         class="glass-btn with-text me-3" 
         :class="{ 'disabled-btn': isDownloading }"
         :disabled="isDownloading"
-        @click="$emit('download', 'pdf')"
+        @click="handleDownloadClick" 
       >
         <span class="btn-text">
           {{ isDownloading ? 'Pobieram...' : 'Pobierz wizualizację' }}
@@ -201,12 +201,40 @@
       </div>
     </div>
   </Transition>
+  <Transition name="fade">
+    <div v-if="isDownloadModalOpen" class="modal-overlay" style="z-index: 1000;">
+      <div class="glass-modal-content container p-5 text-center" style="max-width: 450px;">
+        
+        <div class="mb-4 d-flex justify-content-center">
+          <div class="p-3 rounded-circle bg-light shadow-sm">
+             <svg v-if="isDownloading" class="animate-spin text-dark" width="48" height="48" viewBox="0 0 24 24" fill="#ffffff" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
+             
+             <svg v-else class="text-success" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          </div>
+        </div>
 
+        <h3 class="modal-title mb-2">
+          {{ isDownloading ? 'Generowanie pliku...' : 'Gotowe!' }}
+        </h3>
+        
+        <p class="modal-subtitle fs-6 px-3">
+          {{ isDownloading 
+            ? 'Dziękujemy za pobranie projektu. Proszę czekać, przygotowujemy Twoją wizualizację PDF.' 
+            : 'Plik został pobrany. Dziękujemy!' 
+          }}
+        </p>
+
+        <button v-if="!isDownloading" class="action-btn-primary mt-4 w-100 justify-content-center" @click="isDownloadModalOpen = false">
+          Zamknij
+        </button>
+      </div>
+    </div>
+  </Transition>
   
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue';
+import { ref, reactive, computed, watch } from 'vue';
 import { projectAPI } from '../utils/axios.js'; 
 import { resizeImage } from '../utils/imageUtils.js';
 
@@ -219,12 +247,11 @@ const props = defineProps({
 });
 const emit = defineEmits(['download', 'toggle-view']); 
 
-// Stan UI
-const isModalOpen = ref(false);      // Modal wysyłki
-const isLogoModalOpen = ref(false);  // NOWE: Modal logo
+const isModalOpen = ref(false);     
+const isLogoModalOpen = ref(false);  
 const isSubmitting = ref(false);
+const isDownloadModalOpen = ref(false);
 
-// Dane do formularza (tylko dla nowego projektu)
 const formData = reactive({
   imieNazwisko: '',
   email: '',
@@ -233,6 +260,23 @@ const formData = reactive({
   ilosc: '',
   uwagi: '',
   rodo: false
+});
+
+const handleDownloadClick = () => {
+
+  isDownloadModalOpen.value = true;
+
+  emit('download', 'pdf');
+};
+
+watch(() => props.isDownloading, (newValue, oldValue) => {
+  // Jeśli wcześniej pobierał (true), a teraz skończył (false) -> zamknij modal
+  if (oldValue === true && newValue === false) {
+    // Opcjonalnie: małe opóźnienie, żeby użytkownik zdążył przeczytać komunikat
+    setTimeout(() => {
+      isDownloadModalOpen.value = false;
+    }, 1000);
+  }
 });
 
 // --- LOGIKA STANU (COMPUTED) ---

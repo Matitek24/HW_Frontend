@@ -5,100 +5,96 @@
       data-name="Warstwa 1" 
       xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink" 
-      viewBox="0 0 1144.47 714.48">
-    >
+      viewBox="0 0 1316.28 800.63">
+      
       <defs>
-        <clipPath id="clippath2">
-          <path class="cls-2"
-          d="M1144.45,189.53c-.95-5.3-30.61-167.61-95.19-167.61s-93.4,155.8-95.5,167.09c-2.07-11.29-31.82-167.09-95.1-167.09s-94.3,160.57-95.57,167.51c-1.25-6.94-30.94-167.51-95.17-167.51s-93.66,157.18-95.52,167.24c-1.84-10.06-31.57-167.24-95.12-167.24s-94.63,162.31-95.59,167.61h-.04c-.95-5.3-30.61-167.61-95.19-167.61s-94.63,162.31-95.59,167.61h-.05c-.95-5.3-30.61-167.61-95.19-167.61S.99,184.23.02,189.53h-.02v477.44h1144.47V189.53h-.02Z" />
+        <clipPath id="clippath-new">
+          <path class="cls-2" d="M1314.34,192.86c-1.09-6.07-35.14-192-109.27-192s-107.21,178.47-109.62,191.4c-2.38-12.94-36.53-191.4-109.17-191.4s-108.25,183.92-109.71,191.88c-1.44-7.95-35.51-191.88-109.25-191.88s-107.52,180.05-109.65,191.57c-2.11-11.52-36.24-191.57-109.2-191.57s-108.63,185.92-109.73,192h-.04c-1.09-6.07-35.14-192-109.27-192s-108.63,185.92-109.73,192h-.06C218.53,186.79,184.48.87,110.35.87S1.72,186.79.61,192.86h-.03v546.9h1313.78V192.86h-.03Z"/>
         </clipPath>
-        <clipPath id="prostokat" transform="translate(0, -360)">
-          <path d="M1144.45,171.3c-.95-4.95-30.61-156.45-95.19-156.45s-93.4,145.43-95.5,155.97c-2.07-10.54-31.82-155.97-95.1-155.97s-94.3,149.88-95.57,156.36c-1.25-6.48-30.94-156.36-95.17-156.36s-93.66,146.72-95.52,156.11c-1.84-9.39-31.57-156.11-95.12-156.11s-94.63,151.5-95.59,156.45h-.04c-.95-4.95-30.61-156.45-95.19-156.45s-94.63,151.5-95.59,156.45h-.05c-.95-4.95-30.61-156.45-95.19-156.45S.99,166.35.02,171.3h-.02v445.65h1144.47V171.3h-.02Z" />
+
+        <clipPath id="prostokat-top" transform="translate(0, -360)">
+             <path d="M1314.34,192.86c-1.09-6.07-35.14-192-109.27-192s-107.21,178.47-109.62,191.4c-2.38-12.94-36.53-191.4-109.17-191.4s-108.25,183.92-109.71,191.88c-1.44-7.95-35.51-191.88-109.25-191.88s-107.52,180.05-109.65,191.57c-2.11-11.52-36.24-191.57-109.2-191.57s-108.63,185.92-109.73,192h-.04c-1.09-6.07-35.14-192-109.27-192s-108.63,185.92-109.73,192h-.06C218.53,186.79,184.48.87,110.35.87S1.72,186.79.61,192.86h-.03v546.9h1313.78V192.86h-.03Z"/>
         </clipPath>
-        <clipPath id="prostokat2" transform="translate(0, 93) rotate(180, 572, 357) ">
-          <rect class="cls-2" x="1.66" y="6.01" width="1142.81" height="544.33" />
+
+        <clipPath id="prostokat2" transform="translate(0, 93) rotate(180, 658, 370)">
+          <rect class="cls-2" x="0" y="0" width="1316.4" height="740" />
         </clipPath>
-        <clipPath id="prostokat3" transform="translate(0, -66) ">
-          <rect class="cls-2" x="1.66" y="6.01" width="1142.81" height="544.33" />
+        <clipPath id="prostokat3" transform="translate(0, -66)">
+          <rect class="cls-2" x="0" y="0" width="1316.4" height="740" />
         </clipPath>
       </defs>
      
-      <g class="cls-4">
-        <rect :fill="config.base.bottom" class="cls-5" x="1.66" y="482.59" width="1142.81" height="231.89" />
-        <rect :fill="config.base.top" class="cls-3"x="1.85" width="1142.81" height="307.04" />
-        <rect :fill="config.base.middle" class="cls-1" x="1.66" y="256.81" width="1142.81" height="225.78" />
-        <rect class="cls-2" x="1.66" y="6.01" width="1142.81" height="544.33" />
+      <g class="main-clipped">
+        
+        <rect :fill="config.base.bottom" class="cls-5" x="0.58" y="512.74" width="1313.78" height="227.89" />
+        
+        <rect :fill="config.base.top" class="cls-3" x="-0.12" y="-1.57" width="1316.4" height="286.07" />
+        
+        <rect :fill="config.base.middle" class="cls-1" x="-0.12" y="284.49" width="1316.4" height="228.85" />
+        
+        <rect class="cls-2" x="0.58" y="0.87" width="1313.78" height="283.99" />
   
-    <g>
-      <g>
-        <rect class="pasek" x="50.54" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="23.07" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="79.12" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="107.7" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="136.27" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="164.85" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="193.42" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="224.93" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="253.51" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="282.08" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="310.66" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="339.24" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="367.81" y="482.59" width="2.75" height="231.26"/>
-      </g>
-      <g>
-        <rect class="pasek" x="396.02" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="424.6" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="453.17" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="481.75" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="510.33" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="538.9" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="570.41" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="598.99" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="627.56" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="656.14" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="684.71" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="713.29" y="482.59" width="2.75" height="231.26"/>
-      </g>
-      <g>
-        <rect class="pasek" x="743.15" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="771.72" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="800.3" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="828.88" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="857.45" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="886.03" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="917.54" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="946.11" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="974.69" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="1003.26" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="1031.84" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="1060.42" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="1090.09" y="482.59" width="2.75" height="231.26"/>
-        <rect class="pasek" x="1120.32" y="482.59" width="2.75" height="231.26"/>
-      </g>
-    </g>
+        <g>
+           <rect class="pasek" x="25.2" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="56.78" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="89.63" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="122.49" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="155.34" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="188.19" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="221.04" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="257.26" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="290.11" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="322.96" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="355.81" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="388.66" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="421.52" y="512.74" width="3.16" height="227.89"/>
+
+           <rect class="pasek" x="453.95" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="486.8" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="519.65" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="552.5" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="585.35" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="618.2" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="654.42" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="687.27" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="720.12" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="752.98" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="785.83" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="818.68" y="512.74" width="3.16" height="227.89"/>
+
+           <rect class="pasek" x="853" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="885.85" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="918.7" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="951.56" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="984.41" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="1017.26" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="1053.48" y="512.74" width="2" height="227.89"/>
+           <rect class="pasek" x="1086.33" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="1119.18" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="1152.03" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="1184.88" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="1217.73" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="1251.85" y="512.74" width="3.16" height="227.89"/>
+           <rect class="pasek" x="1286.6" y="512.74" width="3.16" height="227.89"/>
+        </g>
       </g>
     
-      <!-- Wzór górny -->
-      <g class="prostokat">
-        <g class="fls-2" :fill="config.pattern.top">
-          <g v-html="topPatternSvg" transform="translate(0, 80)"></g>
+      <g class="prostokat-clip">
+        <g class="main-clipped" :fill="config.pattern.top">
+          <g v-html="topPatternSvg" transform="translate(0, 40) scale(2)"></g>
         </g>
       </g>
 
-      <!-- Główny wzór -->
-      
-      <g clip-path="url(#clippath2)">
-        <g :fill="config.pattern.main" transform="translate(-10, 257) scale(1.04, 1.05)">
+      <g class="main-clipped">
+        <g :fill="config.pattern.main" transform="translate(0, 283) scale(2.01)">
           <g v-html="mainPatternSvg"></g>
         </g>
       </g>
       
-
-      <!-- Tekst -->
-     <g clip-path="url(#prostokat3)">
+      <g clip-path="url(#prostokat3)">
       <g clip-path="url(#prostokat2)">
       <text 
-        :x="572.23" 
+        :x="658.14" 
         :y="finalTextPosition"
         :fill="config.text.color" 
         :font-family="config.text.font" 
@@ -130,46 +126,39 @@ const props = defineProps({
 });
 
 const finalTextPosition = computed(() => {
-  // 1. Twoja bazowa pozycja ze statycznego kodu
-  const baseY = 367.69; 
+  // Zaktualizowana bazowa pozycja Y dla nowego SVG (środek geometryczny strefy tekstu)
+  // Wcześniej było 367, teraz skarpetka jest trochę inna, celujemy w okolicę środka "Middle"
+  // y=284 + (228/2) = ~398
+  const baseY = 398; 
   
-  // 2. Przesunięcie z suwaka (zabezpieczone na 0)
   const offset = props.config.text.offsetY || 0;
 
-  // 3. Suma
   return baseY + offset * 1.6;
 });
 
 const topPatternSvg = computed(() => {
   const selectedId = props.config.patterns.top;
-  
   if (!selectedId || selectedId === 'none') return null;
-
-  // 2. Szukamy tego ID w słowniku z bazy
   const patternObj = props.patternsDict.find(p => p.id === selectedId);
-  
-  // 3. Zwracamy kod SVG (string) lub null
   return patternObj ? patternObj.kodSvg : null;
 });
 
-// LOGIKA DLA WZORU DOLNEGO
 const mainPatternSvg = computed(() => {
   const selectedId = props.config.patterns.bottom;
   if (!selectedId || selectedId === 'none') return null;
-
   const patternObj = props.patternsDict.find(p => p.id === selectedId);
   return patternObj ? patternObj.kodSvg : null;
 });
 </script>
 
 <style scoped>
-
-.fls-2 {
-  clip-path: url(#clippath2);
+/* Główna klasa przycinająca do kształtu skarpety */
+.main-clipped {
+  clip-path: url(#clippath-new);
 }
 
-.prostokat {
-  clip-path: url(#prostokat);
+.prostokat-clip {
+  clip-path: url(#prostokat-top);
 }
 
 .pasek {
@@ -179,8 +168,7 @@ const mainPatternSvg = computed(() => {
 .cls-2 {
   fill: none;
 }
-
-.cls-4 {
-  clip-path: url(#clippath2);
+.svg-wrapper svg {
+  shape-rendering: crispEdges; 
 }
 </style>

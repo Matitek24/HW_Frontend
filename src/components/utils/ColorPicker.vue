@@ -211,10 +211,10 @@ onUnmounted(() => {
   grid-template-columns: repeat(5, 1fr); 
   gap: 6px; 
   
-  /* --- DODANE/ZMIENIONE ELEMENTY --- */
-  max-height: 280px; /* Ustawia maksymalną wysokość, np. na 180px */
-  overflow-y: auto;  /* Dodaje pionowy pasek przewijania */
-  padding-right: 8px; /* Dodatkowy padding, by pasek przewijania nie nachodził na kolory */
-  /* ---------------------------------- */
+  
+  max-height: 280px;
+  overflow-y: auto; 
+  padding-right: 8px; 
+
 }
 </style>
