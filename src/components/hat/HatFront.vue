@@ -1,12 +1,12 @@
 <template>
     <div class="svg-wrapper position-relative" style="padding-top:130px;">
       
-      <div v-if="showPompon" class="pompon" style="position:absolute;  z-index:1; top:70px; transform: scale(3)">
+      <div v-if="showPompon" class="pompon" style="position:absolute;  z-index:1; top:65px; transform: scale(3)">
         <HatPompon :config="config" />
       </div>
   
       <svg 
-        style="transform: rotate(-0.5deg); z-index:-5; transform-origin: center;"
+        style="transform: rotate(-0.4deg); z-index:-5; transform-origin: center;"
         id="Warstwa_1_Obrazek_2" 
         ref="svgRef"
         data-name="Warstwa 1" 
@@ -173,10 +173,10 @@ const CENTER_FROM_BOTTOM = 18;
 
 const finalTextProps = computed(() => {
   const userFontSize = props.config.text.fontSize || 40;
-  const userOffset = props.config.text.offsetY || 0;
+  const userOffset = -props.config.text.offsetY || 0;
 
 
-  const finalFontSize = userFontSize * SCALE_FACTOR;
+  const finalFontSize = userFontSize * SCALE_FACTOR * 1.03;
   const scaledUserOffset = userOffset * SCALE_FACTOR;
   const fontCenteringCorrection = finalFontSize * 0.35;
 

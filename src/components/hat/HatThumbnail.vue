@@ -22,11 +22,11 @@
         <rect :fill="config.base.top" x="0" y="0" width="1144" height="206" />
 
 
-        <g v-if="mainPatternSvg" :fill="config.pattern.main" transform="translate(-20, 203) scale(1.1)">
+        <g v-if="mainPatternSvg" :fill="config.pattern.main" transform="translate(-20, 203) scale(2)">
            <g v-html="mainPatternSvg"></g>
         </g>
 
-        <g v-if="topPatternSvg" :fill="config.pattern.top" transform="translate(0, 50)">
+        <g v-if="topPatternSvg" :fill="config.pattern.top" transform="translate(70, 50) scale(1.5)">
            <g v-html="topPatternSvg"></g>
         </g>
 
@@ -82,8 +82,8 @@ const mainPatternSvg = computed(() => {
 // --- LOGIKA POZYCJI TEKSTU ---
 const finalTextPosition = computed(() => {
   const baseY = 330.69; 
-  const offset = props.config.text.offsetY || 0;
-  return baseY + offset * 1.5;
+  const offset = -props.config.text.offsetY || 0;
+  return baseY + offset;
 });
 </script>
 

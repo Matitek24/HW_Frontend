@@ -6,6 +6,27 @@ import logo from "../assets/Headwear_COLOR_CMYK_logo-1.png.webp";
 
 export function useProductionCard() {
 
+  // Funkcja pomocnicza z logowaniem błędów
+  const getPatternName = (id, patternsDict) => {
+    if (!id) return 'BRAK';
+    
+    // Zabezpieczenie: jeśli słownik nie dotrze
+    if (!patternsDict || !Array.isArray(patternsDict)) {
+        console.warn(`Brak słownika wzorów dla ID: ${id}`);
+        return `ID: ${id}`; 
+    }
+    
+    // Szukamy wzoru (używamy == dla bezpieczeństwa typów string/number)
+    const pattern = patternsDict.find(p => p.id == id);
+
+    if (pattern) {
+        // TU BYŁ BŁĄD: Sprawdzamy 'name' ORAZ 'nazwa' (zależnie od tego co zwraca API)
+        return pattern.name || pattern.nazwa || `ID: ${id}`;
+    }
+
+    return `ID: ${id} (Nie znaleziono)`;
+  };
+
   const loadImage = (src) => {
     return new Promise((resolve) => {
       const img = new Image();
@@ -15,8 +36,11 @@ export function useProductionCard() {
     });
   };
 
-  // ZMIANA: Funkcja przyjmuje teraz drugi argument: elementDoZdjecia
-  const generateProductionCard = async (project, hatDomElement) => {
+  const generateProductionCard = async (project, hatDomElement, patternsDict) => {
+    // Debug: Zobacz co przychodzi w konsoli
+    console.log("Generowanie PDF dla projektu:", project.id);
+    console.log("Dostępne wzory:", patternsDict);
+
     const doc = new jsPDF();
 
     // 1. Fonty
@@ -24,12 +48,12 @@ export function useProductionCard() {
     doc.addFont("Roboto-Regular.ttf", "Roboto", "normal");
     doc.setFont("Roboto");
 
-    // 2. GENEROWANIE OBRAZKA Z DUŻEGO "GHOSTA"
+    // 2. GENEROWANIE OBRAZKA Z "GHOSTA"
     let hatImage = null;
     if (hatDomElement) {
       try {
         const canvas = await html2canvas(hatDomElement, {
-          scale: 2, // 2x to aż nadto dla 800px źródła, będzie żyleta
+          scale: 2,
           backgroundColor: null,
           logging: false
         });
@@ -40,8 +64,6 @@ export function useProductionCard() {
     }
 
     // 3. UKŁAD STRONY
-    
-    // --- Lewa Strona: DANE TEKSTOWE ---
     doc.setFontSize(18);
     doc.text("KARTA PRODUKCYJNA", 14, 20);
     
@@ -50,15 +72,11 @@ export function useProductionCard() {
     doc.text(`Data: ${project.createdAt}`, 14, 35); 
     doc.text(`Status: ${project.status}`, 14, 40);
 
-    // --- Prawa Strona: DUŻA MINIATURKA (Wysoka jakość) ---
     if (hatImage) {
-       // x=130, y=10, szer=70, wys=50 (Dostosuj proporcje do HatThumbnail)
-       // Dzięki temu, że źródło ma 800px, tutaj skalujemy w dół = super jakość
        doc.addImage(hatImage, 'PNG', 130, 10, 70, 50);
     }
 
     // --- TABELA 1: KLIENT ---
-    // Przesuwamy startY niżej, np. 65, żeby nie nachodziło na obrazek
     autoTable(doc, {
         startY: 65, 
         styles: { font: "Roboto", fontStyle: "normal" },
@@ -74,20 +92,35 @@ export function useProductionCard() {
 
     // --- TABELA 2: SPECYFIKACJA ---
     const conf = project.config;
+
+    // POPRAWKA: Obliczanie rozmiaru czcionki (zabezpieczenie przed NaNpx)
+    let fontSizeDisplay = '-';
+    if (conf.text?.fontSize) {
+        // Dzielenie przez 8 daje mm (zgodnie z poprzednią rozmową: 160 / 8 = 20mm)
+        fontSizeDisplay = (conf.text.fontSize / 8).toFixed(1) + ' px'; 
+    }
+
+    let YPos = '0 px';
+    if(conf.text?.offsetY !== undefined) {
+        // Tutaj też dzielimy przez 8, żeby zachować skalę milimetrów
+        // Zmieniłem 'config' na 'conf' <- TO BYŁ GŁÓWNY BŁĄD
+        YPos = (conf.text.offsetY / 6).toFixed(1) + ' px';
+    }
     const specsData = [
-      ['Gora - Kolor', conf.base?.top || '-'],
-      ['Srodek - Kolor', conf.base?.middle || '-'],
-      ['Dol - Kolor', conf.base?.bottom || '-'],
-      ['Wzor Gora', conf.patterns?.top ? `ID: ${conf.patterns.top}` : 'BRAK'],
-      ['Wzor Dol', conf.patterns?.bottom ? `ID: ${conf.patterns.bottom}` : 'BRAK'],
-      ['Kolor Wzoru Gora', conf.pattern?.top || '-'],
-      ['Kolor Wzoru Dol', conf.pattern?.main || '-'],
-      ['Rozmiar czcionki', conf.text?.fontSize || '-'],
-      ['Czcionki', conf.text?.font || '-'],
+      ['Góra - Kolor', conf.base?.top || '-'],
+      ['Środek - Kolor', conf.base?.middle || '-'],
+      ['Dół - Kolor', conf.base?.bottom || '-'],
+      // Wywołanie z poprawioną funkcją getPatternName
+      ['Wzór Góra', getPatternName(conf.patterns?.top, patternsDict)],
+      ['Wzór Dół', getPatternName(conf.patterns?.bottom, patternsDict)],
+      ['Kolor Wzoru Góra', conf.pattern?.top || '-'],
+      ['Kolor Wzoru Dół', conf.pattern?.main || '-'],
+      ['Rozmiar czcionki', fontSizeDisplay],
+      ['Czcionka', conf.text?.font || '-'],
       ['Tekst', conf.text?.content || '-'],
       ['Kolor Tekstu', conf.text?.color || '-'],
-      ['Y Tekstu', conf.text?.offsetY || '0'],
-      ['Czy jest pompon', conf.pompons?.show ? 'TAK' : 'NIE']
+      ['Y Tekstu', YPos || '0'],
+      ['Pompon', conf.pompons?.show ? 'TAK' : 'NIE']
     ];
 
     if (conf.pompons?.show) {
@@ -122,23 +155,16 @@ export function useProductionCard() {
 
     // --- STOPKA I LOGO ---
     const logoImg = await loadImage(logo);
-    const pageHeight = doc.internal.pageSize.height;
-    const pageWidth = doc.internal.pageSize.width;
-    
-    // Logo na samym dole na środku (lub po prawej)
     if (logoImg) {
+        const pageHeight = doc.internal.pageSize.height;
+        const pageWidth = doc.internal.pageSize.width;
         const logoWidth = 50;
         const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
-        
-        // Pozycja X: (SzerokośćStrony - SzerokośćLogo) / 2 = Środek
         const x = (pageWidth - logoWidth) / 2;
         const y = pageHeight - logoHeight - 15;
-        
         doc.addImage(logoImg, "PNG", x, y, logoWidth, logoHeight);
     }
     
-    doc.setFontSize(8);
-
     doc.save(`Karta_Produkcyjna_${project.id}.pdf`);
   };
 

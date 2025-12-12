@@ -81,7 +81,7 @@
     
       <g class="prostokat-clip">
         <g class="main-clipped" :fill="config.pattern.top">
-          <g v-html="topPatternSvg" transform="translate(0, 40) scale(2)"></g>
+          <g v-html="topPatternSvg" transform="translate(0, 50) scale(2.04)"></g>
         </g>
       </g>
 
@@ -125,10 +125,10 @@ const props = defineProps({
   }
 });
 
-const FLAT_CENTER_Y = 398;
+const FLAT_CENTER_Y = 395;
 
 const finalTextPosition = computed(() => {
-  const userOffset = props.config.text.offsetY || 0;
+  const userOffset = -props.config.text.offsetY || 0;
   
   // Po prostu baza + przesunięcie z suwaka. Żadnego mnożenia przez font size!
   return FLAT_CENTER_Y + userOffset;

@@ -184,8 +184,8 @@
                             
                             <p class="mb-1 text-sm"><strong>Wzory:</strong></p>
                             <div class="d-flex flex-column text-muted text-sm">
-                              <span>Góra: {{ project.config.patterns.top }}</span>
-                              <span>Dół: {{ project.config.patterns.bottom }}</span>
+                              <span>Góra: {{ getPatternName(project.config.patterns.top) }}</span>
+                              <span>Dół: {{ getPatternName(project.config.patterns.bottom) }}</span>
                             </div>
                           </div>
                         </div>
@@ -337,8 +337,9 @@ const downloadProductionPdf = async (project) => {
         // 3. Znajdujemy nasz ukryty element w DOM
         const ghostElement = document.getElementById('pdf-ghost-container');
 
+
         // 4. Generujemy PDF, przekazując ten ukryty element
-        await generateProductionCard(project, ghostElement);
+        await generateProductionCard(project, ghostElement, patternsDict.value);
 
     } catch (e) {
         console.error("Błąd PDF:", e);
@@ -355,6 +356,16 @@ const checkMobile = () => {
 
 onMounted(() => window.addEventListener('resize', checkMobile));
 onUnmounted(() => window.removeEventListener('resize', checkMobile));
+// Funkcja zamieniająca ID na nazwę wzoru
+const getPatternName = (id) => {
+  if (!id) return 'BRAK'; // Jeśli nie ma ID, zwróć 'BRAK'
+  
+  // Szukamy w załadowanym słowniku patternsDict
+  const pattern = patternsDict.value.find(p => p.id == id);
+  
+  // Jeśli znaleziono, zwróć nazwę (lub nazwa), w przeciwnym razie pokaż samo ID
+  return pattern ? (pattern.name || pattern.nazwa) : `ID: ${id}`;
+};
 
 const sort = (column) => {
   if (currentSort.value === column) {

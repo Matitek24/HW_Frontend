@@ -78,12 +78,14 @@
   const activeView = ref('front');
   const isBarExpanded = ref(false);
 
+  
+ 
   const toggleView = () => {
     activeView.value = activeView.value === 'front' ? 'flat' : 'front';
   };
   // Reaktywny konfig
   const hatConfig = reactive(JSON.parse(JSON.stringify(defaultConfig)));
-  
+
   // Słowniki
   const dictionaryData = ref({
     colors: [],
@@ -394,9 +396,9 @@ onMounted(async () => {
   padding-top:80px !important;
  }
  .content-layout {
-   padding-top: 140px; 
+   padding-top: 0px; 
    gap: 10px; 
-   margin-bottom: 0px; 
+   margin-bottom: 35px; 
    transition: margin-bottom 0.3s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
  }
 

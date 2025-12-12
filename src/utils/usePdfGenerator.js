@@ -87,7 +87,7 @@ export function usePdfGenerator() {
             right: auto !important;
             transform: scale(1.36) !important;
             right: 72px !important;
-            top: 12px !important;
+            top: 18px !important;
             position: relative !important;
           }
           
@@ -111,6 +111,7 @@ export function usePdfGenerator() {
           
           .front-layout {
             display: block !important;
+            transform: rotate(0.4deg) !important;
           }
           
           /* Wyłączamy WSZYSTKIE media queries */
@@ -289,11 +290,11 @@ export function usePdfGenerator() {
       }
       else{
         if(!hasPompon){
-          doc.addImage(imgData1, 'JPEG', margin + 100, yPos - 400, boxWidth, boxHeight1);
+          doc.addImage(imgData1, 'JPEG', margin + 100, yPos - 460, boxWidth, boxHeight1);
           doc.addImage(imgData2, 'JPEG', margin + 810, yPos + 370, boxWidth, boxHeight2);
         }
         else{
-          doc.addImage(imgData1, 'JPEG', margin + 100, yPos - 400, boxWidth, boxHeight1);
+          doc.addImage(imgData1, 'JPEG', margin + 100, yPos - 460, boxWidth, boxHeight1);
           doc.addImage(imgData2, 'JPEG', margin + 810, yPos + 230, boxWidth, boxHeight2);
         }
       }

@@ -209,20 +209,25 @@
             
             <div class="expanded-row">
               <div class="expanded-field half">
-                <label>Rozmiar: {{ config.text.fontSize }}</label>
+                <label>
+                  Rozmiar: {{ (config.text.fontSize / 8) }} px
+              </label>
                 <input 
                   type="range" 
                   v-model.number="config.text.fontSize" 
-                  min="30" max="100" step="5"
+                  min="48" max="152" step="8"
                   class="slider compact-slider"
                 />
               </div>
               <div class="expanded-field half">
-                <label>Pozycja Y: {{ config.text.offsetY || 0 }}</label>
+                <label>
+
+                  Pozycja Y: {{ ((config.text.offsetY / 6)).toFixed(1) }} px
+                </label>
                 <input 
                   type="range" 
                   v-model.number="config.text.offsetY" 
-                  min="-60" max="60" step="2"
+                  min="-60" max="60" step="6"
                   class="slider compact-slider"
                 />
               </div>
@@ -513,7 +518,6 @@ const bottomPatterns = computed(() =>
   background: rgba(255,255,255,0.5);
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 .expanded-column {
   display: flex;
   flex-direction: column;
@@ -1039,7 +1043,6 @@ const bottomPatterns = computed(() =>
     overflow-y: auto;
   }
 
-  /* 1. UKŁAD GRID W WIDOKU ROZSZERZONYM */
   .expanded-grid {
     grid-template-columns: 1fr; /* Jedna kolumna */
     gap: 30px;
@@ -1047,9 +1050,9 @@ const bottomPatterns = computed(() =>
 
   /* 2. WYSOKOŚĆ PANELU PO ROZWINIĘCIU */
   .config-bar-container.expanded .config-bar {
-    padding: 24px 24px 80px 24px; /* Większy padding na dole na scroll */
-    height: 45vh; 
-    max-height: 500px; /* Bezpiecznik, żeby na dużych telefonach nie był za wysoki */
+    padding: 24px 24px 80px 24px; 
+    height: 34vh; 
+    max-height: 500px; 
     
     overflow-y: auto; /* Scrollowanie wewnątrz paska */
     box-shadow: 0 -10px 40px rgba(0,0,0,0.15); /* Mocniejszy cień do góry */
