@@ -267,34 +267,43 @@
       </div>
     </div>
 
+    <Teleport to="body">
     <div 
       id="pdf-ghost-container" 
       style="
         position: fixed; 
-        left: -9999px; 
+        left: -9999px; /* Wyrzucamy daleko poza ekran */
         top: 0; 
-        width: 1200px; /* Szerszy kontener dla HatFlat */
+        width: 1200px; /* Sztywne wymiary dla dobrej jakości */
         height: 800px; 
-        background: transparent; 
-        z-index: -1;
-        display: flex;
+        z-index: -9999;
+        visibility: hidden; /* Ukrywamy przed wzrokiem */
+        display: flex; /* Ale zachowujemy display dla renderowania */
         align-items: center;
         justify-content: center;
       "
     >
-      <div v-if="pdfProjectData" style="width: 100%; height: 100%;">
-        
+      <div 
+        v-if="pdfProjectData" 
+        style="
+          width: 100%; 
+          height: 100%; 
+          visibility: visible; 
+          background: transparent;
+        "
+      >
         <HatFlat 
           :config="pdfProjectData.config" 
           :patternsDict="patternsDict"
           style="width: 100%; height: 100%;"
         />
-
       </div>
     </div>
-    
+  </Teleport>
   </div>
 </template>
+
+
 
 <script setup>
 import { ref, onMounted, computed, watch, onUnmounted } from 'vue';

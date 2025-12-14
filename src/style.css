@@ -1,4 +1,53 @@
 
+/* 1. Arial */
+@font-face {
+  font-family: 'arial';
+  src: url('./assets/fonts/ARIAL.TTF') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 2. Arial Bold (jako osobna rodzina, żeby wymusić ten konkretny plik) */
+@font-face {
+  font-family: 'arialbold';
+  src: url('./assets/fonts/ArialCEMTBlack.woff') format('woff');
+  font-weight: bold;
+  font-style: normal;
+}
+
+
+/* 3. Calibri */
+@font-face {
+  font-family: 'calibri';
+  src: url('./assets/fonts/calibri.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 4. MS Gothic */
+@font-face {
+  font-family: 'gothic';
+  /* Uwaga: Plik ma spacje w nazwie, więc koniecznie w cudzysłowie */
+  src: url('./assets/fonts/MS\ Gothic\ Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 5. Roboto */
+@font-face {
+  font-family: 'roboto';
+  src: url('./assets/fonts/Roboto-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* 6. Tahoma */
+@font-face {
+  font-family: 'tahoma';
+  src: url('./assets/fonts/Tahoma\ Regular\ font.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;

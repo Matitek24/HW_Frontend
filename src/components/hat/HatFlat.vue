@@ -1,39 +1,37 @@
 <template>
   <div class="svg-wrapper d-flex align-items-end h-100" color-interpolation-filters="sRGB">
     <svg 
-      id="Warstwa_1" 
-      data-name="Warstwa 1" 
+      :id="`hat-svg-${uniqueId}`"
       xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink" 
       viewBox="0 0 1316.28 800.63">
       
       <defs>
-        <clipPath id="clippath-new">
+        <clipPath :id="`clippath-new-${uniqueId}`">
           <path class="cls-2" d="M1314.34,192.86c-1.09-6.07-35.14-192-109.27-192s-107.21,178.47-109.62,191.4c-2.38-12.94-36.53-191.4-109.17-191.4s-108.25,183.92-109.71,191.88c-1.44-7.95-35.51-191.88-109.25-191.88s-107.52,180.05-109.65,191.57c-2.11-11.52-36.24-191.57-109.2-191.57s-108.63,185.92-109.73,192h-.04c-1.09-6.07-35.14-192-109.27-192s-108.63,185.92-109.73,192h-.06C218.53,186.79,184.48.87,110.35.87S1.72,186.79.61,192.86h-.03v546.9h1313.78V192.86h-.03Z"/>
         </clipPath>
 
-        <clipPath id="prostokat-top" transform="translate(0, -360)">
+        <clipPath :id="`prostokat-top-${uniqueId}`" transform="translate(0, -360)">
              <path d="M1314.34,192.86c-1.09-6.07-35.14-192-109.27-192s-107.21,178.47-109.62,191.4c-2.38-12.94-36.53-191.4-109.17-191.4s-108.25,183.92-109.71,191.88c-1.44-7.95-35.51-191.88-109.25-191.88s-107.52,180.05-109.65,191.57c-2.11-11.52-36.24-191.57-109.2-191.57s-108.63,185.92-109.73,192h-.04c-1.09-6.07-35.14-192-109.27-192s-108.63,185.92-109.73,192h-.06C218.53,186.79,184.48.87,110.35.87S1.72,186.79.61,192.86h-.03v546.9h1313.78V192.86h-.03Z"/>
         </clipPath>
 
-        <clipPath id="prostokat2" transform="translate(0, 93) rotate(180, 658, 370)">
+        <clipPath :id="`prostokat2-${uniqueId}`" transform="translate(0, 93) rotate(180, 658, 370)">
           <rect class="cls-2" x="0" y="0" width="1316.4" height="740" />
         </clipPath>
-        <clipPath id="prostokat3" transform="translate(0, -66)">
+        <clipPath :id="`prostokat3-${uniqueId}`" transform="translate(0, -66)">
           <rect class="cls-2" x="0" y="0" width="1316.4" height="740" />
         </clipPath>
       </defs>
      
-      <g class="main-clipped">
-        
-        <rect :fill="config.base.bottom" class="cls-5" x="0.58" y="512.74" width="1313.78" height="227.89" />
-        
-        <rect :fill="config.base.top" class="cls-3" x="-0.12" y="-1.57" width="1316.4" height="286.07" />
-        
-        <rect :fill="config.base.middle" class="cls-1" x="-0.12" y="284.49" width="1316.4" height="228.85" />
-        
-        <rect class="cls-2" x="0.58" y="0.87" width="1313.78" height="283.99" />
+      <g :style="{ clipPath: `url(#clippath-new-${uniqueId})` }">
   
+  <rect :fill="config.base.bottom" class="cls-5" x="0.58" y="512.74" width="1313.78" height="227.89" />
+  
+  <rect :fill="config.base.top" class="cls-3" x="-0.12" y="-1.57" width="1316.4" height="286.07" />
+  
+  <rect :fill="config.base.middle" class="cls-1" x="-0.12" y="284.49" width="1316.4" height="228.85" />
+  
+  <rect fill="none" class="cls-2" x="0.58" y="0.87" width="1313.78" height="283.99" />
         <g>
            <rect class="pasek" x="25.2" y="512.74" width="3.16" height="227.89"/>
            <rect class="pasek" x="56.78" y="512.74" width="3.16" height="227.89"/>
@@ -78,95 +76,78 @@
            <rect class="pasek" x="1286.6" y="512.74" width="3.16" height="227.89"/>
         </g>
       </g>
-    
-      <g class="prostokat-clip">
-        <g class="main-clipped" :fill="config.pattern.top">
+      <g :style="{ clipPath: `url(#prostokat-top-${uniqueId})` }">
+        <g :style="{ clipPath: `url(#clippath-new-${uniqueId})` }" :fill="config.pattern.top">
           <g v-html="topPatternSvg" transform="translate(0, 50) scale(2.04)"></g>
         </g>
       </g>
 
-      <g class="main-clipped">
+      <g :style="{ clipPath: `url(#clippath-new-${uniqueId})` }">
         <g :fill="config.pattern.main" transform="translate(0, 283) scale(2.01)">
           <g v-html="mainPatternSvg"></g>
         </g>
       </g>
       
-      <g clip-path="url(#prostokat3)">
-      <g clip-path="url(#prostokat2)">
-      <text 
-        :x="658.14" 
-        :y="finalTextPosition"
-        :fill="config.text.color" 
-        :font-family="config.text.font" 
-        :font-size="config.text.fontSize" 
-        font-weight="bold"
-        text-anchor="middle" 
-        dominant-baseline="central"
-      >
-        {{ config.text.content }}
-      </text>
-      </g>
+      <g :style="{ clipPath: `url(#prostokat3-${uniqueId})` }">
+        <g :style="{ clipPath: `url(#prostokat2-${uniqueId})` }">
+          <text 
+            :x="658.14" 
+            :y="finalTextPosition"
+            :fill="config.text.color" 
+            :font-family="config.text.font" 
+            :font-size="config.text.fontSize" 
+            font-weight="bold"
+            text-anchor="middle" 
+            dominant-baseline="central"
+          >
+            {{ config.text.content }}
+          </text>
+        </g>
      </g>
     </svg>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
-
-const props = defineProps({
-  config: {
-    type: Object,
-    required: true
-  },
-  patternsDict: {
-    type: Array,
-    default: () => []
-  }
-});
-
-const FLAT_CENTER_Y = 395;
-
-const finalTextPosition = computed(() => {
-  const userOffset = -props.config.text.offsetY || 0;
+  import { computed } from 'vue';
   
-  // Po prostu baza + przesunięcie z suwaka. Żadnego mnożenia przez font size!
-  return FLAT_CENTER_Y + userOffset;
-});
-
-const topPatternSvg = computed(() => {
-  const selectedId = props.config.patterns.top;
-  if (!selectedId || selectedId === 'none') return null;
-  const patternObj = props.patternsDict.find(p => p.id === selectedId);
-  return patternObj ? patternObj.kodSvg : null;
-});
-
-const mainPatternSvg = computed(() => {
-  const selectedId = props.config.patterns.bottom;
-  if (!selectedId || selectedId === 'none') return null;
-  const patternObj = props.patternsDict.find(p => p.id === selectedId);
-  return patternObj ? patternObj.kodSvg : null;
-});
-</script>
-
-<style scoped>
-/* Główna klasa przycinająca do kształtu skarpety */
-.main-clipped {
-  clip-path: url(#clippath-new);
-}
-
-.prostokat-clip {
-  clip-path: url(#prostokat-top);
-}
-
-.pasek {
-  fill: var(--kolor-pasek);
-}
-
-.cls-2 {
-  fill: none;
-}
-.svg-wrapper svg {
-  shape-rendering: crispEdges; 
-}
-</style>
+  const props = defineProps({
+    config: { type: Object, required: true },
+    patternsDict: { type: Array, default: () => [] }
+  });
+  
+  // Generujemy losowe ID dla tej instancji komponentu
+  const uniqueId = Math.random().toString(36).substr(2, 9);
+  
+  const FLAT_CENTER_Y = 395;
+  
+  const finalTextPosition = computed(() => {
+    const userOffset = -props.config.text.offsetY || 0;
+    return FLAT_CENTER_Y + userOffset;
+  });
+  
+  const topPatternSvg = computed(() => {
+    const selectedId = props.config.patterns.top;
+    if (!selectedId || selectedId === 'none') return null;
+    const patternObj = props.patternsDict.find(p => p.id === selectedId);
+    return patternObj ? patternObj.kodSvg : null;
+  });
+  
+  const mainPatternSvg = computed(() => {
+    const selectedId = props.config.patterns.bottom;
+    if (!selectedId || selectedId === 'none') return null;
+    const patternObj = props.patternsDict.find(p => p.id === selectedId);
+    return patternObj ? patternObj.kodSvg : null;
+  });
+  </script>
+  
+  <style scoped>
+  /* Te klasy można usunąć lub zostawić jako fallback, ale logika 
+     została przeniesiona do :style="" w szablonie, co jest kluczowe dla PDF */
+  .pasek {
+    fill: var(--kolor-pasek, #000000); /* Dodaj domyślny kolor jeśli zmienna nie działa w PDF */
+  }
+  .cls-2 {
+    fill: none;
+  }
+  </style>
