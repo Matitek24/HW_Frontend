@@ -28,7 +28,7 @@
         class="glass-btn with-text me-3" 
         :class="{ 'disabled-btn': isDownloading }"
         :disabled="isDownloading"
-        @click="handleDownloadClick" 
+       @click="printVisualisation"
       >
         <span class="btn-text">
           {{ isDownloading ? 'Pobieram...' : 'Pobierz wizualizację' }}
@@ -234,7 +234,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch } from 'vue';
+import { ref, reactive, computed, watch, nextTick } from 'vue';
 import { projectAPI } from '../utils/axios.js'; 
 import { resizeImage } from '../utils/imageUtils.js';
 
@@ -251,7 +251,9 @@ const isModalOpen = ref(false);
 const isLogoModalOpen = ref(false);  
 const isSubmitting = ref(false);
 const isDownloadModalOpen = ref(false);
-
+const printVisualisation = () => {
+  window.print();
+};
 const formData = reactive({
   imieNazwisko: '',
   email: '',

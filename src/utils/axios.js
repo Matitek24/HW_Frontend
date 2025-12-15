@@ -1,6 +1,3 @@
-// utils/axios.js
-// Skonfigurowany Axios z automatycznym dodawaniem JWT i obsługą błędów
-
 import axios from 'axios';
 import { getStoredToken, removeStoredToken, isTokenValid } from './jwt';
 import router from '../router/index';
@@ -13,7 +10,6 @@ const api = axios.create({
   },
 });
 
-// REQUEST INTERCEPTOR - dodaj token do każdego requesta
 api.interceptors.request.use(
   (config) => {
 
@@ -23,7 +19,6 @@ api.interceptors.request.use(
 
     const token = getStoredToken();
     
-    // Jeśli jest token i jest ważny, dodaj do headers
     if (token && isTokenValid(token)) {
       config.headers.Authorization = `Bearer ${token}`;
     }

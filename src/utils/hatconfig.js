@@ -32,9 +32,7 @@ export const defaultConfig = {
   }
 };
 
-/**
- * Wczytuje konfigurację z localStorage
- */
+
 export const loadConfig = () => {
   const savedData = localStorage.getItem(STORAGE_KEY);
   if (savedData) {

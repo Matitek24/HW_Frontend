@@ -264,7 +264,6 @@
     color: #374151;
   }
   
-  /* Licznik wyników */
   .results-count {
     margin-top: 12px;
     font-size: 0.9rem;
@@ -277,7 +276,6 @@
     font-weight: 600;
   }
   
-  /* Responsywność */
   @media (max-width: 640px) {
     .filter-type-selector {
       gap: 6px;
@@ -288,10 +286,9 @@
       font-size: 0.85rem;
     }
     .glass-panel {
-    padding: 20px 15px; /* Mniejszy padding panelu */
+    padding: 20px 15px;
   }
   
-  /* Header (Wszystkie / Nowe / CSV) */
   .glass-panel .d-flex.justify-content-between {
     flex-direction: column;
     align-items: stretch;

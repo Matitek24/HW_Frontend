@@ -4,7 +4,6 @@ export const exportProjectsToCSV = (projects, filename = null) => {
       return;
     }
   
-    // 1. Nagłówki kolumn
     const headers = [
       "ID", "Data", "Klient", "Email", "Telefon", 
       "Firma", "Ilosc", "Status", "Uwagi"
@@ -13,7 +12,6 @@ export const exportProjectsToCSV = (projects, filename = null) => {
     let csvContent = "data:text/csv;charset=utf-8,";
     csvContent += headers.join(",") + "\n";
   
-    // 2. Dane wierszy
     projects.forEach(p => {
       const safe = (text) => {
         if (text === null || text === undefined) return '""';
@@ -39,12 +37,10 @@ export const exportProjectsToCSV = (projects, filename = null) => {
       csvContent += row + "\n";
     });
   
-    // 3. Tworzenie i pobieranie pliku
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
     
-    // Domyślna nazwa pliku z datą
     const defaultFilename = `zamowienia_${new Date().toISOString().split('T')[0]}.csv`;
     link.setAttribute("download", filename || defaultFilename);
     

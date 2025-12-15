@@ -58,6 +58,10 @@
     </template>
 
   </div>
+  <PrintLayout 
+    :config="hatConfig" 
+    :patternsDict="dictionaryData.patterns" 
+  />
 </template>
   <script setup>
   import { reactive, watch, onMounted, ref } from 'vue';
@@ -69,6 +73,7 @@
   import { defaultConfig, loadConfig, saveConfig } from '../utils/hatConfig.js';
   import { usePdfGenerator } from '../utils/usePdfGenerator.js'; 
   import { dictionaryAPI, projectAPI } from '../utils/axios.js';
+  import PrintLayout from './PrintLayout.vue'; // Pamiętaj o imporcie!
   
   const isDownloading = ref(false);
   const isInitLoading = ref(true);
@@ -211,6 +216,13 @@ onMounted(async () => {
   </script>
   
   <style>
+     @media print {
+      .svg-wrapper {
+        box-shadow: none !important;
+        background: transparent !important;
+        border: none !important;
+      }
+     }
   /* --- UKŁAD KONTENERÓW CZAPEK --- */
 .flat-layout, 
 .front-layout {
@@ -223,6 +235,7 @@ onMounted(async () => {
 /* Jeśli wcześniej miałeś display: block na front-layout, zmień na flex dla spójności */
 .front-layout {
   display: flex; 
+  
 }
 
 /* --- STYL NAPISU --- */

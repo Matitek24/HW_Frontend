@@ -31,8 +31,6 @@ const routes = [
     component: LoginPage,
   },
 
-
-
   { path: '/forgot-password', component: ForgotPassword },
   { path: '/reset-password', component: ResetPassword },
 ];

@@ -272,13 +272,13 @@
       id="pdf-ghost-container" 
       style="
         position: fixed; 
-        left: -9999px; /* Wyrzucamy daleko poza ekran */
+        left: -9999px; 
         top: 0; 
-        width: 1200px; /* Sztywne wymiary dla dobrej jakości */
+        width: 1200px; 
         height: 800px; 
         z-index: -9999;
-        visibility: hidden; /* Ukrywamy przed wzrokiem */
-        display: flex; /* Ale zachowujemy display dla renderowania */
+        visibility: hidden; 
+        display: flex; 
         align-items: center;
         justify-content: center;
       "
@@ -332,22 +332,17 @@ const isMobile = ref(window.innerWidth <= 650);
 const pdfProjectData = ref(null);
 
 const downloadProductionPdf = async (project) => {
-    isLoading.value = true; // Pokaż jakiś loader jeśli chcesz
+    isLoading.value = true; 
 
     try {
-        // 1. Wrzucamy dane projektu do "Ghost Containera"
         pdfProjectData.value = project;
 
-        // 2. Czekamy aż Vue przerysuje ukryty kontener z nowymi danymi
         await nextTick();
-        // Czasem warto dać malutki timeout dla pewności, że obrazki/fonty "wskoczyły"
         await new Promise(r => setTimeout(r, 100));
 
-        // 3. Znajdujemy nasz ukryty element w DOM
         const ghostElement = document.getElementById('pdf-ghost-container');
 
 
-        // 4. Generujemy PDF, przekazując ten ukryty element
         await generateProductionCard(project, ghostElement, patternsDict.value);
 
     } catch (e) {
@@ -390,7 +385,6 @@ const handleSearch = ({ type, query }) => {
   searchFilter.value = { type, query };
 };
 
-// Zmodyfikowany computed dla paginatedProjects
 const processedProjects = computed(() => {
   let result = [...projects.value];
 
@@ -413,11 +407,9 @@ const processedProjects = computed(() => {
     let modifier = currentSortDir.value === 'desc' ? -1 : 1;
 
     if (currentSort.value === 'date') {
-      // Sortowanie po dacie (używamy rawDate!)
       return (new Date(a.rawDate) - new Date(b.rawDate)) * modifier;
     } 
     else if (currentSort.value === 'status') {
-      // Sortowanie alfabetyczne po statusie
       return a.status.localeCompare(b.status) * modifier;
     }
     return 0;
@@ -429,21 +421,17 @@ const processedProjects = computed(() => {
 
 const handleStatusChange = async ({ id, status, done }) => {
   try {
-    // 1. Wywołaj API
     await adminAPI.updateProjectStatus(id, status);
     
-    // 2. Zaktualizuj lokalnie w tabeli (żeby nie odświeżać wszystkiego)
     const project = projects.value.find(p => p.id === id);
     if (project) {
       project.status = status;
     }
     
-    // Opcjonalnie: Toast notification "Status zaktualizowany"
   } catch (error) {
     console.error("Błąd zmiany statusu:", error);
     alert("Nie udało się zmienić statusu.");
   } finally {
-    // Wyłącz loader wewnątrz badge'a
     done();
   }
 };
@@ -463,7 +451,6 @@ const toggleRow = (id) => {
 const changePage = (page) => {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
-    // Zwiń wszystkie rozwinięte wiersze przy zmianie strony
     expandedRows.value = [];
   }
 };
@@ -530,7 +517,6 @@ const formatDate = (dateString) => {
   });
 };
 
-// WATCHER dla itemsPerPage
 watch(itemsPerPage, () => {
   currentPage.value = 1; // Reset do pierwszej strony przy zmianie ilości na stronie
 });
@@ -749,9 +735,7 @@ onMounted(async () => {
   margin-bottom: 0; /* Usuń domyślny margines bootstrapa */
 }
 .custom-table thead th {
-  background: transparent; /* Usuwamy tło nagłówka, bo jest w glass-panelu */
-  /* Jeśli chcesz sticky header, musisz dać mu tło, ale bez blura (wydajność) */
-  /* position: sticky; top: 0; <--- Opcjonalnie usuń sticky, jeśli tabela jest długa i scrollujesz stronę */
+  background: transparent;
   border: none;
   color: #6b7280;
   font-weight: 500;
@@ -1015,9 +999,8 @@ onMounted(async () => {
     justify-content: center; /* Wycentrowane ikony */
     gap: 20px; /* Odstęp między ikonami */
   }
-  .main-row td:last-child::before { display: none; } /* Bez etykiety */
+  .main-row td:last-child::before { display: none; } 
 
-  /* Style dla przycisków akcji na mobile - trochę większe */
   .icon-btn {
     width: 40px;
     height: 40px;
@@ -1026,9 +1009,8 @@ onMounted(async () => {
     display: flex; align-items: center; justify-content: center;
   }
 
-  /* --- PAGINACJA MOBILE --- */
   .mobile-pagination-row {
-    justify-content: center !important; /* Wycentruj paginację */
+    justify-content: center !important; 
   }
   .page-link {
     padding: 4px 10px;

@@ -25,13 +25,13 @@
      
       <g :style="{ clipPath: `url(#clippath-new-${uniqueId})` }">
   
-  <rect :fill="config.base.bottom" class="cls-5" x="0.58" y="512.74" width="1313.78" height="227.89" />
-  
-  <rect :fill="config.base.top" class="cls-3" x="-0.12" y="-1.57" width="1316.4" height="286.07" />
-  
-  <rect :fill="config.base.middle" class="cls-1" x="-0.12" y="284.49" width="1316.4" height="228.85" />
-  
-  <rect fill="none" class="cls-2" x="0.58" y="0.87" width="1313.78" height="283.99" />
+        <rect :fill="config.base.bottom" class="cls-5" x="0.58" y="512.74" width="1313.78" height="227.89" />
+        
+        <rect :fill="config.base.top" class="cls-3" x="-0.12" y="-1.57" width="1316.4" height="286.07" />
+        
+        <rect :fill="config.base.middle" class="cls-1" x="-0.12" y="284.49" width="1316.4" height="228.85" />
+        
+        <rect fill="none" class="cls-2" x="0.58" y="0.87" width="1313.78" height="283.99" />
         <g>
            <rect class="pasek" x="25.2" y="512.74" width="3.16" height="227.89"/>
            <rect class="pasek" x="56.78" y="512.74" width="3.16" height="227.89"/>
@@ -116,7 +116,6 @@
     patternsDict: { type: Array, default: () => [] }
   });
   
-  // Generujemy losowe ID dla tej instancji komponentu
   const uniqueId = Math.random().toString(36).substr(2, 9);
   
   const FLAT_CENTER_Y = 395;
@@ -142,12 +141,14 @@
   </script>
   
   <style scoped>
-  /* Te klasy można usunąć lub zostawić jako fallback, ale logika 
-     została przeniesiona do :style="" w szablonie, co jest kluczowe dla PDF */
+
   .pasek {
-    fill: var(--kolor-pasek, #000000); /* Dodaj domyślny kolor jeśli zmienna nie działa w PDF */
+    fill: var(--kolor-pasek, #000000); 
   }
   .cls-2 {
     fill: none;
   }
+  .svg-wrapper svg {
+  shape-rendering: crispEdges; 
+}
   </style>
