@@ -70,7 +70,7 @@
   import TopBar from './TopBar.vue';
   import HatFlat from './hat/HatFlat.vue';
   import HatFront from './hat/HatFront.vue';
-  import { defaultConfig, loadConfig, saveConfig } from '../utils/hatConfig.js';
+  import { defaultConfig, loadConfig, saveConfig } from '../utils/hatconfig.js';
   import { usePdfGenerator } from '../utils/usePdfGenerator.js'; 
   import { dictionaryAPI, projectAPI } from '../utils/axios.js';
   import PrintLayout from './PrintLayout.vue'; // Pamiętaj o imporcie!
