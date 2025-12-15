@@ -4,31 +4,31 @@ const STORAGE_KEY = 'moj_projekt_czapki_v1';
 
 export const defaultConfig = {
   text: {
-    content: 'HEADWEAR',
-    color: '#1797ff',
-    font: 'Arial, sans-serif',
-    fontSize: 100,
+    content: 'KONFIGURATOR M38-H',
+    color: '#3E87CB',
+    font: 'impact',
+    fontSize: 112,
     offsetY: 0
   },
   base: {
-    top: '#1797ff',
-    middle: '#f0f0f0',
-    bottom: '#1797ff'
+    top: '#01426A',
+    middle: '#D6D2C4',
+    bottom: '#7FADE3'
   },
   pattern: {
-    main: '#1797ff',
-    top: '#8ad4f1'
+    main: '#E8E4D6',
+    top: '#C7C3B2'
   },
   pompons: {
     show: true,
-    p1: '#000000',
-    p2: '#f0f0f0',
-    p3: '#f0f0f0',
-    p4: '#f0f0f0'
+    p1: '#B79A81',
+    p2: '#C7C3B2',
+    p3: '#B79A81',
+    p4: '#C7C3B2'
   },
   patterns: {
-    top: 'snowflakes',
-    bottom: 'triangles'
+    top: 17,
+    bottom: 32
   }
 };
 
