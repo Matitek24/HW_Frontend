@@ -42,11 +42,12 @@
                       :class="{ active: modelValue === pattern.id }"
                       @click="selectPattern(pattern.id)"
                     >
-                      <div class="pattern-preview-box">
-                        <svg viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid meet">
-                           <g v-html="pattern.kodSvg"></g>
-                        </svg>
-                      </div>
+                    <div class="pattern-preview-box">
+                      <svg viewBox="-265 -150 1200 400" preserveAspectRatio="xMidYMid slice" >
+                        <g v-html="pattern.kodSvg" style="transform-origin: 0 0; transform: scale(1);">
+                        </g>
+                      </svg>
+                    </div>
                       <div class="pattern-label">{{ pattern.nazwa }}</div>
                     </div>
                   </div>
@@ -169,9 +170,8 @@ onMounted(() => {
   
   .pattern-preview-box {
     width: 100%;
-    height: 60px;
-    padding:5px;
-    padding-left:10px;
+    height: 80px; /* Zwiększamy z 60px na 80px */
+    padding: 0;   /* Usuwamy padding, żeby SVG zajęło całe miejsce */
     background: #fff;
     border: 1px solid #e5e7eb;
     border-radius: 8px;
@@ -181,9 +181,12 @@ onMounted(() => {
     align-items: center;
     justify-content: center;
   }
+  
+  /* To też warto dodać, żeby SVG na pewno było na środku */
   .pattern-preview-box svg {
     width: 100%;
     height: 100%;
+    display: block;
   }
   
   .empty-box {

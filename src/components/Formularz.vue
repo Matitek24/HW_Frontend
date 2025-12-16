@@ -19,6 +19,7 @@
               v-model="config.text.content" 
               class="input-pill text-main"
               placeholder="Twój tekst..."
+                maxlength="50"
             />
             <div class="select-wrapper">
               <select v-model="config.text.font" class="input-pill select-pill select-pill-font">
@@ -117,7 +118,7 @@
         <div class="vertical-divider"></div>
   
         <div class="group-section">
-          <div class="group-header">Pompony</div>
+          <div class="group-header">Pompon</div>
           
           <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
              <div class="form-check form-switch m-0">
@@ -177,6 +178,7 @@
                 v-model="config.text.content" 
                 class="input-pill full-width large-text"
                 placeholder="Twój tekst..."
+                 maxlength="50"
               />
             </div>
 
@@ -308,7 +310,7 @@
           <div class="expanded-column">
             
             <div class="d-flex justify-content-between align-items-center mb-3">
-              <h3 class="column-title mb-0">Pompony</h3>
+              <h3 class="column-title mb-0">Pompon</h3>
               <div class="form-check form-switch mb-0">
                 <input class="form-check-input" type="checkbox" role="switch" id="pomponSwitch" v-model="config.pompons.show">
               </div>
