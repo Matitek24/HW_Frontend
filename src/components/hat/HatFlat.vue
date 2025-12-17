@@ -4,7 +4,8 @@
       :id="`hat-svg-${uniqueId}`"
       xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink" 
-      viewBox="0 0 1316.28 800.63">
+      viewBox="0 0 1316.28 800.63"
+      ref="svgRef">
       
       <defs>
         <clipPath :id="`clippath-new-${uniqueId}`">
@@ -31,7 +32,6 @@
         
         <rect :fill="config.base.middle" class="cls-1" x="-0.12" y="284.49" width="1316.4" height="228.85" />
         
-        <rect fill="none" class="cls-2" x="0.58" y="0.87" width="1313.78" height="283.99" />
         <g>
            <rect class="pasek" x="25.2" y="512.74" width="3.16" height="227.89"/>
            <rect class="pasek" x="56.78" y="512.74" width="3.16" height="227.89"/>
@@ -109,8 +109,9 @@
 </template>
 
 <script setup>
-  import { computed } from 'vue';
-  
+  import { computed, ref } from 'vue';
+  const svgRef = ref(null);
+
   const props = defineProps({
     config: { type: Object, required: true },
     patternsDict: { type: Array, default: () => [] }
@@ -137,6 +138,9 @@
     if (!selectedId || selectedId === 'none') return null;
     const patternObj = props.patternsDict.find(p => p.id === selectedId);
     return patternObj ? patternObj.kodSvg : null;
+  });
+  defineExpose({
+    svgRef
   });
   </script>
   

@@ -3,6 +3,7 @@
     
     <div class="toggle-wrapper" @click="toggleExpand">
       <div class="toggle-btn">
+      
         <span class="chevron" :class="{ 'up': !isExpanded, 'down': isExpanded }"></span>
       </div>
     </div>

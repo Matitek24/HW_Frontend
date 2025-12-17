@@ -24,7 +24,7 @@
           <span>3D</span>
         </span>
       </button>
-        <button 
+        <!-- <button 
         class="glass-btn with-text me-3" 
         :class="{ 'disabled-btn': isDownloading }"
         :disabled="isDownloading"
@@ -38,7 +38,39 @@
           <svg v-if="!isDownloading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
           <svg v-else class="animate-spin" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
         </span>
-      </button>
+      </button> -->
+
+      <button 
+  class="glass-btn with-text me-3" 
+  :class="{ 'disabled-btn': isDownloading }"
+  :disabled="isDownloading"
+  @click="handlePDFDownload"
+>
+  <span class="btn-text">
+    {{ isDownloading ? 'Generuję PDF...' : 'Pobierz Wizualizację PDF' }}
+  </span>
+  
+  <span class="btn-icon">
+    <svg v-if="!isDownloading" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+      <polyline points="14 2 14 8 20 8"></polyline>
+      <line x1="16" y1="13" x2="8" y2="13"></line>
+      <line x1="16" y1="17" x2="8" y2="17"></line>
+      <polyline points="10 9 9 9 8 9"></polyline>
+    </svg>
+
+    <svg v-else class="animate-spin" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="2" x2="12" y2="6"></line>
+      <line x1="12" y1="18" x2="12" y2="22"></line>
+      <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+      <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+      <line x1="2" y1="12" x2="6" y2="12"></line>
+      <line x1="18" y1="12" x2="22" y2="12"></line>
+      <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+      <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+    </svg>
+  </span>
+</button>
 
       <button 
         class="glass-btn with-text" 
@@ -264,11 +296,11 @@ const formData = reactive({
   rodo: false
 });
 
-const handleDownloadClick = () => {
+const handlePDFDownload = () => {
+  
+  emit('download', 'pdf');
 
   isDownloadModalOpen.value = true;
-
-  emit('download', 'pdf');
 };
 
 watch(() => props.isDownloading, (newValue, oldValue) => {

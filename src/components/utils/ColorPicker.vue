@@ -48,12 +48,17 @@
   </div>
 </template>
 
+<script>
+  import { ref } from 'vue';
+  
+  // Ta zmienna powstanie tylko raz i będzie wspólna dla wszystkich ColorPickerów!
+  const activePickerId = ref(null);
+  </script>
 <script setup>
 import { onMounted, onUnmounted, computed, nextTick, ref } from 'vue';
 
 // Stan globalny dla aktywnego pickera (żeby zamykać inne przy otwieraniu)
 // Jeśli masz to w osobnym pliku store, zaimportuj stamtąd. Tu wersja lokalna dla pliku:
-const activePickerId = ref(null); 
 
 const props = defineProps({
   modelValue: { type: String, required: true },
@@ -121,8 +126,9 @@ const handleClickOutside = (event) => {
   if (!isOpen.value) return;
   const isClickInDropdown = dropdownEl.value && dropdownEl.value.contains(event.target);
   const isClickInTrigger = pickerTrigger.value && pickerTrigger.value.contains(event.target);
-  if (!isClickInDropdown && !isClickInTrigger) close();
-};
+  if (!isClickInDropdown && !isClickInTrigger) {
+    close();
+  }};
 
 const handleResize = () => {
   isMobile.value = window.innerWidth <= 768;

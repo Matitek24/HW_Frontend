@@ -1,6 +1,6 @@
 <template>
   <div class="svg-container no-scroll">
-    
+
     <div v-if="isInitLoading" class="loading-overlay">
       <div class="spinner"></div>
       <p>Wczytuję projekt...</p>
@@ -38,7 +38,7 @@
             :class="{ 'is-active': activeView === 'flat' }"
           > 
           <div class="hat-label mb-2">WIDOK PŁASKI</div>
-            <HatFlat :config="hatConfig" :patternsDict="dictionaryData.patterns" class="czapka2"/>
+            <HatFlat ref="flatRef" :config="hatConfig" :patternsDict="dictionaryData.patterns" class="czapka2"/>
             
            
         </div>
@@ -49,7 +49,7 @@
             :class="{ 'is-active': activeView === 'front' }"
           >
           <div class="hat-label mb-2">WIDOK PRZÓD CZAPKI</div>
-            <HatFront :config="hatConfig" :show-pompon="hatConfig.pompons.show" :patternsDict="dictionaryData.patterns" class="czapka2"/>
+            <HatFront ref="frontRef" :config="hatConfig" :show-pompon="hatConfig.pompons.show" :patternsDict="dictionaryData.patterns" class="czapka2"/>
             
           
         </div>
@@ -58,39 +58,47 @@
     </template>
 
   </div>
-  <PrintLayout 
+  <!-- <PrintLayout 
     :config="hatConfig" 
     :patternsDict="dictionaryData.patterns" 
-  />
+  /> -->
 </template>
-  <script setup>
+<script setup>
   import { reactive, watch, onMounted, ref } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
-  import Formularz from './Formularz.vue';
+  // Upewnij się, że ścieżka do composable jest poprawna!
+  import { useGeneratorWizualizacji } from '../utils/generatorWizualizacji.js';
+    import Formularz from './Formularz.vue';
   import TopBar from './TopBar.vue';
   import HatFlat from './hat/HatFlat.vue';
   import HatFront from './hat/HatFront.vue';
   import { defaultConfig, loadConfig, saveConfig } from '../utils/hatconfig.js';
-  import { usePdfGenerator } from '../utils/usePdfGenerator.js'; 
   import { dictionaryAPI, projectAPI } from '../utils/axios.js';
-  import PrintLayout from './PrintLayout.vue'; // Pamiętaj o imporcie!
+  // import PrintLayout from './PrintLayout.vue'; 
   
   const isDownloading = ref(false);
   const isInitLoading = ref(true);
   const route = useRoute(); 
   const router = useRouter();
-  const { generatePdf } = usePdfGenerator();
+  
+  // Refy do komponentów (Kluczowe dla PDF)
+  const frontRef = ref(null);
+  const flatRef = ref(null);
+  
   const activeView = ref('front');
   const isBarExpanded = ref(false);
-
+  const projectStatus = ref('NOWY');
   
- 
+  // Import generatora PDF
+  const { generatePDF } = useGeneratorWizualizacji();
+
   const toggleView = () => {
     activeView.value = activeView.value === 'front' ? 'flat' : 'front';
   };
+  
   // Reaktywny konfig
   const hatConfig = reactive(JSON.parse(JSON.stringify(defaultConfig)));
-
+  
   // Słowniki
   const dictionaryData = ref({
     colors: [],
@@ -99,98 +107,54 @@
   });
   
   // --- GŁÓWNA LOGIKA INICJALIZACJI ---
- // Upewnij się, że masz zdefiniowaną zmienną na status
-const projectStatus = ref('NOWY');
-
-onMounted(async () => {
-  try {
-    // KROK 1: Pobierz Słowniki (Bez zmian)
-    const [colorsRes, patternsRes, fontsRes] = await Promise.all([
-      dictionaryAPI.getColors(),
-      dictionaryAPI.getPatterns(),
-      dictionaryAPI.getFonts()
-    ]);
-    
-    dictionaryData.value.colors = colorsRes.data;
-    dictionaryData.value.patterns = patternsRes.data;
-    dictionaryData.value.fonts = fontsRes.data;
-
-    // KROK 2: Sprawdź czy to wejście z Linku
-    if (route.params.id) {
-      console.log("Tryb odczytu projektu: ", route.params.id);
+  onMounted(async () => {
+    try {
+      const [colorsRes, patternsRes, fontsRes] = await Promise.all([
+        dictionaryAPI.getColors(),
+        dictionaryAPI.getPatterns(),
+        dictionaryAPI.getFonts()
+      ]);
       
-      // Pobieramy z bazy (teraz przychodzi wrapper ze statusem)
-      const response = await projectAPI.getProject(route.params.id);
-      
-      // 1. Wyciągamy STATUS (do blokowania przycisku)
-      if (response.data.status) {
-         projectStatus.value = response.data.status;
-         console.log("Status projektu:", projectStatus.value);
-      }
-
-      // 2. Wyciągamy KONFIGURACJĘ (jest teraz głębiej, w polu .config)
-      // TU BYŁ BŁĄD: wcześniej brałeś całe response.data
-      const savedConfig = response.data.config; 
-
-      // 3. Nadpisujemy czapkę tylko jeśli config istnieje
-      if (savedConfig) {
-          // Ważne: czyścimy stary config i wpisujemy nowy, 
-          // ale Object.assign jest bezpieczny dla reaktywności
-          Object.assign(hatConfig, savedConfig);
-          console.log("Załadowano konfigurację z serwera!");
-      } else {
-          console.warn("Otrzymano projekt, ale brak w nim konfiguracji JSON!");
-      }
+      dictionaryData.value.colors = colorsRes.data;
+      dictionaryData.value.patterns = patternsRes.data;
+      dictionaryData.value.fonts = fontsRes.data;
+  
+      if (route.params.id) {
+        console.log("Tryb odczytu projektu: ", route.params.id);
+        const response = await projectAPI.getProject(route.params.id);
         
-    } else {
-      // KROK 3: Tryb normalny - wczytaj z LocalStorage
-      console.log("Tryb normalny - wczytuję z LocalStorage");
-      const savedConfig = loadConfig();
-      if (savedConfig) {
-        Object.assign(hatConfig, savedConfig);
+        if (response.data.status) {
+           projectStatus.value = response.data.status;
+        }
+  
+        const savedConfig = response.data.config; 
+        if (savedConfig) {
+            Object.assign(hatConfig, savedConfig);
+        } 
+      } else {
+        console.log("Tryb normalny - wczytuję z LocalStorage");
+        const savedConfig = loadConfig();
+        if (savedConfig) {
+          Object.assign(hatConfig, savedConfig);
+        }
+        projectStatus.value = 'NOWY';
       }
-      // Resetujemy status na NOWY dla trybu roboczego
-      projectStatus.value = 'NOWY';
+  
+    } catch (e) {
+      console.error("Błąd krytyczny inicjalizacji:", e);
+      alert("Nie udało się załadować projektu.");
+      router.push('/');
+    } finally {
+      isInitLoading.value = false;
     }
-
-  } catch (e) {
-    console.error("Błąd krytyczny inicjalizacji:", e);
-    alert("Nie udało się załadować projektu.");
-    router.push('/');
-  } finally {
-    // Zdejmujemy loader
-    isInitLoading.value = false;
-  }
-});
-
-
+  });
+  
   watch(hatConfig, (newVal) => {
-
-  updateCssVariables(newVal.base);
-
-  if (!route.params.id) {
-    saveConfig(newVal);
-  } else {
-    console.log("Tryb podglądu - pomijam auto-zapis do localStorage");
-  }
-}, { deep: true });
-  
-  
-  // --- PDF GENERATOR ---
-  const handleDownloadRequest = async (type) => {
-    if (type === "pdf") {
-      isDownloading.value = true;
-      try {
-        setTimeout(async () => {
-           await generatePdf(hatConfig);
-           isDownloading.value = false;
-        }, 100);
-      } catch (e) {
-        console.error(e);
-        isDownloading.value = false;
-      }
+    updateCssVariables(newVal.base);
+    if (!route.params.id) {
+      saveConfig(newVal);
     }
-  };
+  }, { deep: true });
   
   // --- CSS VARIABLES ---
   const hexToRgbString = (hex) => {
@@ -210,9 +174,46 @@ onMounted(async () => {
       }
   };
   
-  // Inicjalne ustawienie CSS (jeśli są domyślne wartości)
-  updateCssVariables(hatConfig.base);
+  // --- PDF GENERATOR ---
+  // Funkcja obsługująca przycisk z TopBar (stara)
+  const handleDownloadRequest = async (type) => {
+    if (type === "pdf") {
+      handleDownload(); // Przekieruj do nowej funkcji
+    }
+  };
   
+  // NOWA FUNKCJA GENERUJĄCA
+  const handleDownload = async () => {
+    // 1. Zbuduj obiekt danych projektu dynamicznie
+    const projectData = {
+      id: route.params.id || "Nowy",
+      createdAt: new Date().toLocaleDateString(),
+      config: hatConfig, // Używamy naszego reaktywnego obiektu
+      status: projectStatus.value,
+      client: { // Dodaj przykładowe dane klienta lub pobierz je skądś
+         name: "Klient Indywidualny",
+         email: "brak@danych.pl"
+      }
+    };
+  
+    // 2. Wywołaj generator (przekazując Refy)
+    // Dodajemy prosty loader UI
+    isDownloading.value = true;
+    try {
+       // Dajemy chwilę na przerysowanie UI
+       setTimeout(async () => {
+          await generatePDF(projectData, flatRef.value, frontRef.value);
+          isDownloading.value = false;
+       }, 100);
+    } catch (e) {
+       console.error("Błąd PDF:", e);
+       alert("Wystąpił błąd podczas generowania PDF.");
+       isDownloading.value = false;
+    }
+  };
+  
+  // Inicjalne ustawienie CSS
+  updateCssVariables(hatConfig.base);
   </script>
   
   <style>
