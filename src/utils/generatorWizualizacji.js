@@ -120,33 +120,23 @@ export function useGeneratorWizualizacji() {
     doc.addFont("Roboto-Regular.ttf", "Roboto", "bold");
     doc.setFont("Roboto");
 
-    // ========== NAGŁÓWEK Z TŁEM ==========
     doc.setFillColor(41, 128, 185);
     doc.rect(0, 0, 210, 40, 'F');
-
-    // Tytuł
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(24);
     doc.text("WIZUALIZACJA CZAPKI", 105, 15, { align: 'center' });
-    
-    // Info
     doc.setFontSize(9);
     doc.text(`ID Projektu: ${project.id}  |  Data: ${project.createdAt}`, 105, 23, { align: 'center' });
-    
-    // Disclaimer
     doc.setFontSize(8);
     doc.text("* Kolory mogą się różnić przez wyświetlanie na monitorach - jest to tylko wizualizacja", 105, 35, { align: 'center', style: 'italic' });
 
     const config = project.config; 
     const isPompon = config.pompons?.show;
 
-    // ========== GENEROWANIE OBRAZKÓW ==========
     const [resFlat, res3D] = await Promise.all([
       flatRef ? captureFlatHat(flatRef, config) : null,
       frontRef ? captureFrontHat(frontRef, config, isPompon) : null
     ]);
-
-    // ========== SEKCJA Z OBRAZKAMI ==========
     const startY = 65;
     
     doc.setTextColor(0, 0, 0);
