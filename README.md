@@ -1,4 +1,11 @@
-# Headwear Konfigurator
+<div align="center">
+  <h1>🧢 Headwear Designer</h1>
+  <p><i>Kompleksowy system personalizacji produktów online</i></p>
+
+  <a href="https://mateuszskrzypek.pl" target="_blank">
+    <img src="https://img.shields.io/badge/ZOBACZ_PROJEKT_LIVE-2563EB?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Live Demo">
+  </a>
+</div>
 
 Aplikacja do konfiugracji czapki zimowej umożliwa tworzyc customowe czapki reklamowe,
 
