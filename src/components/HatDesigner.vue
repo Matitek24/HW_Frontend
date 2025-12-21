@@ -58,23 +58,17 @@
     </template>
 
   </div>
-  <!-- <PrintLayout 
-    :config="hatConfig" 
-    :patternsDict="dictionaryData.patterns" 
-  /> -->
 </template>
 <script setup>
   import { reactive, watch, onMounted, ref } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
-  // Upewnij się, że ścieżka do composable jest poprawna!
   import { useGeneratorWizualizacji } from '../utils/generatorWizualizacji.js';
-    import Formularz from './Formularz.vue';
+  import Formularz from './Formularz.vue';
   import TopBar from './TopBar.vue';
   import HatFlat from './hat/HatFlat.vue';
   import HatFront from './hat/HatFront.vue';
   import { defaultConfig, loadConfig, saveConfig } from '../utils/hatconfig.js';
   import { dictionaryAPI, projectAPI } from '../utils/axios.js';
-  // import PrintLayout from './PrintLayout.vue'; 
   
   const isDownloading = ref(false);
   const isInitLoading = ref(true);
