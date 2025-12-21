@@ -14,7 +14,6 @@ export const inlineStyles = (sourceElement, forceFill = true) => {
       
       const computed = window.getComputedStyle(srcEl);
       
-      // 👇 Lista BEZ 'fill' na start
       const properties = [
         'stroke', 'stroke-width', 
         'font-size', 'font-weight', 'font-family',
@@ -22,7 +21,6 @@ export const inlineStyles = (sourceElement, forceFill = true) => {
         'opacity', 'visibility'
       ];
   
-      // 👇 Dodajemy 'fill' tylko jeśli forceFill jest włączone
       if (forceFill) {
         properties.push('fill');
       }
