@@ -1,5 +1,5 @@
-<div align="center">
-  <h1>🧢 Headwear Designer</h1>
+<div align="center" style="margin-bottom:20px">
+  <h1> Headwear Konfigurator</h1>
   <p><i>Kompleksowy system personalizacji produktów online</i></p>
 
   <a href="https://mateuszskrzypek.pl" target="_blank">
@@ -19,7 +19,7 @@ Aplikacja do konfiugracji czapki zimowej umożliwa tworzyc customowe czapki rekl
 Jest to frontend mojej aplikacji, zajmuje się on tym aby użytkownik który wejdzie do naszej aplikacji nie musi się logować aby jak najbardziej skrócić drogę klienta do stworzenia swojego produktu. Uzytkownik widzi dwie czapki płaską wizualizację oraz czapkę 3D **produkt który tworzy**, w aplikacji korzystamy z `JsPDF` , `Axios`, `Vite`, `Bootstrap`, `WarpTransform` oraz podstawowych mechanizmów canvas svg itp. 
 Cała moja aplikacja opiera się na tworzeniu svg manipulowaniu obiektami w komponenatch `HatFront.vue` i `HatFlat.vue`
 
-### 🧠 Kluczowe wyzwania inżynierskie
+### Kluczowe wyzwania inżynierskie
 
 W trakcie budowy mojego projektu natknąłem się na kilka problemów, które musiałem rozwiązać:
 
