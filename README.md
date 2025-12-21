@@ -40,9 +40,9 @@ W trakcie budowy mojego projektu natknąłem się na kilka problemów, które mu
 - `Dashboard.vue` - panel administratora, handlowca
 - `Formularz.vue` - Formularz do konfiguracji czapki
 
-## 📸 Prezentacja Projektu
+## Prezentacja Projektu
 
-### 🖥️ Widok Desktopowy (Kreator)
+### Widok Desktopowy 
 <div align="center">
   <img src="https://github.com/user-attachments/assets/073aac87-3d00-40ba-96b3-3c02f651bbe8" width="90%" alt="Designer Desktop">
   <p><i>Główny interfejs konfiguratora z dynamicznym podglądem SVG</i></p>
@@ -50,20 +50,20 @@ W trakcie budowy mojego projektu natknąłem się na kilka problemów, które mu
 
 <br />
 
-### 📊 Panel Administracyjny i Zarządzanie
-| Lista Zamówień | Szczegóły Projektu |
+### Panel Administracyjny i Zarządzanie
+| Panel Administratora | Logowanie |
 | :---: | :---: |
 | <img src="https://github.com/user-attachments/assets/6238673b-d83b-4be5-822b-1d4119dc2a8f" width="100%"> | <img src="https://github.com/user-attachments/assets/1f662e51-310c-46c3-bc3d-6ba0ab8e7050" width="100%"> |
-| *Zarządzanie statusem i filtrowanie* | *Podgląd konkretnej konfiguracji* |
+| *Filtrowanie Pobieranie Kart Produkcyjncyh* | *Panel Logowania* |
 
 <br />
 
-### 📱 Responsywność (Mobile First)
+### Responsywność (Mobile First)
 <div align="center">
   <img src="https://github.com/user-attachments/assets/c74e6577-f82c-4c84-9f6b-fa2c19adbfa2" width="30%" alt="Mobile 1">
   &nbsp;&nbsp;&nbsp;&nbsp;
   <img src="https://github.com/user-attachments/assets/4427f99d-5448-43b8-8274-1dd0a29a6d9f" width="30%" alt="Mobile 2">
-  <p><i>W pełni responsywny interfejs dopasowany do urządzeń mobilnych</i></p>
+  <p><i>Responsywny widok na telefonie</i></p>
 </div>
 
 
