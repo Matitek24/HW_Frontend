@@ -72,6 +72,8 @@
         <ColorPicker
           v-model="config.base.top"
           :color-options="dictionaries.colors"
+          @hover="(hex) => $emit('hover', { path: 'base.top', value: hex })"
+          @hover-end="$emit('hover-end')"
           title="Góra czapki"
         />
         <span class="yarn-number">{{ getYarnNumber(config.base.top) }}</span>
@@ -417,7 +419,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { reactive, ref, computed, watch } from 'vue';
 import ColorPicker from '../components/utils/ColorPicker.vue'; 
 import PatternPicker from '../components/utils/PatternPicker.vue'; 
 const props = defineProps({
@@ -434,6 +436,35 @@ const props = defineProps({
     })
   }
 });
+const hoverState = reactive({
+  path: null,  // np. 'base.top'
+  value: null  // np. '#FF0000'
+});
+
+const previewConfig = computed(() => {
+  // Robimy głęboką kopię obecnego configu
+  const base = JSON.parse(JSON.stringify(props.config));
+  
+  // Jeśli użytkownik na coś najeżdża, nadpisujemy to w kopii podglądu
+  if (hoverState.path && hoverState.value) {
+    const keys = hoverState.path.split('.'); // np. ['base', 'top']
+    if (keys.length === 2) {
+      base[keys[0]][keys[1]] = hoverState.value;
+    } else if (keys.length === 1) {
+      base[keys[0]] = hoverState.value;
+    }
+  }
+  return base;
+});
+
+const onHover = (path, val) => {
+  hoverState.path = path;
+  hoverState.value = val;
+};
+const onHoverEnd = () => {
+  hoverState.path = null;
+  hoverState.value = null;
+};
 
 const getYarnNumber = (hex) => {
   if (!props.dictionaries?.colors) return hex;
@@ -441,7 +472,9 @@ const getYarnNumber = (hex) => {
   return color ? color.nazwa : hex;
 };
 
-const emit = defineEmits(['toggle-expand']); 
+// src/components/Formularz.vue
+
+const emit = defineEmits(['toggle-expand', 'hover', 'hover-end']); // dodaj hover i hover-end
 
 const detectInitialMode = () => {
   const { p1, p2, p3, p4 } = props.config.pompons;

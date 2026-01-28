@@ -27,19 +27,22 @@
         >
         
         <Formularz 
-          :config="hatConfig" 
-          :dictionaries="dictionaryData"
-          @toggle-expand="(val) => isBarExpanded = val"
-        />
-        
+        :config="hatConfig" 
+        :dictionaries="dictionaryData"
+        @toggle-expand="(val) => isBarExpanded = val"
+        @hover="handleHover"        @hover-end="handleHoverEnd" />
+              
         <div 
             id="print-flat-container" 
             class="czapka flat-layout" 
             :class="{ 'is-active': activeView === 'flat' }"
           > 
           <div class="hat-label mb-2">WIDOK PŁASKI</div>
-            <HatFlat ref="flatRef" :config="hatConfig" :patternsDict="dictionaryData.patterns" class="czapka2"/>
-            
+          <HatFlat 
+          ref="flatRef" 
+          :config="previewConfig"  :patternsDict="dictionaryData.patterns" 
+          class="czapka2"
+        />            
            
         </div>
     
@@ -49,8 +52,12 @@
             :class="{ 'is-active': activeView === 'front' }"
           >
           <div class="hat-label mb-2">WIDOK PRZÓD CZAPKI</div>
-            <HatFront ref="frontRef" :config="hatConfig" :show-pompon="hatConfig.pompons.show" :patternsDict="dictionaryData.patterns" class="czapka2"/>
-            
+          <HatFront 
+            ref="frontRef" 
+            :config="previewConfig"  :show-pompon="previewConfig.pompons.show" 
+            :patternsDict="dictionaryData.patterns" 
+            class="czapka2"
+          />            
           
         </div>
 
@@ -60,7 +67,7 @@
   </div>
 </template>
 <script setup>
-  import { reactive, watch, onMounted, ref } from 'vue';
+  import { reactive, watch, onMounted, ref, computed } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import { useGeneratorWizualizacji } from '../utils/generatorWizualizacji.js';
   import Formularz from './Formularz.vue';
@@ -100,6 +107,40 @@
     fonts: []
   });
   
+// hover
+const hoverState = reactive({
+  path: null,  // np. 'base.top'
+  value: null  // hex koloru
+});
+const previewConfig = computed(() => {
+  // Jeśli hatConfig nie jest jeszcze załadowany, zwróć pusty obiekt lub default
+  if (!hatConfig) return {};
+
+  // Robimy kopię, żeby nie modyfikować oryginału przy najeżdżaniu
+  const configCopy = JSON.parse(JSON.stringify(hatConfig));
+
+  // Jeśli użytkownik najeżdża na kolor, nadpisujemy go w kopii
+  if (hoverState.path && hoverState.value) {
+    const keys = hoverState.path.split('.'); // np. ['base', 'top']
+    if (keys.length === 2) {
+      configCopy[keys[0]][keys[1]] = hoverState.value;
+    }
+  }
+  return configCopy;
+});
+
+const handleHover = (data) => {
+  hoverState.path = data.path;
+  hoverState.value = data.value;
+};
+
+const handleHoverEnd = () => {
+  hoverState.path = null;
+  hoverState.value = null;
+};
+//hover
+
+
   // --- GŁÓWNA LOGIKA INICJALIZACJI ---
   onMounted(async () => {
     try {
@@ -211,6 +252,8 @@
   </script>
   
   <style>
+
+
      @media print {
       .svg-wrapper {
         box-shadow: none !important;

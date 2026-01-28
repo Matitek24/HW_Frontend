@@ -18,9 +18,16 @@
           </div>
 
           <div class="color-dropdown-grid">
-            <div v-for="(color, index) in colorOptions" :key="color.id" class="color-dropdown-swatch"
-              :style="{ backgroundColor: color.hex }" @click="selectColor(color.hex)"
-              :class="{ active: modelValue === color.hex }">
+          <div 
+          v-for="(color, index) in colorOptions" 
+          :key="color.id" 
+          class="color-dropdown-swatch"
+          :style="{ backgroundColor: color.hex }"
+          @click="selectColor(color.hex)"
+          @mouseenter="handleMouseEnter(color.hex)" 
+          @mouseleave="!isClosing && emit('hover-end')"
+          :class="{ active: modelValue === color.hex }"
+        >
               <span class="color-number">{{ index + 1 }}</span>
 
               <svg v-if="modelValue === color.hex" class="checkmark-icon" viewBox="0 0 24 24" fill="none" stroke="white"
@@ -51,12 +58,12 @@ const props = defineProps({
   pickerId: { type: String, default: () => `cp-${Math.random().toString(36).substr(2, 9)}` }
 });
 
-const emit = defineEmits(['update:modelValue']);
-const pickerTrigger = ref(null);
+// ColorPicker.vue -> <script setup>
+const emit = defineEmits(['update:modelValue', 'hover', 'hover-end']);
 const dropdownEl = ref(null);
 const dropdownStyle = ref({});
 const isMobile = ref(window.innerWidth <= 768);
-
+const isClosing = ref(false);
 const isOpen = computed(() => activePickerId.value === props.pickerId);
 
 const selectedIndex = computed(() => {
@@ -95,11 +102,22 @@ const togglePicker = async () => {
 };
 
 const close = () => {
-  if (isOpen.value) activePickerId.value = null;
+  if (isOpen.value) {
+    isClosing.value = true; // Blokujemy hover!
+    emit('hover-end');
+    activePickerId.value = null;
+    
+    // Resetujemy flagę po krótkiej chwili, gdy okno już zniknie
+    setTimeout(() => {
+      isClosing.value = false;
+    }, 300);
+  }
 };
 
 const selectColor = (hex) => {
+  isClosing.value = true; // Blokujemy hover!
   emit('update:modelValue', hex);
+  emit('hover-end');
   close();
 };
 
@@ -120,6 +138,11 @@ const handleResize = () => {
 const handleScroll = () => {
   if (isOpen.value && isMobile.value) updatePosition();
 };
+const handleMouseEnter = (hex) => {
+  if (!isClosing.value) {
+    emit('hover', hex);
+  }
+};
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);
@@ -131,7 +154,11 @@ onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
   window.removeEventListener('resize', handleResize);
   window.removeEventListener('scroll', handleScroll, true);
-  if (isOpen.value) activePickerId.value = null;
+  
+  if (isOpen.value) {
+    emit('hover-end');
+    activePickerId.value = null;
+  }
 });
 </script>
 
