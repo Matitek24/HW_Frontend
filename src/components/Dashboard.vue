@@ -191,7 +191,7 @@
                         </div>
 
                         <div class="col-md-3">
-                          <h6 class="detail-header">Personalizacja</h6>
+                          <h6 class="detail-header">TWÓJ NAPIS / TEKST</h6>
                           <div class="mt-3 p-3 bg-light rounded-3 text-center border border-light">
                             <span 
                               class="d-block mb-2" 

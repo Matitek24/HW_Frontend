@@ -13,65 +13,101 @@
       <div v-show="!isExpanded" class="view-compact">
         
         <div class="group-section">
-          <div class="group-header"><span class="icon"></span> Personalizacja</div>
-          <div class="controls-row">
-            <input 
-              type="text" 
-              v-model="config.text.content" 
-              class="input-pill text-main"
-              placeholder="Twój tekst..."
-                maxlength="50"
-            />
-            <div class="select-wrapper">
-              <select v-model="config.text.font" class="input-pill select-pill select-pill-font">
-                <option 
-                  v-for="font in dictionaries.fonts" 
-                  :key="font.id" 
-                  :value="font.wartosc"
-                >
-                  {{ font.nazwa }}
-                </option>
-              </select>
-            </div>
-            <div class="color-pill">
-              <ColorPicker
-                v-model="config.text.color"
-                :color-options="dictionaries.colors"
-                title="Kolor tekstu"
-              />
-              <input type="text" v-model="config.text.color" class="hex-input" maxlength="7" />
-            </div>
-          </div>
-        </div>
+  
+  <div class="controls-row">
+    
+    <div class="control-item">
+      <label class="mini-label"> TWÓJ NAPIS / TEKST</label>
+      <input 
+        type="text" 
+        v-model="config.text.content" 
+        class="input-pill text-main"
+        placeholder="Twój tekst..."
+        maxlength="50"
+      />
+    </div>
+
+    <div class="control-item">
+      <label class="mini-label">CZCIONKA</label>
+      <div class="select-wrapper">
+        <select v-model="config.text.font" class="input-pill select-pill select-pill-font">
+          <option 
+            v-for="font in dictionaries.fonts" 
+            :key="font.id" 
+            :value="font.wartosc"
+          >
+            {{ font.nazwa }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="control-item">
+      <label class="mini-label">KOLOR TEKSTU</label>
+      <div class="color-pill">
+        <ColorPicker
+          v-model="config.text.color"
+          :color-options="dictionaries.colors"
+          title="Kolor tekstu"
+        />
+        <input type="text" v-model="config.text.color" class="hex-input" maxlength="7" />
+      </div>
+    </div>
+
+  </div>
+</div>
   
         <div class="vertical-divider"></div>
   
         <div class="group-section">
-          <div class="group-header">Kolory Czapki</div>
-          <div class="controls-row compact-gap">
-            <div class="mini-color-stack" title="Góra">
-              <ColorPicker
-                v-model="config.base.top"
-                :color-options="dictionaries.colors"
-                title="Góra czapki"
-              />
-            </div>
-            <div class="mini-color-stack" title="Środek">
-              <ColorPicker
-                v-model="config.base.middle"
-                :color-options="dictionaries.colors"
-                title="Środek czapki"
-              />
-            </div>
-            <div class="mini-color-stack" title="Dół">
-              <ColorPicker
-                v-model="config.base.bottom"
-                :color-options="dictionaries.colors"
-                title="Dół czapki"
-              />
-            </div>
-          </div>
-        </div>
+  <div class="group-header">KOLORY CZAPKI</div>
+  
+  <div class="controls-row">
+    
+    <div class="control-item">
+      <div class="unit-header">
+        <label class="mini-label">GÓRA</label>
+      </div>
+      <div class="picker-container">
+        <ColorPicker
+          v-model="config.base.top"
+          :color-options="dictionaries.colors"
+          title="Góra czapki"
+        />
+        <span class="yarn-number">{{ getYarnNumber(config.base.top) }}</span>
+      </div>
+    </div>
+
+    <div class="control-item">
+      <div class="unit-header">
+        <label class="mini-label">ŚRODEK</label>
+      </div>
+      <div class="picker-container">
+        <ColorPicker
+          v-model="config.base.middle"
+          :color-options="dictionaries.colors"
+          title="Środek czapki"
+        />
+        <span class="yarn-number">{{ getYarnNumber(config.base.middle) }}</span>
+      </div>
+    </div>
+
+    <div class="control-item">
+      <div class="unit-header">
+        <label class="mini-label">WYWINIĘCIE</label>
+      </div>
+      <div class="picker-container">
+        <ColorPicker
+          v-model="config.base.bottom"
+          :color-options="dictionaries.colors"
+          title="Wywiniecie czapki"
+        />
+        <span class="yarn-number">{{ getYarnNumber(config.base.bottom) }}</span>
+      </div>
+    </div>
+
+  </div>
+</div>
 
         <div class="vertical-divider"></div>
 
@@ -199,7 +235,7 @@
                 </div>
               </div>
               <div class="expanded-field half">
-                <label>Kolor</label>
+                <label>Kolor Tekstu</label>
                 <div class="color-pill full-width space-between">
                   <ColorPicker
                     v-model="config.text.color"
@@ -241,21 +277,21 @@
             <h3 class="column-title">Kolory Czapki</h3>
             <div class="color-list-rows">
               <div class="color-row-item">
-                <span class="label-text">Góra</span>
+                <span class="label-text">Góra Czapki</span>
                 <ColorPicker
                   v-model="config.base.top"
                   :color-options="dictionaries.colors"
                 />
               </div>
               <div class="color-row-item">
-                <span class="label-text">Środek</span>
+                <span class="label-text">Środek Czapki</span>
                 <ColorPicker
                   v-model="config.base.middle"
                   :color-options="dictionaries.colors"
                 />
               </div>
               <div class="color-row-item">
-                <span class="label-text">Dół</span>
+                <span class="label-text">Wywinięcie</span>
                 <ColorPicker
                   v-model="config.base.bottom"
                   :color-options="dictionaries.colors"
@@ -399,6 +435,12 @@ const props = defineProps({
   }
 });
 
+const getYarnNumber = (hex) => {
+  if (!props.dictionaries?.colors) return hex;
+  const color = props.dictionaries.colors.find(c => c.wartosc === hex);
+  return color ? color.nazwa : hex;
+};
+
 const emit = defineEmits(['toggle-expand']); 
 
 const detectInitialMode = () => {
@@ -485,10 +527,87 @@ const topPatterns = computed(() =>
 const bottomPatterns = computed(() => 
   props.dictionaries.patterns.filter(p => p.kategoria === 'BOTTOM')
 );
+
+
 </script>
 
 <style scoped>
+/* Kontener pojedynczego elementu sterującego */
+.control-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center !important;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  min-width: 80px;
+}
 
+
+
+/* Etykieta */
+.mini-label {
+  font-size: 9px;
+  font-weight: 800;
+  color: #6b7280;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Kontener na picker i numer przędzy */
+.picker-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Numer przędzy pod kółkiem */
+.yarn-number {
+  font-size: 10px;
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 600;
+  color: #929292;
+  margin-top: 2px;
+}
+
+/* Układ rzędu */
+.controls-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+/* Kontener dla pojedynczego pola z labelką */
+.control-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px; /* Odstęp między labelką a polem */
+}
+
+/* Styl dla małych nagłówków nad polami */
+.mini-label {
+  font-size: 9.5px; /* Bardzo mały, ale czytelny */
+  font-weight: 800;
+  color: #9ca3af; /* Jasny szary, żeby nie przytłaczał */
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-left: 4px;
+}
+
+/* Poprawka dla controls-row, aby elementy wyrównały się do góry, skoro mają labelki */
+.controls-row {
+  display: flex;
+  align-items: flex-start; /* Zmiana z center na flex-start */
+  gap: 12px;
+}
+
+/* Dopasowanie szerokości font picker w kompakcie */
+.select-pill-font {
+  min-width: 120px;
+}
 /* Stylowanie przełącznika trybów (pigułki) */
 .mode-selector {
   display: flex;
