@@ -109,28 +109,26 @@
   
 // hover
 const hoverState = reactive({
-  path: null,  // np. 'base.top'
+  paths: [],  // np. 'base.top'
   value: null  // hex koloru
 });
 const previewConfig = computed(() => {
-  // Jeśli hatConfig nie jest jeszcze załadowany, zwróć pusty obiekt lub default
-  if (!hatConfig) return {};
-
-  // Robimy kopię, żeby nie modyfikować oryginału przy najeżdżaniu
   const configCopy = JSON.parse(JSON.stringify(hatConfig));
-
-  // Jeśli użytkownik najeżdża na kolor, nadpisujemy go w kopii
-  if (hoverState.path && hoverState.value) {
-    const keys = hoverState.path.split('.'); // np. ['base', 'top']
-    if (keys.length === 2) {
-      configCopy[keys[0]][keys[1]] = hoverState.value;
-    }
+  
+  if (hoverState.paths.length > 0 && hoverState.value) {
+    // Pętla po wszystkich ścieżkach, które chcemy podmienić
+    hoverState.paths.forEach(p => {
+      const keys = p.split('.');
+      if (keys.length === 2 && configCopy[keys[0]]) {
+        configCopy[keys[0]][keys[1]] = hoverState.value;
+      }
+    });
   }
   return configCopy;
 });
 
 const handleHover = (data) => {
-  hoverState.path = data.path;
+  hoverState.paths = data.paths ? data.paths : [data.path];
   hoverState.value = data.value;
 };
 

@@ -45,11 +45,14 @@
     <div class="control-item">
       <label class="mini-label">KOLOR TEKSTU</label>
       <div class="color-pill">
+  
         <ColorPicker
-          v-model="config.text.color"
-          :color-options="dictionaries.colors"
-          title="Kolor tekstu"
-        />
+              v-model="config.text.color"
+              :color-options="dictionaries.colors"
+              @hover="(hex) => $emit('hover', { path: 'text.color', value: hex })"
+              @hover-end="$emit('hover-end')"
+              title="Kolor Tekstu"
+            />
         <input type="text" v-model="config.text.color" class="hex-input" maxlength="7" />
       </div>
     </div>
@@ -86,10 +89,12 @@
       </div>
       <div class="picker-container">
         <ColorPicker
-          v-model="config.base.middle"
-          :color-options="dictionaries.colors"
-          title="Środek czapki"
-        />
+      v-model="config.base.middle"
+      :color-options="dictionaries.colors"
+      @hover="(hex) => $emit('hover', { path: 'base.middle', value: hex })"
+      @hover-end="$emit('hover-end')"
+      title="Środek czapki"
+    />
         <span class="yarn-number">{{ getYarnNumber(config.base.middle) }}</span>
       </div>
     </div>
@@ -102,6 +107,8 @@
         <ColorPicker
           v-model="config.base.bottom"
           :color-options="dictionaries.colors"
+          @hover="(hex) => $emit('hover', { path: 'base.bottom', value: hex })"
+          @hover-end="$emit('hover-end')"
           title="Wywiniecie czapki"
         />
         <span class="yarn-number">{{ getYarnNumber(config.base.bottom) }}</span>
@@ -118,10 +125,12 @@
           <div class="controls-row compact-gap">
             <div class="mini-color-stack" title="Wzór Główny">
               <ColorPicker
-                v-model="config.pattern.top"
-                :color-options="dictionaries.colors"
-                title="Kolor wzoru góra"
-              />
+              v-model="config.pattern.top"
+              :color-options="dictionaries.colors"
+              @hover="(hex) => $emit('hover', { path: 'pattern.top', value: hex })"
+              @hover-end="$emit('hover-end')"
+              title="Kolor Wzoru góra"
+            />
             </div>
             <div class="select-wrapper">
               <div class="select-wrapper w-100"> 
@@ -135,12 +144,14 @@
           </div>
           <div class="controls-row compact-gap">
             <div class="mini-color-stack" title="Wzór Główny">
+
               <ColorPicker
-                v-model="config.pattern.main"
-                :color-options="dictionaries.colors"
-              
-                title="Kolor wzoru dół"
-              />
+              v-model="config.pattern.main"
+              :color-options="dictionaries.colors"
+              @hover="(hex) => $emit('hover', { path: 'pattern.main', value: hex })"
+              @hover-end="$emit('hover-end')"
+              title="Kolor Wzoru dół"
+            />
             </div>
             <div class="select-wrapper">
               <div class="select-wrapper w-100"> 
@@ -167,12 +178,13 @@
 
           <div class="pompon-carousel" :class="{ 'disabled-section': !config.pompons.show }">
             <div class="color-pill compact">
-              
               <ColorPicker
                 :model-value="config.pompons.p1"
                 :color-options="dictionaries.colors"
                 title="Pompon (Główny)"
                 @update:model-value="(hex) => updatePomponColor(1, hex)"
+                @hover="(hex) => onPomponHover(1, hex)"
+                @hover-end="$emit('hover-end')"
               />
 
               <ColorPicker
@@ -181,6 +193,8 @@
                 :color-options="dictionaries.colors"
                 title="Pompon (Drugi)"
                 @update:model-value="(hex) => updatePomponColor(2, hex)"
+                @hover="(hex) => onPomponHover(2, hex)"
+                @hover-end="$emit('hover-end')"
               />
 
               <ColorPicker
@@ -189,6 +203,8 @@
                 :color-options="dictionaries.colors"
                 title="Pompon (Trzeci)"
                 @update:model-value="(hex) => updatePomponColor(3, hex)"
+                @hover="(hex) => onPomponHover(3, hex)"
+                @hover-end="$emit('hover-end')"
               />
 
               <ColorPicker
@@ -197,6 +213,8 @@
                 :color-options="dictionaries.colors"
                 title="Pompon (Czwarty)"
                 @update:model-value="(hex) => updatePomponColor(4, hex)"
+                @hover="(hex) => onPomponHover(4, hex)"
+                @hover-end="$emit('hover-end')"
               />
             </div>
           </div>
@@ -205,215 +223,172 @@
       </div>
 
       <div v-show="isExpanded" class="view-expanded">
-        
-        <div class="expanded-grid">
-          
-          <div class="expanded-column">
-            <h3 class="column-title">Napis</h3>
-            
-            <div class="expanded-field">
-              <input 
-                type="text" 
-                v-model="config.text.content" 
-                class="input-pill full-width large-text"
-                placeholder="Twój tekst..."
-                 maxlength="50"
-              />
-            </div>
-
-            <div class="expanded-row">
-              <div class="expanded-field half">
-                <label>Czcionka</label>
-                <div class="select-wrapper">
-                  <select v-model="config.text.font" class="input-pill select-pill full-width">
-                    <option 
-                      v-for="font in dictionaries.fonts" 
-                      :key="font.id" 
-                      :value="font.wartosc"
-                    >
-                      {{ font.nazwa }}
-                    </option>
-                  </select>
-                </div>
-              </div>
-              <div class="expanded-field half">
-                <label>Kolor Tekstu</label>
-                <div class="color-pill full-width space-between">
-                  <ColorPicker
-                    v-model="config.text.color"
-                    :color-options="dictionaries.colors"
-                  />
-                  <span class="hex-display">{{ config.text.color }}</span>
-                </div>
-              </div>
-            </div>
-            
-            <div class="expanded-row">
-              <div class="expanded-field half">
-                <label>
-                  Rozmiar: {{ (config.text.fontSize / 8) }} px
-              </label>
-                <input 
-                  type="range" 
-                  v-model.number="config.text.fontSize" 
-                  min="48" max="152" step="8"
-                  class="slider compact-slider"
-                />
-              </div>
-              <div class="expanded-field half">
-                <label>
-
-                  Pozycja Y: {{ ((config.text.offsetY / 6)).toFixed(1) }} px
-                </label>
-                <input 
-                  type="range" 
-                  v-model.number="config.text.offsetY" 
-                  min="-60" max="60" step="6"
-                  class="slider compact-slider"
-                />
-              </div>
-            </div>
+  <div class="expanded-grid">
+    
+    <div class="expanded-column">
+      <h3 class="column-title">Napis</h3>
+      <div class="expanded-field">
+        <input 
+          type="text" 
+          v-model="config.text.content" 
+          class="input-pill full-width large-text"
+          placeholder="Twój tekst..."
+          maxlength="50"
+        />
+      </div>
+      <div class="expanded-row">
+        <div class="expanded-field half">
+          <label>Czcionka</label>
+          <div class="select-wrapper">
+            <select v-model="config.text.font" class="input-pill select-pill full-width">
+              <option v-for="font in dictionaries.fonts" :key="font.id" :value="font.wartosc">
+                {{ font.nazwa }}
+              </option>
+            </select>
           </div>
-
-          <div class="expanded-column">
-            <h3 class="column-title">Kolory Czapki</h3>
-            <div class="color-list-rows">
-              <div class="color-row-item">
-                <span class="label-text">Góra Czapki</span>
-                <ColorPicker
-                  v-model="config.base.top"
-                  :color-options="dictionaries.colors"
-                />
-              </div>
-              <div class="color-row-item">
-                <span class="label-text">Środek Czapki</span>
-                <ColorPicker
-                  v-model="config.base.middle"
-                  :color-options="dictionaries.colors"
-                />
-              </div>
-              <div class="color-row-item">
-                <span class="label-text">Wywinięcie</span>
-                <ColorPicker
-                  v-model="config.base.bottom"
-                  :color-options="dictionaries.colors"
-                />
-              </div>
-            </div>
+        </div>
+        <div class="expanded-field half">
+          <label>Kolor Tekstu</label>
+          <div class="color-pill full-width space-between">
+            <ColorPicker
+              v-model="config.text.color"
+              :color-options="dictionaries.colors"
+              @hover="(hex) => emit('hover', { path: 'text.color', value: hex })"
+              @hover-end="emit('hover-end')"
+            />
+            <span class="hex-display">{{ config.text.color }}</span>
           </div>
-
-          <div class="expanded-column">
-            <h3 class="column-title">Wzory</h3>
-            
-            <div class="expanded-row">
-              <div class="expanded-field grow">
-                <label>Wzór Góra</label>
-                <div class="select-wrapper w-100"> 
-                  <PatternPicker 
-                  v-model="config.patterns.top" 
-                  :options="topPatterns" 
-                  :opt=true
-                  title="Wybierz wzór (Góra)"
-                />
-              </div>
-              </div>
-              <div class="expanded-field auto-width">
-                <label>Kolor</label>
-                <div class="color-pill justify-center">
-                  <ColorPicker v-model="config.pattern.top" :color-options="dictionaries.colors" />
-                </div>
-              </div>
-            </div>
-
-            <div class="expanded-row mt-2">
-              <div class="expanded-field grow">
-                <label>Wzór Środek</label>
-                <div class="select-wrapper w-100"> 
-                  <PatternPicker 
-                  v-model="config.patterns.bottom" 
-                  :options="bottomPatterns" 
-                  :opt=true
-                  title="Wybierz wzór (Góra)"
-                />
-              </div>
-              </div>
-              <div class="expanded-field auto-width">
-                <label>Kolor</label>
-                <div class="color-pill justify-center">
-                  <ColorPicker v-model="config.pattern.main" :color-options="dictionaries.colors" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="expanded-column">
-            
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <h3 class="column-title mb-0">Pompon</h3>
-              <div class="form-check form-switch mb-0">
-                <input class="form-check-input" type="checkbox" role="switch" id="pomponSwitch" v-model="config.pompons.show">
-              </div>
-            </div>
-            
-            <div :class="{ 'disabled-section': !config.pompons.show }">
-              
-              <div class="mode-selector mb-3">
-                 <button 
-                   v-for="opt in pomponOptions" 
-                   :key="opt.value"
-                   @click="pomponMode = opt.value"
-                   class="mode-btn"
-                   :class="{ active: pomponMode === opt.value }"
-                 >
-                   {{ opt.label }}
-                 </button>
-              </div>
-
-              <div class="pompon-grid-display">
-                 
-                 <div class="pompon-item">
-                   <label>{{ pomponMode === 'single' ? 'Kolor' : 'Kolor A' }}</label>
-                   <ColorPicker 
-                      :model-value="config.pompons.p1" 
-                      :color-options="dictionaries.colors" 
-                      @update:model-value="(hex) => updatePomponColor(1, hex)"
-                   />
-                 </div>
-
-                 <div class="pompon-item" v-if="pomponMode !== 'single'">
-                   <label>Kolor B</label>
-                   <ColorPicker 
-                      :model-value="config.pompons.p2" 
-                      :color-options="dictionaries.colors" 
-                      @update:model-value="(hex) => updatePomponColor(2, hex)"
-                   />
-                 </div>
-
-                 <div class="pompon-item" v-if="pomponMode === 'quad'">
-                   <label>Kolor C</label>
-                   <ColorPicker 
-                      :model-value="config.pompons.p3" 
-                      :color-options="dictionaries.colors" 
-                      @update:model-value="(hex) => updatePomponColor(3, hex)"
-                   />
-                 </div>
-
-                 <div class="pompon-item" v-if="pomponMode === 'quad'">
-                   <label>Kolor D</label>
-                   <ColorPicker 
-                      :model-value="config.pompons.p4" 
-                      :color-options="dictionaries.colors" 
-                      @update:model-value="(hex) => updatePomponColor(4, hex)"
-                   />
-                 </div>
-
-              </div>
-            </div>
-            
-          </div>
-          
         </div>
       </div>
+      </div>
+
+    <div class="expanded-column">
+      <h3 class="column-title">Kolory Czapki</h3>
+      <div class="color-list-rows">
+        <div class="color-row-item">
+          <span class="label-text">Góra Czapki</span>
+          <ColorPicker
+            v-model="config.base.top"
+            :color-options="dictionaries.colors"
+            @hover="(hex) => emit('hover', { path: 'base.top', value: hex })"
+            @hover-end="emit('hover-end')"
+          />
+        </div>
+        <div class="color-row-item">
+          <span class="label-text">Środek Czapki</span>
+          <ColorPicker
+            v-model="config.base.middle"
+            :color-options="dictionaries.colors"
+            @hover="(hex) => emit('hover', { path: 'base.middle', value: hex })"
+            @hover-end="emit('hover-end')"
+          />
+        </div>
+        <div class="color-row-item">
+          <span class="label-text">Wywinięcie</span>
+          <ColorPicker
+            v-model="config.base.bottom"
+            :color-options="dictionaries.colors"
+            @hover="(hex) => emit('hover', { path: 'base.bottom', value: hex })"
+            @hover-end="emit('hover-end')"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="expanded-column">
+      <h3 class="column-title">Wzory</h3>
+      <div class="expanded-row">
+        <div class="expanded-field grow">
+          <label>Wzór Góra</label>
+          <PatternPicker v-model="config.patterns.top" :options="topPatterns" :opt="true" />
+        </div>
+        <div class="expanded-field auto-width">
+          <label>Kolor</label>
+          <ColorPicker 
+            v-model="config.pattern.top" 
+            :color-options="dictionaries.colors"
+            @hover="(hex) => emit('hover', { path: 'pattern.top', value: hex })"
+            @hover-end="emit('hover-end')"
+          />
+        </div>
+      </div>
+      <div class="expanded-row mt-2">
+        <div class="expanded-field grow">
+          <label>Wzór Środek</label>
+          <PatternPicker v-model="config.patterns.bottom" :options="bottomPatterns" :opt="true" />
+        </div>
+        <div class="expanded-field auto-width">
+          <label>Kolor</label>
+          <ColorPicker 
+            v-model="config.pattern.main" 
+            :color-options="dictionaries.colors"
+            @hover="(hex) => emit('hover', { path: 'pattern.main', value: hex })"
+            @hover-end="emit('hover-end')"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="expanded-column">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="column-title mb-0">Pompon</h3>
+        <div class="form-check form-switch mb-0">
+          <input class="form-check-input" type="checkbox" role="switch" v-model="config.pompons.show">
+        </div>
+      </div>
+      <div :class="{ 'disabled-section': !config.pompons.show }">
+        <div class="mode-selector mb-3">
+           <button v-for="opt in pomponOptions" :key="opt.value" @click="pomponMode = opt.value" class="mode-btn" :class="{ active: pomponMode === opt.value }">
+             {{ opt.label }}
+           </button>
+        </div>
+        <div class="pompon-grid-display">
+           <div class="pompon-item">
+             <label>{{ pomponMode === 'single' ? 'Kolor' : 'Kolor A' }}</label>
+             <ColorPicker 
+                :model-value="config.pompons.p1" 
+                :color-options="dictionaries.colors" 
+                @update:model-value="(hex) => updatePomponColor(1, hex)"
+                @hover="(hex) => onPomponHover(1, hex)"
+                @hover-end="emit('hover-end')"
+             />
+           </div>
+           <div class="pompon-item" v-if="pomponMode !== 'single'">
+             <label>Kolor B</label>
+             <ColorPicker 
+                :model-value="config.pompons.p2" 
+                :color-options="dictionaries.colors" 
+                @update:model-value="(hex) => updatePomponColor(2, hex)"
+                @hover="(hex) => onPomponHover(2, hex)"
+                @hover-end="emit('hover-end')"
+             />
+           </div>
+           <div class="pompon-item" v-if="pomponMode === 'quad'">
+             <label>Kolor C</label>
+             <ColorPicker 
+                :model-value="config.pompons.p3" 
+                :color-options="dictionaries.colors" 
+                @update:model-value="(hex) => updatePomponColor(3, hex)"
+                @hover="(hex) => onPomponHover(3, hex)"
+                @hover-end="emit('hover-end')"
+             />
+           </div>
+           <div class="pompon-item" v-if="pomponMode === 'quad'">
+             <label>Kolor D</label>
+             <ColorPicker 
+                :model-value="config.pompons.p4" 
+                :color-options="dictionaries.colors" 
+                @update:model-value="(hex) => updatePomponColor(4, hex)"
+                @hover="(hex) => onPomponHover(4, hex)"
+                @hover-end="emit('hover-end')"
+             />
+           </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
     </div>
   </div>
 </template>
@@ -510,7 +485,21 @@ watch(pomponMode, (newMode) => {
     p.p4 = p.p2;
   }
 });
-
+const onPomponHover = (index, hex) => {
+  let paths = [];
+  
+  if (pomponMode.value === 'single') {
+    paths = ['pompons.p1', 'pompons.p2', 'pompons.p3', 'pompons.p4'];
+  } 
+  else if (pomponMode.value === 'dual') {
+    paths = index === 1 ? ['pompons.p1', 'pompons.p3'] : ['pompons.p2', 'pompons.p4'];
+  } 
+  else {
+    paths = [`pompons.p${index}`];
+  }
+  
+  emit('hover', { paths, value: hex });
+};
 const updatePomponColor = (index, hex) => {
   
   if (pomponMode.value === 'single') {

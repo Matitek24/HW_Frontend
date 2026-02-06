@@ -60,7 +60,11 @@ const props = defineProps({
 
 // ColorPicker.vue -> <script setup>
 const emit = defineEmits(['update:modelValue', 'hover', 'hover-end']);
+
+// --- TU BYŁ BŁĄD: Brakowało tej deklaracji ---
+const pickerTrigger = ref(null); 
 const dropdownEl = ref(null);
+
 const dropdownStyle = ref({});
 const isMobile = ref(window.innerWidth <= 768);
 const isClosing = ref(false);
@@ -71,7 +75,9 @@ const selectedIndex = computed(() => {
 });
 
 const updatePosition = () => {
+  // Teraz pickerTrigger.value będzie już widoczny
   if (!isMobile.value || !pickerTrigger.value || !isOpen.value) return;
+  
   const rect = pickerTrigger.value.getBoundingClientRect();
   const dropdownWidth = 240;
 
@@ -103,11 +109,10 @@ const togglePicker = async () => {
 
 const close = () => {
   if (isOpen.value) {
-    isClosing.value = true; // Blokujemy hover!
+    isClosing.value = true;
     emit('hover-end');
     activePickerId.value = null;
     
-    // Resetujemy flagę po krótkiej chwili, gdy okno już zniknie
     setTimeout(() => {
       isClosing.value = false;
     }, 300);
@@ -115,7 +120,7 @@ const close = () => {
 };
 
 const selectColor = (hex) => {
-  isClosing.value = true; // Blokujemy hover!
+  isClosing.value = true;
   emit('update:modelValue', hex);
   emit('hover-end');
   close();
@@ -123,8 +128,11 @@ const selectColor = (hex) => {
 
 const handleClickOutside = (event) => {
   if (!isOpen.value) return;
+
+  // Sprawdzamy, czy kliknięcie było wewnątrz dropdownu lub wewnątrz triggera
   const isClickInDropdown = dropdownEl.value && dropdownEl.value.contains(event.target);
   const isClickInTrigger = pickerTrigger.value && pickerTrigger.value.contains(event.target);
+
   if (!isClickInDropdown && !isClickInTrigger) {
     close();
   }
@@ -138,6 +146,7 @@ const handleResize = () => {
 const handleScroll = () => {
   if (isOpen.value && isMobile.value) updatePosition();
 };
+
 const handleMouseEnter = (hex) => {
   if (!isClosing.value) {
     emit('hover', hex);
@@ -145,13 +154,14 @@ const handleMouseEnter = (hex) => {
 };
 
 onMounted(() => {
-  document.addEventListener('click', handleClickOutside);
+  // Ważne: useCapture na true (trzeci parametr), żeby złapać kliknięcie przed innymi
+  document.addEventListener('click', handleClickOutside, true);
   window.addEventListener('resize', handleResize);
   window.addEventListener('scroll', handleScroll, true);
 });
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside);
+  document.removeEventListener('click', handleClickOutside, true);
   window.removeEventListener('resize', handleResize);
   window.removeEventListener('scroll', handleScroll, true);
   
