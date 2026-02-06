@@ -91,6 +91,7 @@
       <g :style="{ clipPath: `url(#prostokat3-${uniqueId})` }">
         <g :style="{ clipPath: `url(#prostokat2-${uniqueId})` }">
           <text 
+            ref="textElement"
             :x="658.14" 
             :y="finalTextPosition"
             :fill="config.text.color" 
@@ -99,6 +100,9 @@
             font-weight="bold"
             text-anchor="middle" 
             dominant-baseline="central"
+            xml:space="preserve"
+            style="white-space: pre; pointer-events: none;" 
+        
           >
             {{ config.text.content }}
           </text>

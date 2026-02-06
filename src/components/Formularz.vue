@@ -1,4 +1,6 @@
 <template>
+
+
   <div class="config-bar-container" :class="{ 'expanded': isExpanded }">
 
     <div class="toggle-wrapper" @click="toggleExpand">
@@ -39,7 +41,6 @@
                 <input type="text" v-model="config.text.color" class="hex-input" maxlength="7" />
               </div>
             </div>
-
           </div>
         </div>
 
@@ -156,7 +157,12 @@
         </div>
 
       </div>
+      <div v-show="!isExpanded" class="nano-footer-info">
 
+        <span class="nano-content">
+          Chcesz dodać logotyp na wywinięcie? Wyślij zapisaną wizualizację M38 wraz z plikiem logo do handlowca – dobierzemy najlepszą metodę znakowania (haft, naszywka, skórka).
+        </span>
+      </div>
       <div v-show="isExpanded" class="view-expanded">
         <div class="expanded-grid">
           <div class="expanded-column">
@@ -298,6 +304,11 @@
             </div>
           </div>
         </div>
+        <div class="nano-footer-info">
+          <span class="nano-content">
+          Chcesz dodać logotyp na wywinięcie? Wyślij zapisaną wizualizację M38 wraz z plikiem logo do handlowca – dobierzemy najlepszą metodę znakowania (haft, naszywka, skórka).
+        </span>
+       </div>
       </div>
     </div>
   </div>
@@ -308,6 +319,7 @@ import { reactive, ref, computed, watch } from 'vue';
 import ColorPicker from '../components/utils/ColorPicker.vue';
 import PatternPicker from '../components/utils/PatternPicker.vue';
 import FontPicker from '../components/utils/FontPicker.vue';
+
 const props = defineProps({
   config: {
     type: Object,
@@ -465,6 +477,82 @@ const bottomPatterns = computed(() =>
 </script>
 
 <style scoped>
+
+.view-expanded-compact {
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  margin-top: 10px;
+}
+
+.compact-config-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.compact-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.group-tag {
+  font-size: 9px;
+  font-weight: 800;
+  color: #adb5bd;
+  letter-spacing: 0.5px;
+}
+
+.compact-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nano-input {
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 12px;
+  width: 100px;
+  height: 32px;
+}
+
+.v-divider {
+  width: 1px;
+  height: 40px;
+  background: #f1f3f5;
+}
+
+.v-divider-sub {
+  width: 1px;
+  height: 20px;
+  background: #e9ecef;
+  margin: 0 4px;
+}
+
+.nano-footer-info {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #f8f9fa;
+  font-size: 10px;
+  color: #b1bdc4;
+  text-align: center;
+}
+
+.nano-switch {
+  width: 24px;
+  height: 12px;
+  margin: 0;
+}
+
+.disabled-op {
+  opacity: 0.3;
+  pointer-events: none;
+}
 /* Kontener pojedynczego elementu sterującego */
 .control-item {
   display: flex;
@@ -1343,5 +1431,7 @@ const bottomPatterns = computed(() =>
     height: 35px;
     width: 50px;
   }
+  
 }
+
 </style>

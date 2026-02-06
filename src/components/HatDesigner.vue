@@ -7,7 +7,9 @@
     </div>
 
     <template v-else>
-      
+      <ProductSidebar />
+
+    
       <TopBar 
         @download="handleDownloadRequest" 
         :isDownloading="isDownloading"
@@ -76,6 +78,7 @@
   import HatFront from './hat/HatFront.vue';
   import { defaultConfig, loadConfig, saveConfig } from '../utils/hatconfig.js';
   import { dictionaryAPI, projectAPI } from '../utils/axios.js';
+  import ProductSidebar from './ui/ProductSidebar.vue';
   
   const isDownloading = ref(false);
   const isInitLoading = ref(true);
@@ -415,7 +418,7 @@ const handleHoverEnd = () => {
   flex-wrap: wrap;        
   gap: 30px;              
   justify-content: center; 
-  padding-top: 60px;     
+  padding-top: 0px;     
 }
 
 .fade-in-content {

@@ -114,6 +114,9 @@
             :fill="config.text.color"
             text-anchor="middle" 
             letter-spacing="2"
+            xml:space="preserve"
+            style="white-space: pre; pointer-events: none;" 
+        
           >
             <textPath 
               xlink:href="#curvePath" 
