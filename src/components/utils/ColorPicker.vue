@@ -1,40 +1,49 @@
 <template>
   <div class="color-picker-wrapper" ref="pickerTrigger">
-
-    <div class="color-ring clickable" :style="{ backgroundColor: modelValue }" @click.stop="togglePicker"
-      :title="title">
-      <span v-if="selectedIndex !== -1" class="trigger-number">
-        {{ selectedIndex + 1 }}
-      </span>
+    <div 
+      class="color-ring clickable" 
+      :style="{ backgroundColor: modelValue }" 
+      @click.stop="togglePicker"
+    >
+      <div class="floating-tooltip main-trigger-tooltip">{{ getActiveColorName }}</div>
     </div>
 
-    <Teleport to="body" :disabled="!isMobile">
+    <Teleport to="body">
       <transition name="fade">
-        <div v-if="isOpen" :class="isMobile ? 'color-dropdown-fixed' : 'color-dropdown-absolute'"
-          :style="isMobile ? dropdownStyle : {}" ref="dropdownEl" @click.stop>
+        <div 
+          v-if="isOpen" 
+          :class="isMobile ? 'color-dropdown-fixed' : 'color-dropdown-absolute'"
+          :style="dropdownStyle" 
+          ref="dropdownEl" 
+          @click.stop
+        >
           <div class="color-dropdown-header">
-            <span>{{ label || title || 'Wybierz kolor' }}</span>
+            <span>{{ label || title || 'WYBIERZ KOLOR' }}</span>
             <button class="close-btn" @click="close">×</button>
           </div>
 
-          <div class="color-dropdown-grid">
-          <div 
-          v-for="(color, index) in colorOptions" 
-          :key="color.id" 
-          class="color-dropdown-swatch"
-          :style="{ backgroundColor: color.hex }"
-          @click="selectColor(color.hex)"
-          @mouseenter="handleMouseEnter(color.hex)" 
-          @mouseleave="!isClosing && emit('hover-end')"
-          :class="{ active: modelValue === color.hex }"
-        >
-              <span class="color-number">{{ index + 1 }}</span>
+          <div class="color-dropdown-grid" ref="gridEl">
+            <div 
+              v-for="(color, index) in colorOptions" 
+              :key="color.id" 
+              class="color-dropdown-swatch"
+              :style="{ backgroundColor: color.hex }"
+              @click="selectColor(color.hex)"
+              @mouseenter="(e) => handleSwatchHover(color, index, e)" 
+              @mouseleave="handleSwatchLeave"
+              :class="{ active: modelValue === color.hex }"
+            >
+              </div>
+          </div>
 
-              <svg v-if="modelValue === color.hex" class="checkmark-icon" viewBox="0 0 24 24" fill="none" stroke="white"
-                stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-            </div>
+          <div 
+            v-if="hoveredColor" 
+            class="floating-tooltip shared-tooltip" 
+            :class="{ 'is-bottom': tooltipIsBottom }"
+            :style="sharedTooltipStyle"
+          >
+            <span class="tooltip-name">{{ hoveredColor.nazwa }}</span>
+            <span class="tooltip-index">#{{ hoveredColorIndex + 1 }}</span>
           </div>
         </div>
       </transition>
@@ -45,10 +54,14 @@
 <script>
 import { ref } from 'vue';
 const activePickerId = ref(null);
+
+export default {
+  name: 'ColorPicker'
+}
 </script>
 
 <script setup>
-import { onMounted, onUnmounted, computed, nextTick, ref } from 'vue';
+import { onMounted, onUnmounted, computed, nextTick, ref, reactive } from 'vue';
 
 const props = defineProps({
   modelValue: { type: String, required: true },
@@ -58,42 +71,65 @@ const props = defineProps({
   pickerId: { type: String, default: () => `cp-${Math.random().toString(36).substr(2, 9)}` }
 });
 
-// ColorPicker.vue -> <script setup>
 const emit = defineEmits(['update:modelValue', 'hover', 'hover-end']);
 
-// --- TU BYŁ BŁĄD: Brakowało tej deklaracji ---
+// --- REFS & STATE ---
 const pickerTrigger = ref(null); 
 const dropdownEl = ref(null);
-
-const dropdownStyle = ref({});
-const isMobile = ref(window.innerWidth <= 768);
 const isClosing = ref(false);
+
+const isMobile = ref(window.innerWidth <= 768);
+const dropdownStyle = ref({});
 const isOpen = computed(() => activePickerId.value === props.pickerId);
 
-const selectedIndex = computed(() => {
-  return props.colorOptions.findIndex(c => c.hex === props.modelValue);
+// Shared Tooltip State
+const hoveredColor = ref(null);
+const hoveredColorIndex = ref(null);
+const tooltipIsBottom = ref(false);
+const sharedTooltipStyle = reactive({ 
+  top: '0px', 
+  left: '0px', 
+  opacity: 0,
+  transform: 'translate(-50%, -100%)' // Domyślna pozycja startowa
 });
 
+// --- HELPERS ---
+const getActiveColorName = computed(() => {
+  const activeColor = props.colorOptions.find(c => c.hex === props.modelValue);
+  return activeColor ? activeColor.nazwa : props.modelValue;
+});
+
+// --- CORE LOGIC ---
+
+// Obliczanie pozycji okna (Fixed positioning dla Teleportu)
 const updatePosition = () => {
-  // Teraz pickerTrigger.value będzie już widoczny
-  if (!isMobile.value || !pickerTrigger.value || !isOpen.value) return;
+  if (!pickerTrigger.value || !isOpen.value) return;
   
   const rect = pickerTrigger.value.getBoundingClientRect();
   const dropdownWidth = 240;
-
+  
+  // Centrowanie względem guzika
   let left = rect.left + (rect.width / 2) - (dropdownWidth / 2);
-  let top = rect.top - 310;
+  let top = rect.top - 310; // Domyślnie nad guzikiem
 
-  if (left < 10) left = 10;
-  if (left + dropdownWidth > window.innerWidth - 10) {
-    left = window.innerWidth - dropdownWidth - 10;
+  // Marginesy ekranu
+  const margin = 10;
+  if (left < margin) left = margin;
+  if (left + dropdownWidth > window.innerWidth - margin) {
+    left = window.innerWidth - dropdownWidth - margin;
   }
-  if (top < 10) top = rect.bottom + 10;
+
+  // Jeśli brak miejsca u góry, pokaż pod spodem
+  if (top < margin) {
+    top = rect.bottom + 10;
+  }
 
   dropdownStyle.value = {
+    position: 'fixed',
     top: `${top}px`,
     left: `${left}px`,
-    width: `${dropdownWidth}px`
+    width: `${dropdownWidth}px`,
+    zIndex: 999999
   };
 };
 
@@ -103,251 +139,239 @@ const togglePicker = async () => {
   } else {
     activePickerId.value = props.pickerId;
     await nextTick();
-    if (isMobile.value) updatePosition();
+    updatePosition();
   }
 };
 
 const close = () => {
-  if (isOpen.value) {
-    isClosing.value = true;
+  if (activePickerId.value === props.pickerId) {
+    isClosing.value = true; 
     emit('hover-end');
     activePickerId.value = null;
-    
-    setTimeout(() => {
+        setTimeout(() => {
       isClosing.value = false;
     }, 300);
   }
 };
 
 const selectColor = (hex) => {
-  isClosing.value = true;
+  isClosing.value = true; 
   emit('update:modelValue', hex);
   emit('hover-end');
   close();
 };
+// --- TOOLTIP LOGIC ---
+
+const handleSwatchHover = async (color, index, event) => {
+  if(isClosing.value) return;
+  hoveredColor.value = color;
+  hoveredColorIndex.value = index;
+  emit('hover', color.hex);
+
+  await nextTick();
+  if (!dropdownEl.value) return;
+
+  const swatch = event.currentTarget;
+  const dropdownRect = dropdownEl.value.getBoundingClientRect();
+  const swatchRect = swatch.getBoundingClientRect();
+
+  let left = swatchRect.left - dropdownRect.left + (swatchRect.width / 2);
+  let top = swatchRect.top - dropdownRect.top;
+  if (top < 40) {
+    tooltipIsBottom.value = true;
+    top = swatchRect.bottom - dropdownRect.top + 8;
+  } else {
+    tooltipIsBottom.value = false;
+    top = top - 8; 
+  }
+
+  sharedTooltipStyle.left = `${left}px`;
+  sharedTooltipStyle.top = `${top}px`;
+  sharedTooltipStyle.opacity = 1;
+};
+
+const handleSwatchLeave = () => {
+  hoveredColor.value = null;
+  sharedTooltipStyle.opacity = 0;
+  emit('hover-end');
+};
+
+// --- EVENTS ---
 
 const handleClickOutside = (event) => {
   if (!isOpen.value) return;
-
-  // Sprawdzamy, czy kliknięcie było wewnątrz dropdownu lub wewnątrz triggera
-  const isClickInDropdown = dropdownEl.value && dropdownEl.value.contains(event.target);
-  const isClickInTrigger = pickerTrigger.value && pickerTrigger.value.contains(event.target);
-
-  if (!isClickInDropdown && !isClickInTrigger) {
-    close();
+  const target = event.target;
+  if (dropdownEl.value?.contains(target) || pickerTrigger.value?.contains(target)) {
+    return;
   }
+  close();
 };
 
-const handleResize = () => {
+const handleResizeOrScroll = () => {
   isMobile.value = window.innerWidth <= 768;
-  if (isOpen.value && isMobile.value) updatePosition();
-};
-
-const handleScroll = () => {
-  if (isOpen.value && isMobile.value) updatePosition();
-};
-
-const handleMouseEnter = (hex) => {
-  if (!isClosing.value) {
-    emit('hover', hex);
-  }
+  if (isOpen.value) updatePosition();
 };
 
 onMounted(() => {
-  // Ważne: useCapture na true (trzeci parametr), żeby złapać kliknięcie przed innymi
   document.addEventListener('click', handleClickOutside, true);
-  window.addEventListener('resize', handleResize);
+  window.addEventListener('resize', handleResizeOrScroll);
   window.addEventListener('scroll', handleScroll, true);
 });
 
+// Fix na scroll event (throttling niepotrzebny przy fixed, ale capture ważne)
+const handleScroll = () => { if(isOpen.value) updatePosition(); };
+
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside, true);
-  window.removeEventListener('resize', handleResize);
+  window.removeEventListener('resize', handleResizeOrScroll);
   window.removeEventListener('scroll', handleScroll, true);
-  
-  if (isOpen.value) {
-    emit('hover-end');
-    activePickerId.value = null;
-  }
 });
 </script>
 
 <style scoped>
-.color-picker-wrapper {
-  position: relative;
-  display: inline-block;
-  vertical-align: middle;
-}
+/* WRAPPER */
+.color-picker-wrapper { position: relative; display: inline-block; vertical-align: middle; }
 
+/* TRIGGER (GŁÓWNY GUZIK) */
 .color-ring.clickable {
-  cursor: pointer;
-  width: 32px;
-  height: 32px;
+  cursor: pointer; 
+  width: 32px; 
+  height: 32px; 
   border-radius: 50%;
-  border: 2px solid #fff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  transition: transform 0.1s;
-
-  /* Ważne dla pozycjonowania numerka */
-  position: relative;
-  display: flex;
-  align-items: center;
+  border: 2px solid #fff; 
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  display: flex; 
+  align-items: center; 
   justify-content: center;
+  transition: transform 0.2s ease;
 }
+.color-ring.clickable:hover { transform: scale(1.05); }
 
-.color-ring.clickable:hover {
-  transform: scale(1.1);
-}
-
-.trigger-number {
-  color: #fff;
-
-  /* Mały i lekki font */
-  font-size: 11px;
-  font-weight: 500;
-  /* Regular/Medium, nie Bold */
-
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  /* Szybkie, lekkie przejście */
-  pointer-events: none;
-  user-select: none;
-}
-
-/* Pojawia się po najechaniu */
-.color-ring:hover .trigger-number {
-  opacity: 1;
-}
-
-/* --- Reszta stylów bez zmian --- */
-.color-dropdown-fixed {
-  position: fixed;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05);
-  padding: 12px;
-  z-index: 99999;
-}
-
-.color-dropdown-absolute {
+/* TRIGGER TOOLTIP (Ten biały nad guzikiem) */
+.main-trigger-tooltip {
   position: absolute;
-  bottom: calc(100% + 10px);
-  left: 50%;
+  bottom: 130%; left: 50%;
   transform: translateX(-50%);
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
-  padding: 12px;
-  z-index: 20000;
-  min-width: 240px;
-}
-
-.color-dropdown-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 8px;
-  margin-bottom: 8px;
-  border-bottom: 1px solid #f3f4f6;
-}
-
-.color-dropdown-header span {
-  font-size: 12px;
-  font-weight: 600;
-  color: #6b7280;
-  text-transform: uppercase;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 20px;
-  color: #9ca3af;
-  cursor: pointer;
-  padding: 0;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
-}
-
-.close-btn:hover {
-  background: #f3f4f6;
-}
-
-.color-dropdown-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 6px;
-  max-height: 280px;
-  overflow-y: auto;
-  padding-right: 8px;
-}
-
-.color-dropdown-swatch {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid #fff;
-  box-shadow: 0 0 0 1px #e5e7eb;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.color-dropdown-swatch.active {
-  box-shadow: 0 0 0 2px #3b82f6, 0 0 0 4px #fff;
-}
-
-/* Styl numerka w dropdownie (też odchudzony) */
-.color-number {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0.9);
-
-  font-size: 12px;
-  /* Też trochę mniejszy */
-  font-weight: 500;
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
-
-  opacity: 0;
+  background: #ffffff; 
+  color: #1f2937; 
+  border: 1px solid #e5e7eb;
+  padding: 5px 10px; 
+  border-radius: 6px;
+  font-size: 10px; 
+  font-weight: 700;
+  white-space: nowrap; 
   pointer-events: none;
-  z-index: 2;
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  opacity: 0; 
+  transition: opacity 0.2s, transform 0.2s;
+}
+.color-ring:hover .main-trigger-tooltip { opacity: 1; transform: translateX(-50%) translateY(-5px); }
+.main-trigger-tooltip::after {
+  content: ''; position: absolute; top: 100%; left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px; border-style: solid;
+  border-color: #ffffff transparent transparent transparent;
 }
 
-.color-dropdown-swatch:hover .color-number {
-  opacity: 1;
-  transform: translate(-50%, -50%) scale(1);
+/* DROPDOWN (OKNO) */
+.color-dropdown-absolute, .color-dropdown-fixed {
+  background: #ffffff;
+  border-radius: 12px; /* Lekko mniejsze zaokrąglenie */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0,0,0,0.05);
+  padding: 12px;
+  z-index: 999999;
+  /* Fixed height/width logic handled in JS */
 }
 
-.checkmark-icon {
-  width: 16px;
-  height: 16px;
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
-  transition: opacity 0.3s ease;
+/* NAGŁÓWEK DROPDOWNU */
+.color-dropdown-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-bottom: 8px; margin-bottom: 8px; 
+  border-bottom: 1px solid #f1f3f5;
+}
+.color-dropdown-header span { 
+  font-size: 11px; font-weight: 700; color: #9ca3af; letter-spacing: 0.5px; 
+}
+.close-btn { 
+  background: none; border: none; font-size: 18px; line-height: 1;
+  cursor: pointer; color: #adb5bd; padding: 0 4px;
+}
+.close-btn:hover { color: #495057; }
+
+/* GRID KOLORÓW */
+.color-dropdown-grid {
+  display: grid; 
+  grid-template-columns: repeat(5, 1fr); 
+  gap: 6px; /* Mniejszy odstęp dla zwartości */
+  max-height: 260px; 
+  overflow-y: auto; 
+  overflow-x: hidden;
+  padding: 2px; /* Margines na focus ring */
 }
 
-.color-dropdown-swatch.active:hover .checkmark-icon {
-  opacity: 0;
+/* SWATCH (GUZIK KOLORU W PALECIE) */
+.color-dropdown-swatch {
+  width: 30px; /* ZMNIEJSZONE z 36px */
+  height: 30px; /* ZMNIEJSZONE z 36px */
+  border-radius: 50%; 
+  cursor: pointer;
+  border: 1px solid rgba(0,0,0,0.05); 
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  position: relative;
+}
+.color-dropdown-swatch:hover {
+  transform: scale(1.15);
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+.color-dropdown-swatch.active {
+  box-shadow: 0 0 0 2px #3b82f6, 0 0 0 4px #fff; /* Niebieski pierścień aktywności */
+  z-index: 5;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s;
+/* SHARED TOOLTIP (CIEMNY DYMEK W PALECIE) */
+.shared-tooltip {
+  position: absolute;
+  /* Ciemny styl, który chciałeś */
+  background: #1f2937; /* Ciemny grafit/antracyt */
+  color: #ffffff;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1000000;
+  
+  /* Transformacja */
+  transform: translateX(-50%) translateY(-100%);
+  transition: opacity 0.1s ease, transform 0.1s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
+/* Wariant pod spodem */
+.shared-tooltip.is-bottom {
+  transform: translateX(-50%) translateY(0);
 }
+
+/* Strzałka dla ciemnego dymka */
+.shared-tooltip::after {
+  content: ''; position: absolute; top: 100%; left: 50%;
+  transform: translateX(-50%);
+  border-width: 4px; border-style: solid;
+  border-color: #1f2937 transparent transparent transparent;
+}
+.shared-tooltip.is-bottom::after {
+  bottom: 100%; top: auto;
+  border-color: transparent transparent #1f2937 transparent;
+}
+
+/* STYL TREŚCI W DYMKU */
+.tooltip-name { display: block; text-transform: uppercase; line-height: 1.2; }
+.tooltip-index { display: block; font-size: 8px; color: #9ca3af; margin-top: 1px; font-weight: 400; }
+
+/* TRANSITIONS */
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
 </style>

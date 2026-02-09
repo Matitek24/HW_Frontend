@@ -12,7 +12,7 @@
 
     <div class="config-bar">
 
-      <div v-show="!isExpanded" class="view-compact">
+      <div v-if="!isExpanded" class="view-compact">
 
         <div class="group-section">
 
@@ -134,22 +134,17 @@
 
           <div class="pompon-carousel" :class="{ 'disabled-section': !config.pompons.show }">
             <div class="color-pill compact">
-              <ColorPicker :model-value="config.pompons.p1" :color-options="dictionaries.colors" title="Pompon (Główny)"
-                @update:model-value="(hex) => updatePomponColor(1, hex)" @hover="(hex) => onPomponHover(1, hex)"
-                @hover-end="$emit('hover-end')" />
+              <ColorPicker :model-value="config.pompons.p2" :color-options="dictionaries.colors"
+                title="Pompon (Kolor 1)" @update:model-value="(hex) => updatePomponColor(2, hex)"
+                @hover="(hex) => onPomponHover(2, hex)" @hover-end="$emit('hover-end')" />
 
-              <ColorPicker v-if="pomponMode !== 'single'" :model-value="config.pompons.p2"
-                :color-options="dictionaries.colors" title="Pompon (Drugi)"
-                @update:model-value="(hex) => updatePomponColor(2, hex)" @hover="(hex) => onPomponHover(2, hex)"
-                @hover-end="$emit('hover-end')" />
-
-              <ColorPicker v-if="pomponMode === 'quad'" :model-value="config.pompons.p3"
-                :color-options="dictionaries.colors" title="Pompon (Trzeci)"
+              <ColorPicker v-if="pomponMode !== 'single'" :model-value="config.pompons.p3"
+                :color-options="dictionaries.colors" title="Pompon (Kolor 2)"
                 @update:model-value="(hex) => updatePomponColor(3, hex)" @hover="(hex) => onPomponHover(3, hex)"
                 @hover-end="$emit('hover-end')" />
 
-              <ColorPicker v-if="pomponMode === 'quad'" :model-value="config.pompons.p4"
-                :color-options="dictionaries.colors" title="Pompon (Czwarty)"
+              <ColorPicker v-if="pomponMode === 'triple'" :model-value="config.pompons.p4"
+                :color-options="dictionaries.colors" title="Pompon (Kolor 3)"
                 @update:model-value="(hex) => updatePomponColor(4, hex)" @hover="(hex) => onPomponHover(4, hex)"
                 @hover-end="$emit('hover-end')" />
             </div>
@@ -157,13 +152,14 @@
         </div>
 
       </div>
-      <div v-show="!isExpanded" class="nano-footer-info">
+      <div v-if="!isExpanded" class="nano-footer-info">
 
         <span class="nano-content">
-          Chcesz dodać logotyp na wywinięcie? Wyślij zapisaną wizualizację M38 wraz z plikiem logo do handlowca – dobierzemy najlepszą metodę znakowania (haft, naszywka, skórka).
+          Chcesz dodać logotyp na wywinięcie? Wyślij zapisaną wizualizację M38 wraz z plikiem logo do handlowca –
+          dobierzemy najlepszą metodę znakowania (haft, naszywka, skórka).
         </span>
       </div>
-      <div v-show="isExpanded" class="view-expanded">
+      <div v-if="isExpanded" class="view-expanded">
         <div class="expanded-grid">
           <div class="expanded-column">
             <h3 class="column-title">Napis</h3>
@@ -177,19 +173,16 @@
                 <label>Czcionka</label>
                 <div class="select-wrapper">
                   <FontPicker v-model="config.text.font" :options="dictionaries.fonts"
-                @hover="(fontVal) => $emit('hover', { path: 'text.font', value: fontVal })"
-                @hover-end="$emit('hover-end')" />
+                    @hover="(fontVal) => $emit('hover', { path: 'text.font', value: fontVal })"
+                    @hover-end="$emit('hover-end')" />
                 </div>
               </div>
               <div class="expanded-field half">
                 <label>Kolor Tekstu</label>
                 <div class="color-pill full-width space-between">
-                  <ColorPicker
-              v-model="config.text.color"
-              :color-options="dictionaries.colors"
-              @hover="(hex) => emit('hover', { path: 'text.color', value: hex })"
-              @hover-end="emit('hover-end')"
-            />
+                  <ColorPicker v-model="config.text.color" :color-options="dictionaries.colors"
+                    @hover="(hex) => emit('hover', { path: 'text.color', value: hex })"
+                    @hover-end="emit('hover-end')" />
                   <span class="hex-display">{{ config.text.color }}</span>
                 </div>
               </div>
@@ -278,37 +271,33 @@
               <div class="pompon-grid-display">
                 <div class="pompon-item">
                   <label>{{ pomponMode === 'single' ? 'Kolor' : 'Kolor A' }}</label>
-                  <ColorPicker :model-value="config.pompons.p1" :color-options="dictionaries.colors"
-                    @update:model-value="(hex) => updatePomponColor(1, hex)" @hover="(hex) => onPomponHover(1, hex)"
-                    @hover-end="emit('hover-end')" />
-                </div>
-                <div class="pompon-item" v-if="pomponMode !== 'single'">
-                  <label>Kolor B</label>
                   <ColorPicker :model-value="config.pompons.p2" :color-options="dictionaries.colors"
                     @update:model-value="(hex) => updatePomponColor(2, hex)" @hover="(hex) => onPomponHover(2, hex)"
                     @hover-end="emit('hover-end')" />
                 </div>
-                <div class="pompon-item" v-if="pomponMode === 'quad'">
-                  <label>Kolor C</label>
+                <div class="pompon-item" v-if="pomponMode !== 'single'">
+                  <label>Kolor B</label>
                   <ColorPicker :model-value="config.pompons.p3" :color-options="dictionaries.colors"
                     @update:model-value="(hex) => updatePomponColor(3, hex)" @hover="(hex) => onPomponHover(3, hex)"
                     @hover-end="emit('hover-end')" />
                 </div>
-                <div class="pompon-item" v-if="pomponMode === 'quad'">
-                  <label>Kolor D</label>
+                <div class="pompon-item" v-if="pomponMode === 'triple'">
+                  <label>Kolor C</label>
                   <ColorPicker :model-value="config.pompons.p4" :color-options="dictionaries.colors"
                     @update:model-value="(hex) => updatePomponColor(4, hex)" @hover="(hex) => onPomponHover(4, hex)"
                     @hover-end="emit('hover-end')" />
                 </div>
+
               </div>
             </div>
           </div>
         </div>
         <div class="nano-footer-info">
           <span class="nano-content">
-          Chcesz dodać logotyp na wywinięcie? Wyślij zapisaną wizualizację M38 wraz z plikiem logo do handlowca – dobierzemy najlepszą metodę znakowania (haft, naszywka, skórka).
-        </span>
-       </div>
+            Chcesz dodać logotyp na wywinięcie? Wyślij zapisaną wizualizację M38 wraz z plikiem logo do handlowca –
+            dobierzemy najlepszą metodę znakowania (haft, naszywka, skórka).
+          </span>
+        </div>
       </div>
     </div>
   </div>
@@ -376,19 +365,9 @@ const emit = defineEmits(['toggle-expand', 'hover', 'hover-end']); // dodaj hove
 
 const detectInitialMode = () => {
   const { p1, p2, p3, p4 } = props.config.pompons;
-
-  // Sprawdzamy czy wszystkie 4 kolory są identyczne
-  if (p1 === p2 && p2 === p3 && p3 === p4) {
-    return 'single';
-  }
-
-  // Sprawdzamy układ "na przemian" (1 taki sam jak 3, a 2 taki sam jak 4)
-  if (p1 === p3 && p2 === p4) {
-    return 'dual';
-  }
-
-  // W każdym innym przypadku zakładamy, że to 4 różne kolory
-  return 'quad';
+  if (p1 === p2 && p2 === p3 && p3 === p4) return 'single';
+  if (p1 === p3 && p2 === p4) return 'dual';
+  return 'triple'; // Domyślnie 3 kolory, jeśli nie 1 lub 2
 };
 // 2. Inicjalizacja refa wynikiem tej funkcji
 const pomponMode = ref(detectInitialMode());
@@ -415,44 +394,42 @@ const onPomponHover = (index, hex) => {
     paths = ['pompons.p1', 'pompons.p2', 'pompons.p3', 'pompons.p4'];
   }
   else if (pomponMode.value === 'dual') {
-    paths = index === 1 ? ['pompons.p1', 'pompons.p3'] : ['pompons.p2', 'pompons.p4'];
+    paths = index === 2 ? ['pompons.p2', 'pompons.p3'] : ['pompons.p4', 'pompons.p1'];
   }
-  else {
-    paths = [`pompons.p${index}`];
+  else if (pomponMode.value === 'triple') {
+    if (index === 2) paths = ['pompons.p2'];
+    if (index === 3) paths = ['pompons.p3'];
+    if (index === 4) paths = ['pompons.p4', 'pompons.p1']; // Podświetla oba zsynchronizowane segmenty
   }
 
   emit('hover', { paths, value: hex });
 };
+
 const updatePomponColor = (index, hex) => {
+  const p = props.config.pompons;
 
   if (pomponMode.value === 'single') {
-    props.config.pompons.p1 = hex;
-    props.config.pompons.p2 = hex;
-    props.config.pompons.p3 = hex;
-    props.config.pompons.p4 = hex;
+    p.p1 = p.p2 = p.p3 = p.p4 = hex;
   }
   else if (pomponMode.value === 'dual') {
-
-    if (index === 1) {
-      props.config.pompons.p1 = hex;
-      props.config.pompons.p3 = hex;
-    } else if (index === 2) {
-      props.config.pompons.p2 = hex;
-      props.config.pompons.p4 = hex;
-    }
+    // W trybie 2 kolorów: p2 steruje p2 i p3, a p4 steruje p4 i p1
+    if (index === 2) { p.p2 = p.p3 = hex; }
+    else if (index === 4) { p.p4 = p.p1 = hex; }
   }
-  else {
-    if (index === 1) props.config.pompons.p1 = hex;
-    if (index === 2) props.config.pompons.p2 = hex;
-    if (index === 3) props.config.pompons.p3 = hex;
-    if (index === 4) props.config.pompons.p4 = hex;
+  else if (pomponMode.value === 'triple') {
+    if (index === 2) p.p2 = hex;
+    if (index === 3) p.p3 = hex;
+    if (index === 4) {
+      p.p4 = hex;
+      p.p1 = hex; // Automatyczna synchronizacja p1 z p4
+    }
   }
 };
 
 const pomponOptions = [
   { value: 'single', label: '1' },
   { value: 'dual', label: '2' },
-  { value: 'quad', label: '4' },
+  { value: 'triple', label: '3' },
 ];
 
 
@@ -477,7 +454,34 @@ const bottomPatterns = computed(() =>
 </script>
 
 <style scoped>
+@media (max-width: 600px) {
+  /* Zmniejszamy odstępy w małym pasku */
+  .view-compact {
+    gap: 10px;
+    padding: 0 5px;
+  }
 
+  /* Ukrywamy etykiety w kompakcie na mobile - klucz do oszczędności miejsca */
+  .view-compact .mini-label {
+    display: none;
+  }
+
+  .view-compact .control-item {
+    padding: 4px;
+    min-width: auto; /* Pozwól im być tak wąskimi jak potrzeba */
+  }
+
+  /* Węższe pola */
+  .text-main {
+    width: 90px !important;
+    font-size: 13px;
+  }
+
+  /* Ukryj kod HEX obok pickera - na mobile wystarczy samo kółko koloru */
+  .view-compact .hex-input {
+    display: none;
+  }
+}
 .view-expanded-compact {
   padding: 10px 20px;
   background: rgba(255, 255, 255, 0.9);
@@ -553,6 +557,7 @@ const bottomPatterns = computed(() =>
   opacity: 0.3;
   pointer-events: none;
 }
+
 /* Kontener pojedynczego elementu sterującego */
 .control-item {
   display: flex;
@@ -562,7 +567,7 @@ const bottomPatterns = computed(() =>
   gap: 6px;
   padding: 8px;
   border-radius: 12px;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease;
   min-width: 80px;
 }
 
@@ -900,7 +905,7 @@ const bottomPatterns = computed(() =>
 }
 
 .color-dropdown-swatch.active {
-  border-color: #3b82f6;
+  border-color: #45bbe6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
@@ -981,7 +986,7 @@ const bottomPatterns = computed(() =>
   padding: 0 20px;
   z-index: 100;
   font-family: 'Inter', sans-serif;
-  transition: all 0.5s ease-in-out;
+  transition: transoform 0.5s ease-in-out;
 }
 
 /* Zmiana layoutu po rozwinięciu */
@@ -1431,7 +1436,6 @@ const bottomPatterns = computed(() =>
     height: 35px;
     width: 50px;
   }
-  
-}
 
+}
 </style>
