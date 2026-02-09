@@ -6,6 +6,10 @@ import { inlineStyles } from './inlineStyles.js';
 import { embedCurrentFont } from './embedFont.js';
 import { exportSvgToImage } from './exportSvg.js'; 
 
+// --- KONFIGURACJA KOLORYSTYCZNA (Ciemny Grafit) ---
+const THEME_COLOR = [44, 62, 80]; 
+const SECONDARY_TEXT = [100, 116, 139];
+
 const captureFlatHat = async (flatComponentRef, config) => {
   return new Promise(async (resolve) => {
     try {
@@ -19,7 +23,6 @@ const captureFlatHat = async (flatComponentRef, config) => {
       const viewBox = svgElement.viewBox.baseVal;
       const vW = viewBox.width || 1316.28;
       const vH = viewBox.height || 800.63;
-      
       const aspectRatio = vW / vH;
 
       const scale = 2; 
@@ -44,7 +47,7 @@ const captureFlatHat = async (flatComponentRef, config) => {
         if (config.text?.content) {
           const fontName = config.text.font || 'Arial';
           const fontSize = (config.text.fontSize || 64) * scale;
-          const fontWeight = ['tahoma', 'arialbold'].includes(fontName) ? 'bold' : 'normal';
+          const fontWeight = ['tahoma', 'arialbold', 'impact'].includes(fontName.toLowerCase()) ? 'bold' : 'normal';
 
           const textY = (395 - (config.text.offsetY || 0)) * scale; 
           const textX = (vW / 2) * scale;
@@ -74,7 +77,6 @@ const captureFrontHat = async (frontComponentRef, config, showPompon) => {
   try {
     const svgEl = frontComponentRef.svgRef;
     const pomponElRef = frontComponentRef.pomponRef;
-
     if (!svgEl) return null;
 
     const vb = svgEl.viewBox.baseVal;
@@ -120,15 +122,22 @@ export function useGeneratorWizualizacji() {
     doc.addFont("Roboto-Regular.ttf", "Roboto", "bold");
     doc.setFont("Roboto");
 
-    doc.setFillColor(41, 128, 185);
+    // Nagłówek Grafitowy
+    doc.setFillColor(...THEME_COLOR);
     doc.rect(0, 0, 210, 40, 'F');
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(24);
-    doc.text("WIZUALIZACJA CZAPKI", 105, 15, { align: 'center' });
+    
+    doc.setFontSize(22);
+    doc.setFont("Roboto", "bold");
+    doc.text("WIZUALIZACJA CZAPKI M38", 105, 15, { align: 'center' });
+    
     doc.setFontSize(9);
-    doc.text(`ID Projektu: ${project.id}  |  Data: ${project.createdAt}`, 105, 23, { align: 'center' });
-    doc.setFontSize(8);
-    doc.text("* Kolory mogą się różnić przez wyświetlanie na monitorach - jest to tylko wizualizacja", 105, 35, { align: 'center', style: 'italic' });
+    doc.setFont("Roboto", "normal");
+    doc.text(`ID PROJEKTU: ${project.id}  |  DATA: ${project.createdAt}`, 105, 23, { align: 'center' });
+    
+    doc.setFontSize(7.5);
+    doc.setTextColor(200, 200, 200);
+    doc.text("* Kolory mogą się różnić przez wyświetlanie na monitorach - jest to tylko wizualizacja", 105, 34, { align: 'center', style: 'italic' });
 
     const config = project.config; 
     const isPompon = config.pompons?.show;
@@ -137,72 +146,85 @@ export function useGeneratorWizualizacji() {
       flatRef ? captureFlatHat(flatRef, config) : null,
       frontRef ? captureFrontHat(frontRef, config, isPompon) : null
     ]);
-    const startY = 65;
     
+    const startY = 60;
     doc.setTextColor(0, 0, 0);
     
-    // --- FLAT (Lewa strona) ---
+    // Wizualizacje
     if (resFlat && resFlat.dataUrl) {
-      doc.setFontSize(11);
-      
-      const width = 90;
+      const width = 85;
       const height = width / resFlat.ratio; 
-      
-      doc.addImage(resFlat.dataUrl, 'PNG', 15, startY + 44 , width, height);
+      doc.addImage(resFlat.dataUrl, 'PNG', 15, startY + 38, width, height);
     }
 
-    // --- 3D (Prawa strona) ---
     if (res3D && res3D.dataUrl) {
-      doc.setFontSize(11);
-      
       const width = 80;
       doc.addImage(res3D.dataUrl, 'PNG', 115, startY, width, 0);
     }
 
-    // ========== TABELA PARAMETRÓW ==========
-    const tableY = 190;
+    // ========== TABELA PARAMETRÓW (ZMNIEJSZONA) ==========
+    const tableY = 180;
     
-    doc.setFontSize(12);
-    doc.setTextColor(41, 128, 185);
-
-    doc.setTextColor(0, 0, 0);
     autoTable(doc, {
       startY: tableY,
-      head: [['Parametr', 'Wartosc']],
+      head: [['PARAMETR PRODUKTU', 'WYBRANA WARTOŚĆ']],
       body: [
         ['Góra (Top)', config.base.top || '-'],
         ['Środek (Middle)', config.base.middle || '-'],
         ['Dół (Bottom)', config.base.bottom || '-'],
-        ['Tekst', config.text.content || 'Brak'],
+        ['Tekst / Napis', config.text.content || 'Brak'],
+        ['Czcionka', config.text.font || 'Arial'],
       ],
       styles: { 
         font: "Roboto",
-        fontSize: 10,
-        cellPadding: 4,
+        fontSize: 9, // Zmniejszono z 10
+        cellPadding: 3, // Zmniejszono z 4
       },
       headStyles: {
-        fillColor: [41, 128, 185],
+        fillColor: THEME_COLOR,
         textColor: 255,
         fontStyle: 'bold',
-        halign: 'center'
+        halign: 'left'
       },
       alternateRowStyles: {
-        fillColor: [245, 245, 245]
-      }
+        fillColor: [250, 250, 250]
+      },
+      margin: { left: 15, right: 15 }
     });
+
+    // ========== NOWA LEKKA NOTKA POD TABELKĄ ==========
+    const finalY = doc.lastAutoTable.finalY + 12;
+    
+    // Tło notki (bardzo jasny szary)
+    doc.setFillColor(248, 250, 252);
+    doc.rect(15, finalY, 180, 22, 'F');
+    
+    // Border-left (Grafitowy pasek)
+    doc.setFillColor(...THEME_COLOR);
+    doc.rect(15, finalY, 1.2, 22, 'F');
+
+    doc.setFontSize(8.5);
+    doc.setTextColor(...THEME_COLOR);
+    doc.setFont("Roboto", "bold");
+    doc.text("INFORMACJA:", 20, finalY + 7);
+
+    doc.setFont("Roboto", "normal");
+    doc.setTextColor(50, 50, 50);
+    const disclaimer = "Wizualizacja ma charakter poglądowy. Ostateczna akceptacja odbywa się na podstawie przesłanego programu dziewiarskiego. W przypadku braku wybranego koloru przędzy, handlowiec zaproponuje najbliższy zamiennik.";
+    const splitNote = doc.splitTextToSize(disclaimer, 170);
+    doc.text(splitNote, 20, finalY + 13);
 
     // ========== STOPKA ==========
     const pageHeight = doc.internal.pageSize.height;
-    doc.setFillColor(240, 240, 240);
+    doc.setFillColor(245, 245, 245);
     doc.rect(0, pageHeight - 15, 210, 15, 'F');
     
-    doc.setFontSize(8);
-    doc.setTextColor(120, 120, 120);
-    doc.text("Wygenerowano automatycznie", 105, pageHeight - 8, { align: 'center' });
-    doc.text(`© ${new Date().getFullYear()} - System Headwear`, 105, pageHeight - 4, { align: 'center' });
+    doc.setFontSize(7.5);
+    doc.setTextColor(150, 150, 150);
+    doc.text("Wygenerowano automatycznie przez system Headwear Professionals Configuration", 105, pageHeight - 9, { align: 'center' });
+    doc.text(`© ${new Date().getFullYear()} - System Headwear Configuration`, 105, pageHeight - 5, { align: 'center' });
 
     doc.save(`Zamowienie_${project.id}.pdf`);
-   
   };
 
   return { generatePDF };

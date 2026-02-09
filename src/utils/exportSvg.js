@@ -48,35 +48,41 @@ export function exportSvgToImage(svgEl, {
         URL.revokeObjectURL(url);
 
         if (pomponEl) {
-           const pStr = serializer.serializeToString(pomponEl);
-           const pBlob = new Blob([pStr], { type: 'image/svg+xml;charset=utf-8' });
-           const pUrl = URL.createObjectURL(pBlob);
-           const pImg = new Image();
-
-           await new Promise((resP) => {
-              pImg.onload = () => {
-                 // Obliczamy rozmiar pompona
-                 // (Oryginalny rozmiar SVG pompona * Skala wizualna * Jakość)
-                 const pBaseW = pImg.width || 100; // domyślnie 100 jak nie znajdzie
-                 const pBaseH = pImg.height || 100;
-                 
-                 const finalPomponW = pBaseW * POMPON_VISUAL_SCALE * scale; // Tutaj on rośnie!
-                 const finalPomponH = pBaseH * POMPON_VISUAL_SCALE * scale;
-
-                 // Centrowanie w poziomie (Szerokość Canvasa - Szerokość Pompona) / 2
-                 const pX = (canvas.width - finalPomponW) / 2 - 320;
-                 
-                 // Pozycja w pionie (Twoje ustawienie)
-                 const pY = POMPON_OFFSET_Y * scale;
-
-                 ctx.drawImage(pImg, pX, pY, finalPomponW, finalPomponH);
-                 
-                 URL.revokeObjectURL(pUrl);
-                 resP();
-              };
-              pImg.src = pUrl;
-           });
-        }
+          // KLUCZOWA POPRAWKA DLA CHROME: 
+          // Robimy głęboką kopię, aby nie zepsuć oryginału na ekranie
+          const pClone = pomponEl.cloneNode(true);
+          const pVB = pClone.viewBox.baseVal;
+          
+          // Chrome potrzebuje jawnych wymiarów, aby poprawnie narysować Image na Canvas
+          pClone.setAttribute('width', pVB.width);
+          pClone.setAttribute('height', pVB.height);
+       
+          const pStr = serializer.serializeToString(pClone);
+          const pBlob = new Blob([pStr], { type: 'image/svg+xml;charset=utf-8' });
+          const pUrl = URL.createObjectURL(pBlob);
+          const pImg = new Image();
+       
+          await new Promise((resP) => {
+             pImg.onload = () => {
+                const pBaseW = pVB.width || 904.77; 
+                const pBaseH = pVB.height || 259.81;
+                
+                const finalPomponW = pBaseW * POMPON_VISUAL_SCALE * scale;
+                const finalPomponH = pBaseH * POMPON_VISUAL_SCALE * scale;
+       
+                const hatCenterX = (svgW * scale) / 2 - 320;
+                const pX = hatCenterX - (finalPomponW / 2);
+                
+                const pY = POMPON_OFFSET_Y * scale;
+       
+                ctx.drawImage(pImg, pX, pY, finalPomponW, finalPomponH);
+                
+                URL.revokeObjectURL(pUrl);
+                resP();
+             };
+             pImg.src = pUrl;
+          });
+       }
 
         const dataUrl = canvas.toDataURL(type, 1.0);
         
