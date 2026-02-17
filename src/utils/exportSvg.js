@@ -48,12 +48,9 @@ export function exportSvgToImage(svgEl, {
         URL.revokeObjectURL(url);
 
         if (pomponEl) {
-          // KLUCZOWA POPRAWKA DLA CHROME: 
-          // Robimy głęboką kopię, aby nie zepsuć oryginału na ekranie
           const pClone = pomponEl.cloneNode(true);
           const pVB = pClone.viewBox.baseVal;
           
-          // Chrome potrzebuje jawnych wymiarów, aby poprawnie narysować Image na Canvas
           pClone.setAttribute('width', pVB.width);
           pClone.setAttribute('height', pVB.height);
        

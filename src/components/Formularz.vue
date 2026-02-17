@@ -26,7 +26,9 @@
 
             <div class="control-item">
               <label class="mini-label">CZCIONKA</label>
-              <FontPicker v-model="config.text.font" :options="dictionaries.fonts"
+
+              <FontPicker v-model="config.text.font" 
+                :options="dictionaries.fonts"
                 @hover="(fontVal) => $emit('hover', { path: 'text.font', value: fontVal })"
                 @hover-end="$emit('hover-end')" />
             </div>

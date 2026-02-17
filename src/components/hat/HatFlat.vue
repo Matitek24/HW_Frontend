@@ -111,7 +111,6 @@
     </svg>
   </div>
 </template>
-
 <script setup>
   import { computed, ref } from 'vue';
   const svgRef = ref(null);
@@ -120,16 +119,33 @@
     config: { type: Object, required: true },
     patternsDict: { type: Array, default: () => [] }
   });
+
+  // --- TWOJA MAPA DOSTROJENIA (identyczna jak w Front) ---
+  const FONT_TUNING = {
+    'impact': { shift: 12, pivot: -0.12},
+    'roboto': { shift: 14, pivot: -0.10},
+    'arialbold': { shift: 7, pivot: -0.12},
+    'arial': { shift: 10, pivot: -0.12},
+    'tahoma': { shift: 12, pivot: -0.14},
+    'default': { shift: 12, pivot: -0.05},
+  };
   
   const uniqueId = Math.random().toString(36).substr(2, 9);
   
-  const FLAT_CENTER_Y = 395;
+  const FLAT_BASE_Y = 390; 
   
   const finalTextPosition = computed(() => {
+    const fontSize = props.config.text.fontSize || 64;
     const userOffset = -props.config.text.offsetY || 0;
-    return FLAT_CENTER_Y + userOffset;
+    const fontName = (props.config.text.font || 'arial').toLowerCase();
+
+    const tuning = FONT_TUNING[fontName] || FONT_TUNING['default'];
+
+
+    return FLAT_BASE_Y + tuning.shift + (userOffset*0.85) + (fontSize * tuning.pivot);
   });
   
+  // --- LOGIKA WZORÓW ---
   const topPatternSvg = computed(() => {
     const selectedId = props.config.patterns.top;
     if (!selectedId || selectedId === 'none') return null;
@@ -143,10 +159,9 @@
     const patternObj = props.patternsDict.find(p => p.id === selectedId);
     return patternObj ? patternObj.kodSvg : null;
   });
-  defineExpose({
-    svgRef
-  });
-  </script>
+
+  defineExpose({ svgRef });
+</script>
   
   <style scoped>
 

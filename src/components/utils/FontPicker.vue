@@ -22,7 +22,7 @@
   
             <div class="font-options-list">
               <div 
-                v-for="font in options" 
+                v-for="font in visibleOptions" 
                 :key="font.id" 
                 class="font-option"
                 :class="{ selected: modelValue === font.wartosc }"
@@ -49,13 +49,21 @@
     options: { type: Array, default: () => [] },
     pickerId: { type: String, default: () => `fp-${Math.random().toString(36).substr(2, 9)}` }
   });
-  
+
   const emit = defineEmits(['update:modelValue', 'hover', 'hover-end']);
+  const visibleOptions = computed(() => {
+  if (!props.options || !props.options.length) return [];
   
+  return props.options.filter(option => {
+    const text = JSON.stringify(option).toLowerCase();
+    if (text.includes('calibri')) return false;
+    return true;
+  });
+});
   const pickerTrigger = ref(null);
   const dropdownEl = ref(null);
   const isOpen = ref(false);
-  const isClosing = ref(false); // Flaga blokująca hover przy zamykaniu
+  const isClosing = ref(false); 
   const dropdownStyle = ref({});
   
   const currentFontName = computed(() => {

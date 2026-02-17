@@ -106,9 +106,9 @@
             :fill="config.text.color"
             text-anchor="middle" 
             letter-spacing="2"
+            dominant-baseline="central"
             xml:space="preserve"
             style="white-space: pre; pointer-events: none;" 
-        
           >
             <textPath 
               xlink:href="#curvePath" 
@@ -147,8 +147,47 @@ const props = defineProps({
     type: Array,
     default: () => []
   }
-  
 });
+
+// --- KONFIGURACJA PROPORCJI I POZYCJI ---
+const FLAT_HEIGHT = 79.5;
+const HAT_3D_HEIGHT = 114.74;
+const SCALE_FACTOR = FLAT_HEIGHT / HAT_3D_HEIGHT; 
+
+// --- MAPA RĘCZNYCH KOREKT DLA FONTÓW ---
+const FONT_TUNING = {
+  'impact': { 
+    shift: 1,    
+    pivot: 0.31 
+
+  },
+  'roboto': { 
+    shift: -1, 
+    pivot: 0.30
+  },
+  'arialbold': { 
+    shift: 1, 
+    pivot: 0.22
+  },
+  'arial': { 
+    shift: 1, 
+    pivot: 0.22
+  },
+  'tahoma': { 
+    shift: 1, 
+    pivot: 0.26
+  },
+  'tahoma': { 
+    shift: 1, 
+    pivot: 0.26
+  },
+  'default': { 
+    shift: 0, 
+    pivot: 0.35 
+  }
+};
+
+const GLOBAL_BASE_Y = 16;
 
 const topPatternSvg = computed(() => {
   const selectedId = props.config.patterns.top;
@@ -164,28 +203,29 @@ const mainPatternSvg = computed(() => {
   return pattern ? pattern.kodSvg : '';
 });
 
-const FLAT_HEIGHT = 79.5;
-const HAT_3D_HEIGHT = 114.74;
-
-const SCALE_FACTOR = FLAT_HEIGHT / HAT_3D_HEIGHT; 
-
-const CENTER_FROM_BOTTOM = 18; 
-
 const finalTextProps = computed(() => {
   const userFontSize = props.config.text.fontSize || 40;
   const userOffset = -props.config.text.offsetY || 0;
+  const fontName = (props.config.text.font || 'arial').toLowerCase();
 
+  // Pobieramy parametry dla konkretnego fontu
+  const tuning = FONT_TUNING[fontName] || FONT_TUNING['default'];
 
   const finalFontSize = userFontSize * SCALE_FACTOR * 1.03;
   const scaledUserOffset = userOffset * SCALE_FACTOR;
-  const fontCenteringCorrection = finalFontSize * 0.35;
+
+  // MAGIA: Tutaj używamy dedykowanego pivotu dla fontu
+  // To sprawia, że każda czcionka "puchnie" ze swojego środka ciężkości
+  const fontCenteringCorrection = finalFontSize * tuning.pivot;
 
   return {
     fontSize: finalFontSize,
-    dy: CENTER_FROM_BOTTOM + scaledUserOffset + fontCenteringCorrection
+    // Finalne dy: Baza + Stały Shift fontu + Ruch użytkownika + Korekta Zoomu
+    dy: GLOBAL_BASE_Y + tuning.shift + scaledUserOffset + fontCenteringCorrection
   };
 });
 
+// --- LOGIKA WARP (WYGIĘCIA) ---
 const applyTopWarp = async () => {
   await nextTick();
   setTimeout(() => {
@@ -205,10 +245,12 @@ const applyBottomWarp = async () => {
     }
   }, 100);
 };
+
 defineExpose({
   svgRef,
   pomponRef
 });
+
 watch(
   () => topPatternSvg.value,
   (newValue) => {
