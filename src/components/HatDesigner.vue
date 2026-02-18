@@ -316,14 +316,13 @@ const handleHoverEnd = () => {
     display: block;
   }
   .svg-container {
-    position: relative;
+    height: 100dvh;
     display: flex;
-    flex-wrap: wrap;
-    gap: 30px; 
+    align-items: center;
     justify-content: center;
-    padding-bottom: 8rem;
+    padding-bottom: 130px; 
+    overflow: hidden;
   }
-  
   .svg-wrapper {
     min-width: 300px;
     width: 516px;
@@ -431,6 +430,19 @@ const handleHoverEnd = () => {
 }
 
 @media (max-width: 600px) {
+  .svg-container {
+   padding-bottom: 120px;
+  }
+  .svg-wrapper:hover {
+    transform: translateY(0px);
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.75); 
+    box-shadow:
+      0 12px 30px -8px rgba(0, 0, 0, 0.1),
+      inset 0 1px 2px rgba(255, 255, 255, 1);
+    border-color: rgba(255, 255, 255, 0.8);
+  }
+
   .flat-layout, 
   .front-layout {
     display: none !important;
@@ -444,22 +456,20 @@ const handleHoverEnd = () => {
     display: block !important;
   }
  .czapka2{
-  width: 330px;
+  width: 310px;
   padding-top:80px !important;
  }
  .content-layout {
    padding-top: 0px; 
    gap: 10px; 
-   margin-bottom: 35px; 
-   transition: margin-bottom 0.3s ease, transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+   margin-bottom: 60px; 
+   transition: transform 0.3s ease;
  }
 
- .content-layout.expanded-margin {
-   margin-bottom: 110px;
- }
+
  .czapka2 .pompon{
   transform: scale(2.2) !important;
-  right: 95px;
+  right: 86px;
   top:20px !important;
  }
 

@@ -14,7 +14,11 @@
   padding: 0;
   box-sizing: border-box;
 }
-
+.czapka, .svg-wrapper {
+  /* Wymusza renderowanie elementu na oddzielnej warstwie GPU */
+  transform: translateZ(0); 
+  will-change: transform;
+}
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }

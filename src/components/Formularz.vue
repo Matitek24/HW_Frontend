@@ -304,7 +304,6 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { reactive, ref, computed, watch } from 'vue';
 import ColorPicker from '../components/utils/ColorPicker.vue';
@@ -325,34 +324,98 @@ const props = defineProps({
     })
   }
 });
+
+const emit = defineEmits(['toggle-expand', 'hover', 'hover-end']);
+
 const hoverState = reactive({
-  paths: [],  // np. 'base.top'
-  value: null  // np. '#FF0000'
+  path: null,  
+  value: null   
 });
 
 const previewConfig = computed(() => {
-  // Robimy głęboką kopię obecnego configu
-  const base = JSON.parse(JSON.stringify(props.config));
-
-  // Jeśli użytkownik na coś najeżdża, nadpisujemy to w kopii podglądu
-  if (hoverState.path && hoverState.value) {
-    const keys = hoverState.path.split('.'); // np. ['base', 'top']
-    if (keys.length === 2) {
-      base[keys[0]][keys[1]] = hoverState.value;
-    } else if (keys.length === 1) {
-      base[keys[0]] = hoverState.value;
-    }
+  if (!hoverState.paths.length || !hoverState.value) {
+    return hatConfig; 
   }
-  return base;
+
+  const configCopy = { ...hatConfig }; 
+  
+  hoverState.paths.forEach(p => {
+    const keys = p.split('.');
+    if (keys.length === 2 && configCopy[keys[0]]) {
+      configCopy[keys[0]] = { ...configCopy[keys[0]] };
+      configCopy[keys[0]][keys[1]] = hoverState.value;
+    }
+  });
+  
+  return configCopy;
 });
 
-const onHover = (path, val) => {
-  hoverState.path = path;
-  hoverState.value = val;
+
+const detectInitialMode = () => {
+  const { p1, p2, p3, p4 } = props.config.pompons;
+  if (p1 === p2 && p2 === p3 && p3 === p4) return 'single';
+  if (p1 === p3 && p2 === p4) return 'dual';
+  return 'triple';
 };
-const onHoverEnd = () => {
-  hoverState.path = null;
-  hoverState.value = null;
+
+const pomponMode = ref(detectInitialMode());
+
+watch(
+  () => props.config.pompons,
+  () => { pomponMode.value = detectInitialMode(); },
+  { deep: true }
+);
+
+watch(pomponMode, (newMode) => {
+  const p = props.config.pompons;
+  if (newMode === 'single') {
+    p.p2 = p.p1;
+    p.p3 = p.p1;
+    p.p4 = p.p1;
+  } else if (newMode === 'dual') {
+    p.p3 = p.p1;
+    p.p4 = p.p2;
+  }
+});
+
+// ─────────────────────────────────────────────
+// POMPON HOVER
+// Naprawka: ujednolicone API – zawsze emitujemy { paths: string[], value }
+// Rodzic sprawdza Array.isArray zamiast obsługiwać dwa różne formaty.
+// ─────────────────────────────────────────────
+const onPomponHover = (index, hex) => {
+  let paths = [];
+
+  if (pomponMode.value === 'single') {
+    paths = ['pompons.p1', 'pompons.p2', 'pompons.p3', 'pompons.p4'];
+  } else if (pomponMode.value === 'dual') {
+    paths = index === 2
+      ? ['pompons.p2', 'pompons.p3']
+      : ['pompons.p4', 'pompons.p1'];
+  } else if (pomponMode.value === 'triple') {
+    if (index === 2) paths = ['pompons.p2'];
+    if (index === 3) paths = ['pompons.p3'];
+    if (index === 4) paths = ['pompons.p4', 'pompons.p1'];
+  }
+
+  emit('hover', { paths, value: hex });
+};
+
+// ─────────────────────────────────────────────
+// POZOSTAŁE (bez zmian, tylko przeniesione dla porządku)
+// ─────────────────────────────────────────────
+const updatePomponColor = (index, hex) => {
+  const p = props.config.pompons;
+  if (pomponMode.value === 'single') {
+    p.p1 = p.p2 = p.p3 = p.p4 = hex;
+  } else if (pomponMode.value === 'dual') {
+    if (index === 2) { p.p2 = p.p3 = hex; }
+    else if (index === 4) { p.p4 = p.p1 = hex; }
+  } else if (pomponMode.value === 'triple') {
+    if (index === 2) p.p2 = hex;
+    if (index === 3) p.p3 = hex;
+    if (index === 4) { p.p4 = hex; p.p1 = hex; }
+  }
 };
 
 const getYarnNumber = (hex) => {
@@ -361,87 +424,17 @@ const getYarnNumber = (hex) => {
   return color ? color.nazwa : hex;
 };
 
-// src/components/Formularz.vue
-
-const emit = defineEmits(['toggle-expand', 'hover', 'hover-end']); // dodaj hover i hover-end
-
-const detectInitialMode = () => {
-  const { p1, p2, p3, p4 } = props.config.pompons;
-  if (p1 === p2 && p2 === p3 && p3 === p4) return 'single';
-  if (p1 === p3 && p2 === p4) return 'dual';
-  return 'triple'; // Domyślnie 3 kolory, jeśli nie 1 lub 2
-};
-// 2. Inicjalizacja refa wynikiem tej funkcji
-const pomponMode = ref(detectInitialMode());
-
-watch(pomponMode, (newMode) => {
-
-  const p = props.config.pompons;
-
-  if (newMode === 'single') {
-
-    p.p2 = p.p1;
-    p.p3 = p.p1;
-    p.p4 = p.p1;
-  }
-  else if (newMode === 'dual') {
-    p.p3 = p.p1;
-    p.p4 = p.p2;
-  }
-});
-const onPomponHover = (index, hex) => {
-  let paths = [];
-
-  if (pomponMode.value === 'single') {
-    paths = ['pompons.p1', 'pompons.p2', 'pompons.p3', 'pompons.p4'];
-  }
-  else if (pomponMode.value === 'dual') {
-    paths = index === 2 ? ['pompons.p2', 'pompons.p3'] : ['pompons.p4', 'pompons.p1'];
-  }
-  else if (pomponMode.value === 'triple') {
-    if (index === 2) paths = ['pompons.p2'];
-    if (index === 3) paths = ['pompons.p3'];
-    if (index === 4) paths = ['pompons.p4', 'pompons.p1']; // Podświetla oba zsynchronizowane segmenty
-  }
-
-  emit('hover', { paths, value: hex });
-};
-
-const updatePomponColor = (index, hex) => {
-  const p = props.config.pompons;
-
-  if (pomponMode.value === 'single') {
-    p.p1 = p.p2 = p.p3 = p.p4 = hex;
-  }
-  else if (pomponMode.value === 'dual') {
-    // W trybie 2 kolorów: p2 steruje p2 i p3, a p4 steruje p4 i p1
-    if (index === 2) { p.p2 = p.p3 = hex; }
-    else if (index === 4) { p.p4 = p.p1 = hex; }
-  }
-  else if (pomponMode.value === 'triple') {
-    if (index === 2) p.p2 = hex;
-    if (index === 3) p.p3 = hex;
-    if (index === 4) {
-      p.p4 = hex;
-      p.p1 = hex; // Automatyczna synchronizacja p1 z p4
-    }
-  }
-};
-
 const pomponOptions = [
   { value: 'single', label: '1' },
-  { value: 'dual', label: '2' },
+  { value: 'dual',   label: '2' },
   { value: 'triple', label: '3' },
 ];
 
-
 const isExpanded = ref(false);
-
 
 const toggleExpand = () => {
   isExpanded.value = !isExpanded.value;
   emit('toggle-expand', isExpanded.value);
-
 };
 
 const topPatterns = computed(() =>
@@ -451,8 +444,6 @@ const topPatterns = computed(() =>
 const bottomPatterns = computed(() =>
   props.dictionaries.patterns.filter(p => p.kategoria === 'BOTTOM')
 );
-
-
 </script>
 
 <style scoped>
@@ -564,15 +555,15 @@ const bottomPatterns = computed(() =>
 .control-item {
   display: flex;
   flex-direction: column;
-  align-items: center !important;
+  align-items: center;
   justify-content: center;
   gap: 6px;
   padding: 8px;
   border-radius: 12px;
   transition: transform 0.2s ease;
   min-width: 80px;
+  flex-shrink: 0;           
 }
-
 
 
 /* Etykieta */
@@ -988,7 +979,7 @@ const bottomPatterns = computed(() =>
   padding: 0 20px;
   z-index: 100;
   font-family: 'Inter', sans-serif;
-  transition: transoform 0.5s ease-in-out;
+  transition: transform 0.5s ease-in-out; /* było: transoform */
 }
 
 /* Zmiana layoutu po rozwinięciu */
@@ -1047,19 +1038,15 @@ const bottomPatterns = computed(() =>
 /* --- BELKA WŁAŚCIWA --- */
 .config-bar {
   background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);   /* usunięto zduplikowane blur(6px) poniżej */
+  -webkit-backdrop-filter: blur(12px);
   padding: 12px 24px;
   border-radius: 24px;
   box-shadow:
     0 10px 40px rgba(0, 0, 0, 0.08),
     0 0 0 1px rgba(0, 0, 0, 0.03);
-
   max-width: 100%;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-
 }
-
 .config-bar-container.expanded .config-bar {
   width: 100%;
   max-width: 1200px;
@@ -1239,8 +1226,9 @@ const bottomPatterns = computed(() =>
   display: flex;
   align-items: center;
   gap: 24px;
-  overflow-x: visible;
+  overflow-x: auto;              
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch; 
 }
 
 /* --- WIDOK ROZSZERZONY (Nowe Style) --- */
@@ -1370,74 +1358,112 @@ const bottomPatterns = computed(() =>
 }
 
 /* Responsive Mobile */
-
 @media (max-width: 600px) {
-  .expanded-grid {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
 
-  .config-bar-container.expanded .config-bar {
-    padding: 20px;
-    height: 85vh;
-    overflow-y: auto;
-  }
+/* Zmiana odstępów w małym pasku (ZWINIĘTYM) */
+.view-compact {
+  gap: 10px;
+  padding: 0 5px;
+  justify-content: center;
+  width: 100%;
+  overflow-x: auto; 
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch; 
+}
 
-  .expanded-grid {
-    grid-template-columns: 1fr;
-    /* Jedna kolumna */
-    gap: 30px;
-  }
+.view-compact::-webkit-scrollbar {
+  display: none;
+}
 
-  /* 2. WYSOKOŚĆ PANELU PO ROZWINIĘCIU */
-  .config-bar-container.expanded .config-bar {
-    padding: 24px 24px 80px 24px;
-    height: 34vh;
-    max-height: 500px;
+.view-compact .mini-label {
+  display: none;
+}
 
-    overflow-y: auto;
-    /* Scrollowanie wewnątrz paska */
-    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
-    /* Mocniejszy cień do góry */
-  }
+.view-compact .control-item {
+  padding: 4px;
+  min-width: auto; 
+}
 
-  /* 3. CZYSZCZENIE WIDOKU KOMPAKTOWEGO (Zostaje tylko Tekst) */
+.text-main {
+  width: 100px !important;
+  font-size: 13px;
+}
 
-  /* Ukryj wszystkie sekcje grupowe OPRÓCZ pierwszej (Personalizacja) */
-  .view-compact .group-section:not(:first-child) {
-    display: none;
-  }
+.select-pill-font {
+  width: 100px;
+}
 
-  /* Ukryj wszystkie pionowe kreski */
-  .view-compact .vertical-divider {
-    display: none;
-  }
+.view-compact .hex-input {
+  display: none;
+}
 
-  /* Wyśrodkuj tę jedyną sekcję, która została */
-  .view-compact {
-    justify-content: center;
-    width: 100%;
-  }
+.view-compact .group-section:not(:first-child) {
+  display: none;
+}
 
-  /* Lekka korekta inputów, żeby się ładnie mieściły w jednej linii */
-  .text-main {
-    width: 100px;
-    /* Trochę węższy input tekstu */
-  }
+.view-compact .vertical-divider {
+  display: none;
+}
 
-  .select-pill-font {
-    width: 100px;
-  }
+/* --- ZMIANA: LEKKO ODSTAJĄCY KAFELEK (LEWO/PRAWO/DÓŁ) --- */
+.config-bar-container {
+  /* Zachowujemy marginesy: 10px od dołu (plus systemowy dla iPhone), 10px po bokach */
+  bottom: calc(10px + env(safe-area-inset-bottom)) !important; 
+  padding: 0 10px !important; 
+}
 
-  /* Przycisk toggle (strzałka) trochę niżej na mobile */
-  .toggle-wrapper {
-    top: -35px;
-  }
+.config-bar {
+  /* Zaokrąglenie z 4 stron, bo nie dotykamy krawędzi */
+  border-radius: 20px !important; 
+  padding: 15px !important; 
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); /* Lżejszy cień dla zwiniętego */
+}
 
-  .toggle-btn {
-    height: 35px;
-    width: 50px;
-  }
+/* --- ZMIANA: ROZWINIĘCIE TYLKO DO POŁOWY (WIDAĆ CZAPKĘ) --- */
+.config-bar-container.expanded .config-bar {
+  /* Sztywno ustawiamy max wysokość na ok. 45-50% ekranu - zostawia dużo miejsca na czapkę */
+  height: 48vh; 
+  max-height: 33vh; /* Dodatkowe zabezpieczenie przed zbyt dużym rozciągnięciem */
+  padding: 30px !important;
+  overflow-y: auto; /* Aktywny scroll wewnątrz szufladki */
+  box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.15);
+  -webkit-overflow-scrolling: touch; 
+}
+
+/* --- NAPRAWA ROZJEŻDŻANIA WNĘTRZA W ROZWINIĘTYM --- */
+.expanded-grid {
+  grid-template-columns: 1fr;
+  gap: 20px; /* Trochę mniejszy odstęp między sekcjami w pionie */
+  width: 100%;
+  box-sizing: border-box; 
+  overflow-x: hidden; 
+}
+
+.expanded-column {
+  padding-left: 0;
+  padding-right: 0;
+  width: 100%;
+}
+
+/* Pilnujemy elementów, żeby nie rozpychały siatki na boki */
+.input-pill, .select-wrapper, .color-pill, .slider {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Zapobiega łamaniu rzędów, jeśli jest wąsko */
+.expanded-row {
+  flex-wrap: wrap; 
+}
+
+.toggle-wrapper {
+  top: -35px;
+}
+
+.toggle-btn {
+  height: 35px;
+  width: 50px;
+}
 
 }
 </style>

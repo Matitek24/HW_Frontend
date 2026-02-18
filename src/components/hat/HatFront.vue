@@ -121,6 +121,24 @@
           </text>
         </g>
         </g>
+
+        <g transform="translate(-606, -206) scale(1.4)" :style="{ '--base-color': config.base.top }">
+            <g class="szwy-container">
+    <path d="M524,258 C542,190 575,155 643,148" 
+          fill="none"  class="szwy" stroke-width="1.5" 
+          stroke-dasharray="20, 4" stroke-linecap="round"/>
+
+    <path d="M763,258 C745,190 712,155 643,148" 
+          fill="none"  class="szwy" stroke-width="1.5" 
+          stroke-dasharray="20, 4" stroke-linecap="round"/>
+
+    <path d="M643,148 L643,265" 
+          fill="none" class="szwy" stroke-width="1.5" 
+          stroke-dasharray="20, 4" stroke-linecap="round"/>
+        </g>
+        </g>
+   
+
       </svg>
 
     </div>
@@ -283,6 +301,10 @@ watch(
   .pasek {
     fill: var(--kolor-pasek);
   }
+  .szwy {
+
+  stroke: color-mix(in srgb, var(--base-color), black 30%);
+}
   
   .cls-2-2 {
     fill: none;
