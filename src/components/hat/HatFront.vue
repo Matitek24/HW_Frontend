@@ -157,37 +157,36 @@ const SCALE_FACTOR = FLAT_HEIGHT / HAT_3D_HEIGHT;
 // --- MAPA RĘCZNYCH KOREKT DLA FONTÓW ---
 const FONT_TUNING = {
   'impact': { 
-    shift: 1,    
-    pivot: 0.31 
-
+    shift: 0,    
+    pivot: 0.36
   },
   'roboto': { 
     shift: -1, 
-    pivot: 0.30
+    pivot: 0.32
   },
   'arialbold': { 
-    shift: 1, 
-    pivot: 0.22
+    shift: -2, 
+    pivot: 0.34
   },
   'arial': { 
-    shift: 1, 
-    pivot: 0.22
+    shift: -1, 
+    pivot: 0.33
   },
   'tahoma': { 
-    shift: 1, 
-    pivot: 0.26
+    shift: 10, 
+    pivot: 0.3
   },
   'tahoma': { 
-    shift: 1, 
-    pivot: 0.26
+    shift: 0, 
+    pivot: 0.32
   },
   'default': { 
-    shift: 0, 
-    pivot: 0.35 
+    shift: -2, 
+    pivot: 0.34
   }
 };
 
-const GLOBAL_BASE_Y = 16;
+const GLOBAL_BASE_Y = 19;
 
 const topPatternSvg = computed(() => {
   const selectedId = props.config.patterns.top;

@@ -122,17 +122,17 @@
 
   // --- TWOJA MAPA DOSTROJENIA (identyczna jak w Front) ---
   const FONT_TUNING = {
-    'impact': { shift: 12, pivot: -0.12},
-    'roboto': { shift: 14, pivot: -0.10},
-    'arialbold': { shift: 7, pivot: -0.12},
-    'arial': { shift: 10, pivot: -0.12},
-    'tahoma': { shift: 12, pivot: -0.14},
-    'default': { shift: 12, pivot: -0.05},
+    'impact': { shift: 4, pivot: -0.01},
+    'roboto': { shift: 4, pivot: 0.0},
+    'arialbold': { shift: 6, pivot: -0.06},
+    'arial': { shift: 2, pivot: 0.02},
+    'tahoma': { shift: 5, pivot: -0.05},
+    'default': { shift: 8, pivot: -0.05},
   };
   
   const uniqueId = Math.random().toString(36).substr(2, 9);
   
-  const FLAT_BASE_Y = 390; 
+  const FLAT_BASE_Y = 395; 
   
   const finalTextPosition = computed(() => {
     const fontSize = props.config.text.fontSize || 64;

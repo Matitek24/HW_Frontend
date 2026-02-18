@@ -10,11 +10,24 @@ import { exportSvgToImage } from './exportSvg.js';
 const THEME_COLOR = [44, 62, 80]; 
 const SECONDARY_TEXT = [100, 116, 139];
 
+// --- MAPA DOSTROJENIA CZCIONEK (Musi być identyczna jak w HatFlat.vue) ---
+const FONT_TUNING = {
+ 'impact': { shift: 4, pivot: -0.01},
+    'roboto': { shift: 4, pivot: 0.0},
+    'arialbold': { shift: 6, pivot: -0.06},
+    'arial': { shift: 2, pivot: 0.02},
+    'tahoma': { shift: 5, pivot: -0.05},
+    'default': { shift: 8, pivot: -0.05},
+};
+
 const captureFlatHat = async (flatComponentRef, config) => {
   return new Promise(async (resolve) => {
     try {
       const svgElement = flatComponentRef.svgRef; 
       if (!svgElement) return resolve(null);
+
+      // Baza pozycji Y dla widoku płaskiego (zgodna z HatFlat.vue)
+      const FLAT_BASE_Y = 390; 
 
       if (config.text?.font) {
         await ensureFontLoaded(config.text.font);
@@ -32,6 +45,7 @@ const captureFlatHat = async (flatComponentRef, config) => {
       const ctx = canvas.getContext('2d');
 
       const svgClone = svgElement.cloneNode(true);
+      // Usuwamy oryginalny tekst z SVG, bo narysujemy go ręcznie na Canvasie
       svgClone.querySelectorAll('text').forEach(el => el.remove());
       const styledSvg = inlineStyles(svgClone, false);
 
@@ -45,17 +59,33 @@ const captureFlatHat = async (flatComponentRef, config) => {
         URL.revokeObjectURL(url);
 
         if (config.text?.content) {
-          const fontName = config.text.font || 'Arial';
-          const fontSize = (config.text.fontSize || 64) * scale;
-          const fontWeight = ['tahoma', 'arialbold', 'impact'].includes(fontName.toLowerCase()) ? 'bold' : 'normal';
+          const fontNameRaw = config.text.font || 'Arial';
+          const fontName = fontNameRaw.toLowerCase();
+          const userFontSize = config.text.fontSize || 64;
+          
+          // Odwracamy offset (w Vue jest minus przy pobieraniu z propsa)
+          const userOffset = -(config.text.offsetY || 0); 
+          
+          // Pobieramy tuning dla danej czcionki
+          const tuning = FONT_TUNING[fontName] || FONT_TUNING['default'];
 
-          const textY = (395 - (config.text.offsetY || 0)) * scale; 
+        
+          const finalYWithoutScale = FLAT_BASE_Y + tuning.shift + (userOffset * 0.95) + (userFontSize * tuning.pivot);
+          
+          // Skalujemy pozycje do wielkości Canvasa
+          const textY = finalYWithoutScale * scale;
           const textX = (vW / 2) * scale;
+          const fontSizeForCanvas = userFontSize * scale; 
 
-          ctx.font = `${fontWeight} ${fontSize}px "${fontName}"`;
+          // Logika pogrubiania dla Canvasa
+          const fontWeight = ['tahoma', 'arialbold', 'impact'].includes(fontName) ? 'bold' : 'normal';
+
+          ctx.font = `${fontWeight} ${fontSizeForCanvas}px "${fontNameRaw}"`;
           ctx.fillStyle = config.text.color || '#000000';
           ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
+          
+          // KLUCZOWE: Ustawienie osi na środek (odpowiednik dominant-baseline="central")
+          ctx.textBaseline = 'middle'; 
           
           ctx.fillText(config.text.content, textX, textY);
         }
@@ -86,6 +116,8 @@ const captureFrontHat = async (frontComponentRef, config, showPompon) => {
     await ensureFontLoaded(fontName);
 
     const styledSvg = inlineStyles(svgEl, true);
+    // Wymuszenie jakości geometrycznej
+    styledSvg.style.shapeRendering = 'geometricPrecision';
     const frozenSvg = embedCurrentFont(styledSvg, fontName);
 
     let readyPompon = null;
@@ -150,15 +182,17 @@ export function useGeneratorWizualizacji() {
     const startY = 60;
     doc.setTextColor(0, 0, 0);
     
-    // Wizualizacje
+    // Wizualizacje (Wyśrodkowane w blokach)
     if (resFlat && resFlat.dataUrl) {
       const width = 85;
       const height = width / resFlat.ratio; 
+      // Centrowanie w lewym bloku (x: 15 do 105)
       doc.addImage(resFlat.dataUrl, 'PNG', 15, startY + 38, width, height);
     }
 
     if (res3D && res3D.dataUrl) {
       const width = 80;
+      // Centrowanie w prawym bloku
       doc.addImage(res3D.dataUrl, 'PNG', 115, startY, width, 0);
     }
 
@@ -177,8 +211,8 @@ export function useGeneratorWizualizacji() {
       ],
       styles: { 
         font: "Roboto",
-        fontSize: 9, // Zmniejszono z 10
-        cellPadding: 3, // Zmniejszono z 4
+        fontSize: 9, 
+        cellPadding: 3, 
       },
       headStyles: {
         fillColor: THEME_COLOR,
@@ -195,7 +229,7 @@ export function useGeneratorWizualizacji() {
     // ========== NOWA LEKKA NOTKA POD TABELKĄ ==========
     const finalY = doc.lastAutoTable.finalY + 12;
     
-    // Tło notki (bardzo jasny szary)
+    // Tło notki
     doc.setFillColor(248, 250, 252);
     doc.rect(15, finalY, 180, 22, 'F');
     
