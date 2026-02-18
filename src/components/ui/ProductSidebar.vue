@@ -37,16 +37,9 @@
                 <div class="info-block">
                     <label class="info-label">INFORMACJE TECHNICZNE</label>
                        <p class="info-text fw-medium">
-                         
                         Widoczny na ekranie kolor może różnić się od faktycznego ze względu na parametry monitora.
-                      
                        </p>
-                
                 </div>
-
-
-              
-
             </div>
 
             <footer class="drawer-footer">
@@ -98,19 +91,15 @@ onUnmounted(() => {
 
 .drawer-handle {
     position: absolute;
-    /* Zwiększamy szerokość (np. 60px), ale wystawiamy tylko część */
     width: 60px;
     right: -46px;
-    /* Kotwiczymy tak, by 46px wystawało, a 14px było pod panelem */
     top: 140px;
     background: #ffffff;
     height: 180px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    /* Zawartość do prawej, by była widoczna na wystającej części */
     padding-right: 15px;
-    /* Odstęp treści od prawej krawędzi guzika */
     cursor: pointer;
     border-radius: 0 16px 16px 0;
     border: 1px solid #f1f3f5;
@@ -151,9 +140,7 @@ onUnmounted(() => {
 }
 
 .spec-drawer-container {
-    /* ... reszta bez zmian ... */
     background: transparent;
-    /* Kontener musi być przezroczysty */
     border-right: none;
 }
 

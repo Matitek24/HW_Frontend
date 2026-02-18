@@ -19,15 +19,14 @@ const FONT_TUNING = {
     'tahoma': { shift: 5, pivot: -0.05},
     'default': { shift: 8, pivot: -0.05},
 };
-
 const captureFlatHat = async (flatComponentRef, config) => {
   return new Promise(async (resolve) => {
     try {
       const svgElement = flatComponentRef.svgRef; 
       if (!svgElement) return resolve(null);
 
-      // Baza pozycji Y dla widoku płaskiego (zgodna z HatFlat.vue)
-      const FLAT_BASE_Y = 390; 
+      // 1. ZGODNOŚĆ BAZY (Taka sama jak w HatFlat.vue)
+      const FLAT_BASE_Y = 395; 
 
       if (config.text?.font) {
         await ensureFontLoaded(config.text.font);
@@ -45,7 +44,6 @@ const captureFlatHat = async (flatComponentRef, config) => {
       const ctx = canvas.getContext('2d');
 
       const svgClone = svgElement.cloneNode(true);
-      // Usuwamy oryginalny tekst z SVG, bo narysujemy go ręcznie na Canvasie
       svgClone.querySelectorAll('text').forEach(el => el.remove());
       const styledSvg = inlineStyles(svgClone, false);
 
@@ -61,30 +59,30 @@ const captureFlatHat = async (flatComponentRef, config) => {
         if (config.text?.content) {
           const fontNameRaw = config.text.font || 'Arial';
           const fontName = fontNameRaw.toLowerCase();
-          const userFontSize = config.text.fontSize || 64;
           
-          // Odwracamy offset (w Vue jest minus przy pobieraniu z propsa)
+          // Pobieramy surowe wartości z configu (bez mnożenia przez scale jeszcze!)
+          const userFontSize = config.text.fontSize || 64;
           const userOffset = -(config.text.offsetY || 0); 
           
-          // Pobieramy tuning dla danej czcionki
           const tuning = FONT_TUNING[fontName] || FONT_TUNING['default'];
 
-        
-          const finalYWithoutScale = FLAT_BASE_Y + tuning.shift + (userOffset * 0.95) + (userFontSize * tuning.pivot);
+          // 2. MATEMATYKA 1:1 Z HATFLAT.VUE
+          // Mnożnik suwaka zmieniony na 0.85 
+          // userFontSize NIE jest tu jeszcze pomnożony przez `scale`
+          const finalYWithoutScale = FLAT_BASE_Y + tuning.shift + (userOffset * 0.85) + (userFontSize * tuning.pivot);
           
-          // Skalujemy pozycje do wielkości Canvasa
+          // 3. DOPIERO TERAZ SKALUJEMY WYNIK DLA CANVASA
           const textY = finalYWithoutScale * scale;
           const textX = (vW / 2) * scale;
+          
+          // I skalujemy rozmiar czcionki do rysowania
           const fontSizeForCanvas = userFontSize * scale; 
 
-          // Logika pogrubiania dla Canvasa
-          const fontWeight = ['tahoma', 'arialbold', 'impact'].includes(fontName) ? 'bold' : 'normal';
+          const fontWeight = ['tahoma', 'arialbold'].includes(fontName) ? 'bold' : 'normal';
 
           ctx.font = `${fontWeight} ${fontSizeForCanvas}px "${fontNameRaw}"`;
           ctx.fillStyle = config.text.color || '#000000';
           ctx.textAlign = 'center';
-          
-          // KLUCZOWE: Ustawienie osi na środek (odpowiednik dominant-baseline="central")
           ctx.textBaseline = 'middle'; 
           
           ctx.fillText(config.text.content, textX, textY);
