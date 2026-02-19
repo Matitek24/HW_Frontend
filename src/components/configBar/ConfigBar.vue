@@ -261,11 +261,21 @@ const getYarnNumber = (hex) => {
   /* --- WIDOK KOMPAKTOWY --- */
   .view-compact {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 24px;
     overflow-x: auto;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
+    padding-top: 20px !important; 
+    margin-top: -10px;
+  
+  }
+  @media screen and (min-width: 800px) {
+    .view-compact {
+       padding-right: 40px !important;
+    margin-right: -20px;
+    }
+    
   }
   
   .view-compact::-webkit-scrollbar {

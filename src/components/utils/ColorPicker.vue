@@ -4,6 +4,7 @@
       <div class="floating-tooltip main-trigger-tooltip">
         {{ getActiveColorData.nazwa }} / <span style="color:red">{{ getActiveColorData.index }}</span>
       </div>
+
     </div>
 
     <Teleport to="body">

@@ -4,6 +4,7 @@
   
       <!-- Compact View -->
       <div v-if="compact" class="group-section">
+        <div class="group-header">PERSONALIZACJA</div>
         <div class="controls-row">
           <div class="control-item">
             <label class="mini-label">TWÓJ NAPIS / TEKST</label>

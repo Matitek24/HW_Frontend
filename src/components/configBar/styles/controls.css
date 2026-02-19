@@ -1,3 +1,20 @@
+.group-header {
+  /* Tekst */
+  font-size: 9px;
+  font-weight: 800;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+
+  width: 100%;
+  text-align: left;
+  padding-bottom: 6px;  
+  margin-bottom: 12px;   
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04); 
+  display: block;
+  line-height: 1;
+}
+
 /* ========================================
    SECTION WRAPPER & COLUMN LAYOUT
    ======================================== */
@@ -38,7 +55,7 @@
     color: #9ca3af;
     font-weight: 700;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 4px;
   }
   
