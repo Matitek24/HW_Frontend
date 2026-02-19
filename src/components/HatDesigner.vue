@@ -28,11 +28,18 @@
         }"
         >
         
-        <Formularz 
+        <!-- <Formularz 
         :config="hatConfig" 
         :dictionaries="dictionaryData"
         @toggle-expand="(val) => isBarExpanded = val"
-        @hover="handleHover"        @hover-end="handleHoverEnd" />
+        @hover="handleHover"        @hover-end="handleHoverEnd" /> -->
+
+        <ConfigBar
+  :config="hatConfig"
+  :dictionaries="dictionaryData"
+  @update:config="handleConfigUpdate" @hover="handleHover"
+  @hover-end="handleHoverEnd"
+/>
               
         <div 
             id="print-flat-container" 
@@ -72,7 +79,7 @@
   import { reactive, watch, onMounted, ref, computed } from 'vue';
   import { useRoute, useRouter } from 'vue-router';
   import { useGeneratorWizualizacji } from '../utils/generatorWizualizacji.js';
-  import Formularz from './Formularz.vue';
+  import ConfigBar from './configBar/ConfigBar.vue';
   import TopBar from './TopBar.vue';
   import HatFlat from './hat/HatFlat.vue';
   import HatFront from './hat/HatFront.vue';
@@ -130,6 +137,9 @@ const previewConfig = computed(() => {
   return configCopy;
 });
 
+const handleConfigUpdate = (newConfig) => {
+  Object.assign(hatConfig, newConfig);
+};
 const handleHover = (data) => {
   hoverState.paths = data.paths ? data.paths : [data.path];
   hoverState.value = data.value;
