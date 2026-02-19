@@ -196,25 +196,38 @@
 };
   // Update pompon color based on mode
   const updatePomponColor = (index, hex) => {
-  const updates = {}; // Wysyłamy tylko zmiany
+    const updates = {}; 
 
-  if (pomponMode.value === 'single') {
-    updates.p1 = updates.p2 = updates.p3 = updates.p4 = hex;
-  } else if (pomponMode.value === 'dual') {
-    if (index === 2) {
-      updates.p2 = updates.p3 = hex;
-    } else if (index === 4 || index === 3) {
-      updates.p4 = updates.p1 = hex;
-    }
-  } else if (pomponMode.value === 'triple') {
-    if (index === 2) updates.p2 = hex;
-    if (index === 3) updates.p3 = hex;
-    if (index === 4) {
-      updates.p4 = hex;
+    if (pomponMode.value === 'single') {
+      // 1 kolor: wszystkie pompony takie same
       updates.p1 = hex;
+      updates.p2 = hex;
+      updates.p3 = hex;
+      updates.p4 = hex;
+    } 
+    else if (pomponMode.value === 'dual') {
+      // 2 kolory: przeplatają się (np. p1=p3, p2=p4)
+      if (index === 2) {
+        // Zmiana Koloru A (index 2 z templatki) wpływa na p2 i p4
+        updates.p2 = hex;
+        updates.p4 = hex;
+      } else if (index === 3) {
+        // Zmiana Koloru B (index 3 z templatki) wpływa na p1 i p3
+        updates.p1 = hex;
+        updates.p3 = hex;
+      }
+    } 
+    else if (pomponMode.value === 'triple') {
+      // 3 kolory: p1=p4 (żeby zamknąć pętlę ładnie), p2 i p3 osobne
+      if (index === 2) updates.p2 = hex;
+      if (index === 3) updates.p3 = hex;
+      if (index === 4) {
+        updates.p4 = hex;
+        updates.p1 = hex; 
+      }
     }
-  }
-  emitUpdate(updates);
+    
+    emitUpdate(updates);
   };
   
   // Hover preview
@@ -223,11 +236,15 @@
   
     if (pomponMode.value === 'single') {
       paths = ['pompons.p1', 'pompons.p2', 'pompons.p3', 'pompons.p4'];
-    } else if (pomponMode.value === 'dual') {
-      paths = index === 2
-        ? ['pompons.p2', 'pompons.p3']
-        : ['pompons.p4', 'pompons.p1'];
-    } else if (pomponMode.value === 'triple') {
+    } 
+    else if (pomponMode.value === 'dual') {
+      if (index === 2) {
+        paths = ['pompons.p2', 'pompons.p4'];
+      } else if (index === 3) {
+        paths = ['pompons.p1', 'pompons.p3'];
+      }
+    } 
+    else if (pomponMode.value === 'triple') {
       if (index === 2) paths = ['pompons.p2'];
       if (index === 3) paths = ['pompons.p3'];
       if (index === 4) paths = ['pompons.p4', 'pompons.p1'];
