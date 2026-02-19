@@ -78,14 +78,20 @@ const captureFlatHat = async (flatComponentRef, config) => {
           // I skalujemy rozmiar czcionki do rysowania
           const fontSizeForCanvas = userFontSize * scale; 
 
-          const fontWeight = ['tahoma', 'arialbold'].includes(fontName) ? 'bold' : 'normal';
+          const fontWeight = ['arialbold'].includes(fontName) ? 'bold' : 'normal';
 
           ctx.font = `${fontWeight} ${fontSizeForCanvas}px "${fontNameRaw}"`;
           ctx.fillStyle = config.text.color || '#000000';
           ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle'; 
+          ctx.textBaseline = 'alphabetic';
           
-          ctx.fillText(config.text.content, textX, textY);
+          const isEdge = /Edg/.test(navigator.userAgent);
+
+          const multiplier = isEdge ? 0.4 : 0.4;
+   
+          const compensatedY = textY + (fontSizeForCanvas * multiplier);
+          
+          ctx.fillText(config.text.content, textX, compensatedY);
         }
         
         resolve({ 
@@ -114,8 +120,13 @@ const captureFrontHat = async (frontComponentRef, config, showPompon) => {
     await ensureFontLoaded(fontName);
 
     const styledSvg = inlineStyles(svgEl, true);
-    // Wymuszenie jakości geometrycznej
-    styledSvg.style.shapeRendering = 'geometricPrecision';
+    styledSvg.querySelectorAll('text').forEach(t => {
+      t.style.stroke = 'none';
+      t.style.webkitFontSmoothing = 'antialiased'; 
+      t.style.textRendering = 'optimizeLegibility';
+    });
+    
+    styledSvg.style.shapeRendering = 'auto';
     const frozenSvg = embedCurrentFont(styledSvg, fontName);
 
     let readyPompon = null;

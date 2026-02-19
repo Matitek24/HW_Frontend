@@ -101,7 +101,7 @@
           <text 
             :dy="finalTextProps.dy"
             :font-family="config.text.font" 
-            font-weight="bold" 
+            :font-weight="['tahoma', 'arialbold'].includes(config.text.font.toLowerCase()) ? 'bold' : 'normal'"
             :font-size="finalTextProps.fontSize" 
             :fill="config.text.color"
             text-anchor="middle" 
@@ -313,6 +313,6 @@ watch(
     clip-path: url(#clippath3);
   }
   .svg-wrapper svg {
-  shape-rendering: crispEdges; 
+  shape-rendering: auto; 
 }
   </style>
