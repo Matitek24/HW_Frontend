@@ -33,7 +33,9 @@
         :dictionaries="dictionaryData"
         @toggle-expand="(val) => isBarExpanded = val"
         @hover="handleHover"        @hover-end="handleHoverEnd" /> -->
-
+        <div class="floating-ai">
+         <AiAssistant @config-ready="applyAiConfig" />
+      </div>
         <ConfigBar
   :config="hatConfig"
   :dictionaries="dictionaryData"
@@ -86,7 +88,7 @@
   import { defaultConfig, loadConfig, saveConfig } from '../utils/hatconfig.js';
   import { dictionaryAPI, projectAPI } from '../utils/axios.js';
   import ProductSidebar from './ui/ProductSidebar.vue';
-  
+  import AiAssistant from './ai/AiAssistant.vue';
   const isDownloading = ref(false);
   const isInitLoading = ref(true);
   const route = useRoute(); 
@@ -116,7 +118,10 @@
     patterns: [],
     fonts: []
   });
-  
+  const applyAiConfig = (newAiConfig) => {
+  console.log("AI nadpisuje czapkę!", newAiConfig);
+  Object.assign(hatConfig, newAiConfig);
+};
 // hover
 const hoverState = reactive({
   paths: [],  // np. 'base.top'
@@ -264,7 +269,21 @@ const handleHoverEnd = () => {
   
   <style>
 
+.floating-ai {
+  position: absolute;
+  top: 40px;
+  left: 150px;
+  z-index: 100;
+}
 
+@media (max-width: 1024px) {
+  .floating-ai {
+    position: relative;
+    bottom: 0;
+    left: 20px; /* Lekki margines na mobile */
+    margin-bottom: 10px;
+  }
+}
      @media print {
       .svg-wrapper {
         box-shadow: none !important;
