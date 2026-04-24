@@ -1,7 +1,7 @@
 <template>
   <div class="login-card">
     <div class="login-header">
-      <img src="../assets/Headwear_COLOR_CMYK_logo-1.png.webp" alt="logotyp" width="180px">
+      <img src="../../assets/Headwear_COLOR_CMYK_logo-1.png.webp" alt="logotyp" width="180px">
       <h2>Headwear</h2>
       <p>Zaloguj się do swojego konta</p>
     </div>
@@ -51,8 +51,8 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { authAPI } from '../utils/axios';
-import { saveToken, isTokenValid } from '../utils/jwt';
+import { authAPI } from '../../utils/axios';
+import { saveToken, isTokenValid } from '../../utils/jwt';
 
 const router = useRouter();
 

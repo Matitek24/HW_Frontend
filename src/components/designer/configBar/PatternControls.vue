@@ -101,8 +101,8 @@
   </template>
   
   <script setup>
-  import ColorPicker from '../utils/ColorPicker.vue';
-  import PatternPicker from '../utils/PatternPicker.vue';
+  import ColorPicker from '../pickers/ColorPicker.vue';
+  import PatternPicker from '../pickers/PatternPicker.vue';
   import './styles/controls.css';
 
   const props = defineProps({

@@ -126,8 +126,8 @@
   </template>
   
   <script setup>
-  import ColorPicker from '../utils/ColorPicker.vue';
-  import FontPicker from '../utils/FontPicker.vue';
+  import ColorPicker from '../pickers/ColorPicker.vue';
+  import FontPicker from '../pickers/FontPicker.vue';
   import './styles/controls.css';
 
   const props = defineProps({

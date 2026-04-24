@@ -12,7 +12,7 @@
 
 <script setup>
 import { computed } from 'vue';
-import { POMPON_SVG } from '../../utils/pompon.js';
+import { POMPON_SVG } from '../../../utils/pompon.js';
 
 const props = defineProps({
   config: {

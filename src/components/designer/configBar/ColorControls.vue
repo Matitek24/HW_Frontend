@@ -31,7 +31,7 @@
   </template>
   
   <script setup>
-  import ColorPicker from '../utils/ColorPicker.vue';
+  import ColorPicker from '../../designer/pickers/ColorPicker.vue';
   import './styles/controls.css';
 
   defineProps({

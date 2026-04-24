@@ -5,7 +5,7 @@
   </template>
   
   <script setup>
-  import Czapka from '../components/HatDesigner.vue';
+  import Czapka from '../components/designer/HatDesigner.vue';
   </script>
   
   <style scoped>

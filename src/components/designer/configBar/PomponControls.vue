@@ -119,7 +119,7 @@
   
   <script setup>
   import { ref, watch } from 'vue';
-  import ColorPicker from '../utils/ColorPicker.vue';
+  import ColorPicker from '../pickers/ColorPicker.vue';
   import './styles/controls.css';
   
   const props = defineProps({

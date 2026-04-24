@@ -90,10 +90,10 @@ import { removeStoredToken, getStoredToken, isTokenValid } from '../../utils/jwt
 import { useProductionCard } from '../../utils/useProductionCard';
 
 // Nowe Komponenty
-import SearchFilter from '../SearchFilter.vue';
+import SearchFilter from '../common/SearchFilter.vue';
 import OrdersTable from './OrdersTable.vue';
 import DashboardPagination from './DashboardPagination.vue';
-import HatFlat from '../hat/HatFlat.vue';
+import HatFlat from '../designer/hat/HatFlat.vue';
 
 // Logika (Composable)
 import { useAdminOrders } from './composables/useAdminOrders';

@@ -119,7 +119,7 @@
         <img v-if="hatConfig.customLogo" :src="hatConfig.customLogo" alt="Custom Logo"
           style="width: auto; max-width: 60%; max-height: 60%; object-fit: contain;" />
 
-        <img v-else src="../assets/Headwear_COLOR_CMYK_logo-1.png.webp" width="120" alt="hw" />
+        <img v-else src="../../assets/Headwear_COLOR_CMYK_logo-1.png.webp" width="120" alt="hw" />
       </a>
     </div>
   </div>
@@ -294,8 +294,8 @@
 
 <script setup>
 import { ref, reactive, computed, watch, nextTick } from 'vue';
-import { projectAPI } from '../utils/axios.js';
-import { resizeImage } from '../utils/imageUtils.js';
+import { projectAPI } from '../../utils/axios.js';
+import { resizeImage } from '../../utils/imageUtils.js';
 
 const props = defineProps({
   isDownloading: { type: Boolean, default: false },

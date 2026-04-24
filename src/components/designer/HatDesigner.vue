@@ -26,7 +26,7 @@
         @hover="handleHover"        @hover-end="handleHoverEnd" /> -->
 
         <ConfigBar :config="hatConfig" :dictionaries="dictionaryData" @update:config="handleConfigUpdate"
-          @hover="handleHover" @hover-end="handleHoverEnd" />
+          @toggle-expand="(val) => isBarExpanded = val" @hover="handleHover" @hover-end="handleHoverEnd" />
 
         <div id="print-flat-container" class="czapka flat-layout" :class="{ 'is-active': activeView === 'flat' }">
           <div class="hat-label mb-2">WIDOK PŁASKI</div>
@@ -49,14 +49,14 @@
 <script setup>
 import { reactive, watch, onMounted, ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useGeneratorWizualizacji } from '../utils/generatorWizualizacji.js';
+import { useGeneratorWizualizacji } from '../../utils/generatorWizualizacji.js';
 import ConfigBar from './configBar/ConfigBar.vue';
 import TopBar from './TopBar.vue';
 import HatFlat from './hat/HatFlat.vue';
 import HatFront from './hat/HatFront.vue';
-import { defaultConfig, loadConfig, saveConfig } from '../utils/hatconfig.js';
-import { dictionaryAPI, projectAPI } from '../utils/axios.js';
-import ProductSidebar from './ui/ProductSidebar.vue';
+import { defaultConfig, loadConfig, saveConfig } from '../../utils/hatconfig.js';
+import { dictionaryAPI, projectAPI } from '../../utils/axios.js';
+import ProductSidebar from '../ui/ProductSidebar.vue';
 
 const isDownloading = ref(false);
 const isInitLoading = ref(true);

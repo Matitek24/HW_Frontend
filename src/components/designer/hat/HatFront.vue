@@ -145,7 +145,7 @@
   </template>
 <script setup>
 import { ref, computed, watch, nextTick } from 'vue';
-import { bendIt, resetWarp } from '../../utils/warpTransform.js';
+import { bendIt, resetWarp } from '../../../utils/warpTransform.js';
 import HatPompon from './HatPompon.vue';
 
 const svgRef = ref(null);
