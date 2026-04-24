@@ -133,7 +133,7 @@ export const projectAPI = {
 export const adminAPI = {
   getAllUsers: () => api.get('/admin/users'),
   deleteUser: (id) => api.delete(`/admin/users/${id}`),
-  getAllProjects: () => api.get('/admin/projects'),
+  getAllProjects: (params) => api.get('/admin/projects', { params }),
   updateProjectStatus: (id, status) => api.patch(`/admin/projects/${id}/status`, status, {
     headers: { 'Content-Type': 'text/plain' } // Wysyłamy prosty string, nie JSON
 })

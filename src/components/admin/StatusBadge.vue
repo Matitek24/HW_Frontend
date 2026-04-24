@@ -1,11 +1,11 @@
 <template>
     <div class="status-badge-wrapper" ref="triggerRef">
       <div 
-        class="status-trigger" 
+        class="status-trigger position-relative" 
         :class="statusClass"
         @click.stop="toggleDropdown"
       >
-        <span v-if="isLoading" class="spinner-border spinner-border-sm me-1"></span>
+        <span v-if="isLoading" class="spinner-border spinner-border-sm" style="position: absolute; left: -24px; top: 50%; transform: translateY(-50%);"></span>
         {{ currentLabel }}
         <svg class="ms-1" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" :class="{ 'rotate-180': isOpen }">
           <polyline points="6 9 12 15 18 9"></polyline>

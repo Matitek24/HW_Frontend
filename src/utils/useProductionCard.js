@@ -33,7 +33,7 @@ export function useProductionCard() {
   const loadFontForCanvas = async (fontName) => {
     const fontFileName = getFontFileName(fontName);
     const fontUrl = `${window.location.origin}/fonts/${fontFileName}`;
-    
+
     try {
       // Sprawdź czy już załadowany
       if (document.fonts.check(`16px "${fontName}"`)) {
@@ -49,7 +49,7 @@ export function useProductionCard() {
       console.log(`✅ Font ${fontName} załadowany!`);
       return true;
     } catch (e) {
-      console.error(`❌ Błąd ładowania fontu ${fontName}:`, e);
+      console.error(`Błąd ładowania fontu ${fontName}:`, e);
       return false;
     }
   };
@@ -57,13 +57,13 @@ export function useProductionCard() {
   const getFontFileName = (fontName) => {
     if (!fontName) return 'arial.ttf';
     const lower = fontName.toLowerCase();
-    
+
     const fontMap = {
       'arial': 'arial.ttf',
       'arialbold': 'arialbold.ttf',
       'gothic': 'msgothic.ttf',
       'calibri': 'calibri.ttf',
-      'tahoma': 'tahoma.ttf',
+      'tahoma': 'Tahoma.ttf',
       'impact': 'impact.ttf',
       'roboto': 'roboto.ttf'
     };
@@ -96,7 +96,7 @@ export function useProductionCard() {
 
         // 3. Serializuj SVG (bez tekstu - bo go nadpiszemy)
         const svgClone = svgElement.cloneNode(true);
-        
+
         // USUŃ tekst z SVG (żeby nie dublował się)
         const textElements = svgClone.querySelectorAll('text');
         textElements.forEach(el => el.remove());
@@ -107,7 +107,7 @@ export function useProductionCard() {
         const svgUrl = URL.createObjectURL(svgBlob);
 
         const img = new Image();
-        
+
         img.onload = async () => {
           // 5. Rysuj SVG czapki na canvas
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -116,18 +116,21 @@ export function useProductionCard() {
           // 6. NAŁÓŻ TEKST z właściwym fontem
           if (config.text?.content) {
             const fontName = config.text.font || 'Arial';
-            
+
             // ZAŁADUJ FONT przed rysowaniem
             await loadFontForCanvas(fontName);
-            
+
             const fontSize = (config.text.fontSize || 64) * scale;
             const textY = (395 - (config.text.offsetY || 0)) * scale; // 395 to FLAT_CENTER_Y z twojego komponentu
-            
+
             ctx.font = `normal ${fontSize}px "${fontName}", sans-serif`;
             ctx.fillStyle = config.text.color || '#000000';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            
+            if (fontName == 'tahoma') {
+              ctx.font = `bold ${fontSize}px "${fontName}", sans-serif`;
+            }
+
             // Rysuj tekst na środku (658.14 to środek X z HatFlat)
             ctx.fillText(config.text.content, 658.14 * scale, textY);
           }
@@ -178,7 +181,7 @@ export function useProductionCard() {
     doc.text("KARTA PRODUKCYJNA", 14, 20);
     doc.setFontSize(10);
     doc.text(`ID: ${project.id}`, 14, 30);
-    doc.text(`Data: ${project.createdAt}`, 14, 35); 
+    doc.text(`Data: ${project.createdAt}`, 14, 35);
     doc.text(`Status: ${project.status}`, 14, 40);
 
     // Dodaj wizualizację czapki
@@ -188,16 +191,16 @@ export function useProductionCard() {
 
     // Tabela 1 - Dane klienta
     autoTable(doc, {
-        startY: 65, 
-        styles: { font: "Roboto", fontStyle: "normal" },
-        head: [['Klient', 'Firma', 'Kontakt']],
-        body: [[
-          project.client.name,
-          project.client.company || '-',
-          `${project.client.email}\n${project.client.phone || ''}`,
-        ]],
-        theme: 'grid',
-        headStyles: { fillColor: [31, 41, 55] }
+      startY: 65,
+      styles: { font: "Roboto", fontStyle: "normal" },
+      head: [['Klient', 'Firma', 'Kontakt']],
+      body: [[
+        project.client.name,
+        project.client.company || '-',
+        `${project.client.email}\n${project.client.phone || ''}`,
+      ]],
+      theme: 'grid',
+      headStyles: { fillColor: [31, 41, 55] }
     });
 
     // Tabela 2 - Specyfikacja czapki
@@ -222,41 +225,41 @@ export function useProductionCard() {
     ];
 
     if (conf.pompons?.show) {
-        specsData.push(['Kolory Pompona', `1: ${conf.pompons.p1}, 2: ${conf.pompons.p2}, 3: ${conf.pompons.p3}, 4: ${conf.pompons.p4}`]);
+      specsData.push(['Kolory Pompona', `1: ${conf.pompons.p1}, 2: ${conf.pompons.p2}, 3: ${conf.pompons.p3}, 4: ${conf.pompons.p4}`]);
     }
 
     autoTable(doc, {
-        startY: doc.lastAutoTable.finalY + 10,
-        styles: { font: "Roboto", fontStyle: "normal" },
-        head: [['Element', 'Specyfikacja / Kolor (HEX)']],
-        body: specsData,
-        theme: 'striped',
-        headStyles: { fillColor: [100, 100, 100] }
+      startY: doc.lastAutoTable.finalY + 10,
+      styles: { font: "Roboto", fontStyle: "normal" },
+      head: [['Element', 'Specyfikacja / Kolor (HEX)']],
+      body: specsData,
+      theme: 'striped',
+      headStyles: { fillColor: [100, 100, 100] }
     });
 
     // Uwagi klienta
     if (project.order.notes) {
-        let finalY = doc.lastAutoTable.finalY + 10;
-        if (finalY > 270) { doc.addPage(); finalY = 20; }
-        doc.setFontSize(10);
-        doc.text("Uwagi do zamówienia:", 14, finalY);
-        doc.setFontSize(9);
-        const splitNotes = doc.splitTextToSize(project.order.notes, 180);
-        doc.text(splitNotes, 14, finalY + 5);
+      let finalY = doc.lastAutoTable.finalY + 10;
+      if (finalY > 270) { doc.addPage(); finalY = 20; }
+      doc.setFontSize(10);
+      doc.text("Uwagi do zamówienia:", 14, finalY);
+      doc.setFontSize(9);
+      const splitNotes = doc.splitTextToSize(project.order.notes, 180);
+      doc.text(splitNotes, 14, finalY + 5);
     }
 
     // Logo Headwear
     const logoImg = await loadImage(logo);
     if (logoImg) {
-        const pageHeight = doc.internal.pageSize.height;
-        const pageWidth = doc.internal.pageSize.width;
-        const logoWidth = 40;
-        const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
-        const x = (pageWidth - logoWidth) / 2;
-        const y = pageHeight - logoHeight - 15;
-        doc.addImage(logoImg, "PNG", x, y, logoWidth, logoHeight);
+      const pageHeight = doc.internal.pageSize.height;
+      const pageWidth = doc.internal.pageSize.width;
+      const logoWidth = 40;
+      const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
+      const x = (pageWidth - logoWidth) / 2;
+      const y = pageHeight - logoHeight - 15;
+      doc.addImage(logoImg, "PNG", x, y, logoWidth, logoHeight);
     }
-    
+
     doc.save(`Karta_${project.id.slice(0, 8)}.pdf`);
     console.log("✅ PDF wygenerowany!");
   };

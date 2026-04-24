@@ -97,7 +97,7 @@
             :fill="config.text.color" 
             :font-family="config.text.font" 
             :font-size="config.text.fontSize" 
-            font-weight="bold"
+            :font-weight="['tahoma', 'arialbold'].includes(config.text.font.toLowerCase()) ? 'bold' : 'normal'"
             text-anchor="middle" 
             dominant-baseline="central"
             xml:space="preserve"
