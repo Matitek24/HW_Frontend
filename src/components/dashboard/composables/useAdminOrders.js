@@ -13,7 +13,7 @@ export function useAdminOrders() {
   const totalProjects = ref(0); // Będzie używane do backend paginacji
   
   const searchFilter = ref({ type: 'name', query: '' });
-  const currentSort = ref('date');
+  const currentSort = ref('createdAt');
   const currentSortDir = ref('desc');
 
   // Wskazuje czy dostajemy pełne dane (Array) i musimy stronicować lokalnie
@@ -119,7 +119,7 @@ export function useAdminOrders() {
     // Lokalne Sortowanie
     result.sort((a, b) => {
       let modifier = currentSortDir.value === 'desc' ? -1 : 1;
-      if (currentSort.value === 'date') {
+      if (currentSort.value === 'createAt') {
         return (new Date(a.rawDate) - new Date(b.rawDate)) * modifier;
       } else if (currentSort.value === 'status') {
         return a.status.localeCompare(b.status) * modifier;
@@ -175,8 +175,6 @@ export function useAdminOrders() {
   }
 
   const exportCSV = () => {
-    // Uwaga: przy serwerowej paginacji to ściągnie tylko to co na ekranie,
-    // serwer powinien dostarczyć /admin/projects/export - dla teraz ujdzie.
     exportProjectsToCSV(isLocalPagination.value ? processedProjects.value : projects.value);
   };
 
