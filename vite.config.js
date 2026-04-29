@@ -13,4 +13,16 @@ export default defineConfig({
   optimizeDeps: {
     include: ['html2canvas']
   },
+
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+        }
+      }
+    }
+  }
 })
