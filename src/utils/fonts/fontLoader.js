@@ -2,24 +2,25 @@
 import { fontLibrary } from '../fontLibrary'; // Ścieżka do pliku wyżej
 
 export async function ensureFontLoaded(fontName) {
-  // Pobieramy dane fontu na podstawie nazwy z bazy (np. "MS Gothic")
   const fontData = fontLibrary[fontName];
 
   if (!fontData) {
-    return Promise.resolve();
+    return false;
   }
 
-  // Sprawdzamy czy przeglądarka już go ma
-  const checkSyntax = fontData.weight === 'bold' ? `bold 12px "${fontName}"` : `12px "${fontName}"`;
-  if (document.fonts.check(checkSyntax)) {
-    return Promise.resolve();
+  if (fontData.base64) {
+      return true;
   }
-
 
   try {
+    
+    const base64String = await fontData.loader();
+    
+    fontData.base64 = base64String; 
+
     const fontFace = new FontFace(
-      fontName, // Ta nazwa będzie używana w CSS
-      `url(data:font/${fontData.format};base64,${fontData.base64})`,
+      fontName,
+      `url(data:font/${fontData.format};base64,${base64String})`,
       {
         style: 'normal',
         weight: fontData.weight
@@ -32,6 +33,7 @@ export async function ensureFontLoaded(fontName) {
     return true;
 
   } catch (err) {
+    console.error("Błąd ładowania czcionki:", err);
     return false;
   }
 }

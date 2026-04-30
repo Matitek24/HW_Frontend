@@ -1,52 +1,43 @@
 // src/utils/fonts/fontLibrary.js
 
-// 1. Importujemy Twoje zmienne z plików.
-// Zwróć uwagę na nazwy w klamrach {} - muszą być IDENTYCZNE jak w Twoich plikach export const ...
-import { Arial } from './fonts/ArialBase64.js';
-import { arialBold } from './fonts/ArialBoldBase64.js';
-import { calibri } from './fonts/CalibriBase64.js';
-import { Impact } from './fonts/ImpactBase64.js';
-import { msgothic } from './fonts/MsGothicBase64.js';
-import { fontBase64 } from './fonts/Roboto-Regular.js'; // Tu nazwałeś zmienną fontBase64
-import { tahoma } from './fonts/TahomaBase64.js';
-
-// 2. Tworzymy bibliotekę mapującą:
-// KLUCZ (lewa strona) = Nazwa z Twojej bazy danych (widoczna na screenie SQL)
-// WARTOŚĆ (prawa strona) = Obiekt z base64 zaimportowany wyżej
+// Zamiast importować wszystko od razu na górze (co zatyka aplikację),
+// tworzymy słownik, w którym przechowujemy FUNKCJE do pobierania czcionek.
+// Vite automatycznie "wytnie" pliki Base64 z głównego bundle'a!
 
 export const fontLibrary = {
   'arial': {
-    base64: Arial,
+    // Zwróć uwagę na ()=> import(...) to kluczowy element!
+    loader: () => import('./fonts/ArialBase64.js').then(m => m.Arial),
     format: 'truetype',
     weight: 'normal'
   },
   'arialbold': {
-    base64: arialBold,
+    loader: () => import('./fonts/ArialBoldBase64.js').then(m => m.arialBold),
     format: 'truetype',
-    weight: 'bold' // Oznaczamy, że to pogrubiona wersja
+    weight: 'bold' 
   },
   'calibri': {
-    base64: calibri,
+    loader: () => import('./fonts/CalibriBase64.js').then(m => m.calibri),
     format: 'truetype',
     weight: 'normal'
   },
   'impact': {
-    base64: Impact,
+    loader: () => import('./fonts/ImpactBase64.js').then(m => m.Impact),
     format: 'truetype',
     weight: 'normal'
   },
   'gothic': {
-    base64: msgothic,
+    loader: () => import('./fonts/MsGothicBase64.js').then(m => m.msgothic),
     format: 'truetype',
     weight: 'normal'
   },
   'roboto': {
-    base64: fontBase64, // Twoja nazwa dla Roboto
+    loader: () => import('./fonts/Roboto-Regular.js').then(m => m.fontBase64),
     format: 'truetype',
     weight: 'normal'
   },
   'tahoma': {
-    base64: tahoma,
+    loader: () => import('./fonts/TahomaBase64.js').then(m => m.tahoma),
     format: 'truetype',
     weight: 'normal'
   }

@@ -78,7 +78,7 @@ const captureFlatHat = async (flatComponentRef, config) => {
           // I skalujemy rozmiar czcionki do rysowania
           const fontSizeForCanvas = userFontSize * scale; 
 
-          const fontWeight = ['arialbold'].includes(fontName) ? 'bold' : 'normal';
+          const fontWeight = ['arialbold', 'tahoma'].includes(fontName) ? 'bold' : 'normal';
 
           ctx.font = `${fontWeight} ${fontSizeForCanvas}px "${fontNameRaw}"`;
           ctx.fillStyle = config.text.color || '#000000';
