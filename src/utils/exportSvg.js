@@ -67,7 +67,7 @@ export function exportSvgToImage(svgEl, {
                 const finalPomponW = pBaseW * POMPON_VISUAL_SCALE * scale;
                 const finalPomponH = pBaseH * POMPON_VISUAL_SCALE * scale;
        
-                const hatCenterX = (svgW * scale) / 2 - 320;
+                const hatCenterX = (svgW * scale) / 2 - 133;
                 const pX = hatCenterX - (finalPomponW / 2);
                 
                 const pY = POMPON_OFFSET_Y * scale;

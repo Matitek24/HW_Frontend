@@ -36,8 +36,7 @@ const captureFlatHat = async (flatComponentRef, config) => {
       const vW = viewBox.width || 1316.28;
       const vH = viewBox.height || 800.63;
       const aspectRatio = vW / vH;
-
-      const scale = 2; 
+      const scale = 1; // ZMNIEJSZAMY SKALĘ Z 2 NA 1
       const canvas = document.createElement('canvas');
       canvas.width = vW * scale;
       canvas.height = vH * scale;
@@ -53,6 +52,10 @@ const captureFlatHat = async (flatComponentRef, config) => {
       const img = new Image();
 
       img.onload = () => {
+        // BARDZO WAŻNE: Wypełniamy tło na biało przed rysowaniem (dla formatu JPEG)
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         URL.revokeObjectURL(url);
 
@@ -60,22 +63,15 @@ const captureFlatHat = async (flatComponentRef, config) => {
           const fontNameRaw = config.text.font || 'Arial';
           const fontName = fontNameRaw.toLowerCase();
           
-          // Pobieramy surowe wartości z configu (bez mnożenia przez scale jeszcze!)
           const userFontSize = config.text.fontSize || 64;
           const userOffset = -(config.text.offsetY || 0); 
           
           const tuning = FONT_TUNING[fontName] || FONT_TUNING['default'];
 
-          // 2. MATEMATYKA 1:1 Z HATFLAT.VUE
-          // Mnożnik suwaka zmieniony na 0.85 
-          // userFontSize NIE jest tu jeszcze pomnożony przez `scale`
           const finalYWithoutScale = FLAT_BASE_Y + tuning.shift + (userOffset * 0.85) + (userFontSize * tuning.pivot);
           
-          // 3. DOPIERO TERAZ SKALUJEMY WYNIK DLA CANVASA
           const textY = finalYWithoutScale * scale;
           const textX = (vW / 2) * scale;
-          
-          // I skalujemy rozmiar czcionki do rysowania
           const fontSizeForCanvas = userFontSize * scale; 
 
           const fontWeight = ['arialbold', 'tahoma'].includes(fontName) ? 'bold' : 'normal';
@@ -86,16 +82,15 @@ const captureFlatHat = async (flatComponentRef, config) => {
           ctx.textBaseline = 'alphabetic';
           
           const isEdge = /Edg/.test(navigator.userAgent);
-
           const multiplier = isEdge ? 0.4 : 0.4;
-   
           const compensatedY = textY + (fontSizeForCanvas * multiplier);
           
           ctx.fillText(config.text.content, textX, compensatedY);
         }
         
         resolve({ 
-            dataUrl: canvas.toDataURL('image/png'),
+            // ZMIENIAMY NA JPEG Z KOMPRESJĄ 80%
+            dataUrl: canvas.toDataURL('image/jpeg', 0.8), 
             ratio: aspectRatio
         });
       };
@@ -136,8 +131,8 @@ const captureFrontHat = async (frontComponentRef, config, showPompon) => {
     }
 
     const dataUrl = await exportSvgToImage(frozenSvg, {
-      type: 'image/png',
-      scale: 3,
+      type: 'image/png', 
+      scale: 1.3,        
       filename: null,
       pomponEl: readyPompon
     });

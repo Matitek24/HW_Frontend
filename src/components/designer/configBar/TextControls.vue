@@ -101,7 +101,7 @@
               type="range"
               :value="config.fontSize"
               @input="updateField('fontSize', Number($event.target.value))"
-              min="48"
+              min="64"
               max="152"
               step="8"
               class="slider compact-slider"

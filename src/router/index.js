@@ -25,6 +25,7 @@ const routes = [
     component: DashboardPage,
     meta: { requiresAuth: true }
   },
+  
   {
     path: '/login',
     name: 'Login',
