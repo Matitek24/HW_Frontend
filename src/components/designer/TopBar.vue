@@ -353,7 +353,7 @@ const canEdit = computed(() => {
 
 // 3. Tekst na guziku
 const buttonText = computed(() => {
-  if (!isEditMode.value) return 'Wyślij wizualizację';
+  if (!isEditMode.value) return 'Wyślij wizualizacje';
   return canEdit.value ? 'Zapisz Wersję' : `Status: ${props.currentStatus}`;
 });
 
