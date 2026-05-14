@@ -74,16 +74,14 @@ a:hover {
 }
 
 
-html,body{
-  overflow-x: hidden;
-
-
-}
 body {
+  overflow-x: hidden;
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
+  
+}
+html:has(.dashboard-wrapper) {
+  scrollbar-gutter: stable;
 }
 
 h1 {

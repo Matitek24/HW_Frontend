@@ -1,5 +1,5 @@
 <template>
-  <div class="table-responsive" :class="{ 'blur-content': isLoading }">
+  <div class="table-responsive custom-table-wrapper" :class="{ 'blur-content': isLoading }">
     <table class="table align-middle custom-table" :class="{ 'table-hover': !isMobile }">
       <thead>
         <tr>
@@ -177,9 +177,14 @@ const emitSort = (column) => {
 </script>
 
 <style scoped>
+.custom-table-wrapper {
+  padding: 16px;
+  margin: -16px; /* Kompensuje padding, by nie zaburzyć układu */
+}
+
 .custom-table {
   border-collapse: separate;
-  border-spacing: 0 8px;
+  border-spacing: 0 16px;
   width: 100%;
   margin-bottom: 0;
 }

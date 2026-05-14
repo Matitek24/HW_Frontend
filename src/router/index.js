@@ -4,6 +4,7 @@ import DashboardPage from '../pages/Dashboard.vue';
 import Czapka from '../pages/Czapka.vue';
 import ForgotPassword from '../pages/ForgotPassword.vue';
 import ResetPassword from '../pages/ResetPassword.vue';
+import LeadsView from '../pages/LeadsView.vue';
 
 const routes = [
   {
@@ -27,6 +28,13 @@ const routes = [
   },
   
   {
+    path: '/leads',
+    name: 'Leads',
+    component: LeadsView,
+    meta: { requiresAuth: true }
+  },
+  
+  {
     path: '/login',
     name: 'Login',
     component: LoginPage,
@@ -38,7 +46,14 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition;
+    } else {
+      return { top: 0, behavior: 'smooth' };
+    }
+  }
 });
 
 router.beforeEach((to, from, next) => {

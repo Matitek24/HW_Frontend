@@ -132,7 +132,10 @@ export const projectAPI = {
   })
 };
 
-// utils/axios.js
+export const adminAnalyticsAPI = {
+  getLeads: (sortBy = 'lastActivityDate') => api.get('/admin/analytics/leads', { params: { sortBy } }),
+  getDailyStats: () => api.get('/admin/analytics/stats/daily')
+};
 
 export const adminAPI = {
   getAllUsers: () => api.get('/admin/users'),

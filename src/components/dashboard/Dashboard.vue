@@ -1,14 +1,19 @@
 <template>
-  <div class="dashboard-wrapper" style="overflow: hidden;">
-    <div class="bg-blob blob-1"></div>
-    <div class="bg-blob blob-2"></div>
+  <div class="dashboard-wrapper">
+    <div class="blobs-container">
+      <div class="bg-blob blob-1"></div>
+      <div class="bg-blob blob-2"></div>
+    </div>
 
-    <div class="container-fluid px-xxl-5 position-relative z-1">
+    <div class="container-fluid px-4 px-lg-5 px-xxl-6 position-relative z-1">
       
       <header class="d-flex justify-content-between align-items-center py-5 mb-3">
         <div>
-          <h1 class="display-6 fw-bold text-dark mb-0" style="letter-spacing: -1px;">Zamówienia</h1>
-          <p class="text-muted fw-light">Panel Headwear</p>
+          <div class="d-flex align-items-center gap-3">
+            <h1 class="display-6 fw-bold text-dark mb-0" style="letter-spacing: -1px;">Zamówienia</h1>
+            <span class="badge glass-badge text-dark px-3 py-2 rounded-pill" style="font-size: 0.9rem;">Wszystkie: {{ totalProjects }}</span>
+          </div>
+          <p class="text-muted fw-light mt-1">Panel Headwear</p>
         </div>
         <button @click="handleLogout" class="glass-btn-logout">
           Wyloguj
@@ -19,7 +24,6 @@
         
         <div class="d-flex justify-content-between align-items-center mb-5">
           <div class="d-flex gap-3 align-items-center">
-            <span class="badge glass-badge text-dark px-3 py-2 rounded-pill">Wszystkie: {{ totalProjects }}</span>
             <span class="badge glass-badge text-success px-3 py-2 rounded-pill">Nowe: {{ newProjectsCount }}</span>
           </div>
           <div>
@@ -80,6 +84,8 @@
         </div>
       </div>
     </Teleport>
+
+    <AdminDock />
   </div>
 </template>
 
@@ -94,6 +100,7 @@ import SearchFilter from '../common/SearchFilter.vue';
 import OrdersTable from './OrdersTable.vue';
 import DashboardPagination from './DashboardPagination.vue';
 import HatFlat from '../designer/hat/HatFlat.vue';
+import AdminDock from './admin/AdminDock.vue';
 
 // Logika (Composable)
 import { useAdminOrders } from './composables/useAdminOrders';
@@ -160,12 +167,21 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+
 .dashboard-wrapper {
   min-height: 100vh;
   background-color: #ffffff;
   position: relative;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  padding-bottom: 40px; 
+  padding-bottom: 100px;
+}
+
+.blobs-container {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .bg-blob {
