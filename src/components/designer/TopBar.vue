@@ -173,6 +173,35 @@
     </div>
   </Transition>
 
+  <Transition name="fade">
+    <div v-if="isPdfEmailModalOpen" class="modal-overlay" @click.self="isPdfEmailModalOpen = false" style="z-index: 1000;">
+      <div class="glass-modal-content container p-4 text-center" style="max-width: 400px;">
+        <div class="position-relative py-2">
+          <button class="btn position-absolute top-0 end-0" @click="isPdfEmailModalOpen = false">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+          <h4 class="modal-title fs-5">Gdzie wysłać wizualizację?</h4>
+          <p class="modal-subtitle mt-2">Podaj adres e-mail, na który otrzymasz gotowy plik PDF z projektem.</p>
+        </div>
+
+        <div>
+          <input
+            v-model="pdfEmail"
+            type="email"
+            class="input-pill w-100 mb-4"
+            placeholder="Twój adres e-mail..."
+            required
+          />
+          <button class="action-btn-primary w-100 justify-content-center" @click="confirmPdfEmail">
+            Wyślij PDF
+          </button>
+        </div>
+      </div>
+    </div>
+  </Transition>
 
   <Transition name="fade">
     <div v-show="isModalOpen" class="modal-overlay" @click.self="closeModal">
@@ -310,6 +339,8 @@ const isModalOpen = ref(false);
 const isLogoModalOpen = ref(false);
 const isSubmitting = ref(false);
 const isDownloadModalOpen = ref(false);
+const isPdfEmailModalOpen = ref(false);
+const pdfEmail = ref('');
 const printVisualisation = () => {
   window.print();
 };
@@ -324,10 +355,8 @@ const formData = reactive({
 });
 
 const handlePDFDownload = () => {
-
-  emit('download', 'pdf');
-
-  isDownloadModalOpen.value = true;
+  // Zamiast od razu emitować, odpalamy nasz nowy Modal!
+  isPdfEmailModalOpen.value = true;
 };
 
 watch(() => props.isDownloading, (newValue, oldValue) => {
@@ -340,6 +369,26 @@ watch(() => props.isDownloading, (newValue, oldValue) => {
   }
 });
 
+// do wysylania maili
+const confirmPdfEmail = () => {
+  if (!pdfEmail.value || !pdfEmail.value.includes('@')) {
+    alert("Proszę podać poprawny adres e-mail.");
+    return;
+  }
+  
+  // Zapisujemy wpisany adres do zmiennej pomocniczej
+  const wpisanyMail = pdfEmail.value; 
+  
+  // ZAMYKAMY MODAL I CZYŚCIMY POLE (To naprawi Twój błąd!)
+  isPdfEmailModalOpen.value = false;
+  pdfEmail.value = ''; 
+  
+  // Przekazujemy rodzicowi zapisany mail
+  emit('download', { format: 'pdf', email: wpisanyMail });
+  
+  // Odpalamy loader kręcącego się kółka
+  isDownloadModalOpen.value = true; 
+};
 // --- LOGIKA STANU (COMPUTED) ---
 
 // 1. Czy edytujemy istniejący projekt?

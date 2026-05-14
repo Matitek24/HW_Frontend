@@ -262,7 +262,8 @@ export function useGeneratorWizualizacji() {
     doc.text("Wygenerowano automatycznie przez system Headwear Professionals Configuration", 105, pageHeight - 9, { align: 'center' });
     doc.text(`© ${new Date().getFullYear()} - System Headwear Configuration`, 105, pageHeight - 5, { align: 'center' });
 
-    doc.save(`Zamowienie_${project.id}.pdf`);
+    // doc.save(`Zamowienie_${project.id}.pdf`);
+    return doc.output('blob');
   };
 
   return { generatePDF };

@@ -23,7 +23,8 @@
         :config="hatConfig" 
         :dictionaries="dictionaryData"
         @toggle-expand="(val) => isBarExpanded = val"
-        @hover="handleHover"        @hover-end="handleHoverEnd" /> -->
+        @hover="handleHover"       
+        @hover-end="handleHoverEnd" /> -->
 
         <ConfigBar :config="hatConfig" :dictionaries="dictionaryData" @update:config="handleConfigUpdate"
           @toggle-expand="(val) => isBarExpanded = val" @hover="handleHover" @hover-end="handleHoverEnd" />
@@ -191,43 +192,93 @@ const updateCssVariables = (base) => {
   }
 };
 
+// --- JEDNA, POPRAWIONA FUNKCJA DO OBSŁUGI WYSYŁKI PDF ---
+const handleDownloadRequest = async (eventData) => {
+  // Sprawdzamy nasz nowy obiekt z formatem i e-mailem
+  if (eventData && eventData.format === 'pdf') {
+    isDownloading.value = true;
+    
+    try {
+      // 1. Budujemy dane projektu
+      const projectData = {
+        id: route.params.id || "Nowy",
+        createdAt: new Date().toLocaleDateString(),
+        config: hatConfig,
+        status: projectStatus.value
+      };
+
+      // Małe opóźnienie, żeby interfejs zdążył zareagować
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      // 2. Generujemy plik w pamięci (Blob) zamiast go pobierać
+      const pdfBlob = await generatePDF(projectData, flatRef.value, frontRef.value);
+      
+      // 3. Pakujemy paczkę dla Spring Boota
+      const formData = new FormData();
+      formData.append('email', eventData.email); 
+      
+      // UWAGA: Upewniamy się, że projekt ma UUID.
+      // Jeśli to nowy projekt (bez zapisu), dajemy domyślne zera, żeby Spring nie zwrócił błędu 400
+      if (route.params.id) {
+         formData.append('projectId', route.params.id);
+      } else {
+         formData.append('projectId', '00000000-0000-0000-0000-000000000000');
+      }
+      
+      formData.append('file', pdfBlob, 'wizualizacja.pdf');
+
+      // 4. Strzał do Twojego API
+      await projectAPI.sendPdf(formData);
+      
+      alert("Wizualizacja została pomyślnie wysłana na adres: " + eventData.email);
+
+    } catch (error) {
+      console.error("Błąd podczas wysyłania PDF:", error);
+      alert("Coś poszło nie tak. Upewnij się, że backend przyjmuje pliki.");
+    } finally {
+      isDownloading.value = false;
+    }
+  }
+};
+
 // --- PDF GENERATOR ---
 // Funkcja obsługująca przycisk z TopBar (stara)
-const handleDownloadRequest = async (type) => {
-  if (type === "pdf") {
-    handleDownload(); // Przekieruj do nowej funkcji
-  }
-};
+// const handleDownloadRequest = async (type) => {
+//   if (type === "pdf") {
+//     handleDownload(); // Przekieruj do nowej funkcji
+//   }
+// };
+// Gdzieś w Twoim App.vue / Głównym komponencie:
 
 // NOWA FUNKCJA GENERUJĄCA
-const handleDownload = async () => {
-  // 1. Zbuduj obiekt danych projektu dynamicznie
-  const projectData = {
-    id: route.params.id || "Nowy",
-    createdAt: new Date().toLocaleDateString(),
-    config: hatConfig, // Używamy naszego reaktywnego obiektu
-    status: projectStatus.value,
-    client: { // Dodaj przykładowe dane klienta lub pobierz je skądś
-      name: "Klient Indywidualny",
-      email: "brak@danych.pl"
-    }
-  };
+// const handleDownload = async () => {
+//   // 1. Zbuduj obiekt danych projektu dynamicznie
+//   const projectData = {
+//     id: route.params.id || "Nowy",
+//     createdAt: new Date().toLocaleDateString(),
+//     config: hatConfig, // Używamy naszego reaktywnego obiektu
+//     status: projectStatus.value,
+//     client: { // Dodaj przykładowe dane klienta lub pobierz je skądś
+//       name: "Klient Indywidualny",
+//       email: "brak@danych.pl"
+//     }
+//   };
 
-  // 2. Wywołaj generator (przekazując Refy)
-  // Dodajemy prosty loader UI
-  isDownloading.value = true;
-  try {
-    // Dajemy chwilę na przerysowanie UI
-    setTimeout(async () => {
-      await generatePDF(projectData, flatRef.value, frontRef.value);
-      isDownloading.value = false;
-    }, 100);
-  } catch (e) {
-    console.error("Błąd PDF:", e);
-    alert("Wystąpił błąd podczas generowania PDF.");
-    isDownloading.value = false;
-  }
-};
+//   // 2. Wywołaj generator (przekazując Refy)
+//   // Dodajemy prosty loader UI
+//   isDownloading.value = true;
+//   try {
+//     // Dajemy chwilę na przerysowanie UI
+//     setTimeout(async () => {
+//       await generatePDF(projectData, flatRef.value, frontRef.value);
+//       isDownloading.value = false;
+//     }, 100);
+//   } catch (e) {
+//     console.error("Błąd PDF:", e);
+//     alert("Wystąpił błąd podczas generowania PDF.");
+//     isDownloading.value = false;
+//   }
+// };
 
 // Inicjalne ustawienie CSS
 updateCssVariables(hatConfig.base);
