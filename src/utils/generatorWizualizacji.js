@@ -8,24 +8,43 @@ import { exportSvgToImage } from './exportSvg.js';
 
 // --- KONFIGURACJA KOLORYSTYCZNA (Ciemny Grafit) ---
 const THEME_COLOR = [44, 62, 80]; 
-const SECONDARY_TEXT = [100, 116, 139];
 
-// --- MAPA DOSTROJENIA CZCIONEK (Musi być identyczna jak w HatFlat.vue) ---
+// --- MAPA DOSTROJENIA CZCIONEK ---
 const FONT_TUNING = {
- 'impact': { shift: 4, pivot: -0.01},
+    'impact': { shift: 4, pivot: -0.01},
     'roboto': { shift: 4, pivot: 0.0},
     'arialbold': { shift: 6, pivot: -0.06},
     'arial': { shift: 2, pivot: 0.02},
     'tahoma': { shift: 5, pivot: -0.05},
     'default': { shift: 8, pivot: -0.05},
 };
+
+// --- HELPER: Bezpieczne pobieranie logotypu do Base64 ---
+// Omija problemy z CORS i wygasłymi Blobami podczas serializacji SVG
+const fetchImageToBase64 = async (url) => {
+  return new Promise((resolve) => {
+    if (!url) return resolve(null);
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL('image/png'));
+    };
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+};
+
 const captureFlatHat = async (flatComponentRef, config) => {
   return new Promise(async (resolve) => {
     try {
       const svgElement = flatComponentRef.svgRef; 
       if (!svgElement) return resolve(null);
 
-      // 1. ZGODNOŚĆ BAZY (Taka sama jak w HatFlat.vue)
       const FLAT_BASE_Y = 395; 
 
       if (config.text?.font) {
@@ -36,36 +55,71 @@ const captureFlatHat = async (flatComponentRef, config) => {
       const vW = viewBox.width || 1316.28;
       const vH = viewBox.height || 800.63;
       const aspectRatio = vW / vH;
-      const scale = 1; // ZMNIEJSZAMY SKALĘ Z 2 NA 1
+      const scale = 1; 
+      
       const canvas = document.createElement('canvas');
       canvas.width = vW * scale;
       canvas.height = vH * scale;
       const ctx = canvas.getContext('2d');
 
       const svgClone = svgElement.cloneNode(true);
+      // Usuwamy natywne teksty i logotyp z klona (narysujemy je ręcznie w wyższej jakości)
       svgClone.querySelectorAll('text').forEach(el => el.remove());
+      svgClone.querySelectorAll('.logo-image-exclude').forEach(el => el.remove());
+      
       const styledSvg = inlineStyles(svgClone, false);
-
       const svgData = new XMLSerializer().serializeToString(styledSvg);
       const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
       const url = URL.createObjectURL(svgBlob);
       const img = new Image();
 
-      img.onload = () => {
-        // BARDZO WAŻNE: Wypełniamy tło na biało przed rysowaniem (dla formatu JPEG)
+      img.onload = async () => {
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         URL.revokeObjectURL(url);
 
+        // ==========================================
+        // 1. RĘCZNE RYSOWANIE LOGA + EFEKT HAFTU
+        // ==========================================
+        if (config.logo && config.logo.url) {
+          await new Promise((resolveLogo) => {
+            const logoImg = new Image();
+            logoImg.crossOrigin = "anonymous";
+            logoImg.onload = () => {
+              // Matematyka z HatFlat.vue
+              const x = (658 + (config.logo.x || 0)) * scale;
+              const y = (620 + (config.logo.y || 0)) * scale;
+              const logoScale = config.logo.scale || 1;
+              const size = 150 * scale * logoScale; 
+              
+              ctx.save();
+              
+     
+              ctx.beginPath();
+              ctx.rect(0.58 * scale, 512.74 * scale, 1313.78 * scale, 227.89 * scale);
+              ctx.clip();
+
+              // Rysowanie bazy loga
+              ctx.drawImage(logoImg, x - size/2, y - size/2, size, size);
+
+
+              ctx.restore();
+              resolveLogo();
+            };
+            logoImg.onerror = () => resolveLogo();
+            logoImg.src = config.logo.url;
+          });
+        }
+
+        // ==========================================
+        // 2. RĘCZNE RYSOWANIE TEKSTU
+        // ==========================================
         if (config.text?.content) {
           const fontNameRaw = config.text.font || 'Arial';
           const fontName = fontNameRaw.toLowerCase();
-          
           const userFontSize = config.text.fontSize || 64;
           const userOffset = -(config.text.offsetY || 0); 
-          
           const tuning = FONT_TUNING[fontName] || FONT_TUNING['default'];
 
           const finalYWithoutScale = FLAT_BASE_Y + tuning.shift + (userOffset * 0.85) + (userFontSize * tuning.pivot);
@@ -73,7 +127,6 @@ const captureFlatHat = async (flatComponentRef, config) => {
           const textY = finalYWithoutScale * scale;
           const textX = (vW / 2) * scale;
           const fontSizeForCanvas = userFontSize * scale; 
-
           const fontWeight = ['arialbold', 'tahoma'].includes(fontName) ? 'bold' : 'normal';
 
           ctx.font = `${fontWeight} ${fontSizeForCanvas}px "${fontNameRaw}"`;
@@ -89,7 +142,6 @@ const captureFlatHat = async (flatComponentRef, config) => {
         }
         
         resolve({ 
-            // ZMIENIAMY NA JPEG Z KOMPRESJĄ 80%
             dataUrl: canvas.toDataURL('image/jpeg', 0.8), 
             ratio: aspectRatio
         });
@@ -115,14 +167,32 @@ const captureFrontHat = async (frontComponentRef, config, showPompon) => {
     await ensureFontLoaded(fontName);
 
     const styledSvg = inlineStyles(svgEl, true);
+    
+    // Optymalizacja tekstu
     styledSvg.querySelectorAll('text').forEach(t => {
       t.style.stroke = 'none';
       t.style.webkitFontSmoothing = 'antialiased'; 
       t.style.textRendering = 'optimizeLegibility';
     });
-    
     styledSvg.style.shapeRendering = 'auto';
+
+    // Osadzanie czcionek
     const frozenSvg = embedCurrentFont(styledSvg, fontName);
+
+    // ==========================================
+    // MAGIA DLA WERSJI 3D: Podmiana loga z Bloba na Base64
+    // ==========================================
+    if (config.logo && config.logo.url) {
+      const logoB64 = await fetchImageToBase64(config.logo.url);
+      frozenSvg.querySelectorAll('.logo-image-exclude').forEach(img => {
+        if (logoB64) {
+          img.setAttribute('href', logoB64);
+          img.setAttribute('xlink:href', logoB64);
+        } else {
+          img.remove(); 
+        }
+      });
+    }
 
     let readyPompon = null;
     if (showPompon && pomponElRef) {
@@ -148,7 +218,6 @@ const captureFrontHat = async (frontComponentRef, config, showPompon) => {
 export function useGeneratorWizualizacji() {
 
   const generatePDF = async (project, flatRef, frontRef) => {
-  
     const doc = new jsPDF();
 
     // ========== SETUP FONTU ==========
@@ -169,7 +238,7 @@ export function useGeneratorWizualizacji() {
     
     doc.setFontSize(9);
     doc.setFont("Roboto", "normal");
-    doc.text(`ID PROJEKTU: ${project.id}  |  DATA: ${project.createdAt}`, 105, 23, { align: 'center' });
+    doc.text(`ID PROJEKTU: ${project.id || 'Niezapisany'}  |  DATA: ${project.createdAt || new Date().toLocaleDateString()}`, 105, 23, { align: 'center' });
     
     doc.setFontSize(7.5);
     doc.setTextColor(200, 200, 200);
@@ -186,21 +255,18 @@ export function useGeneratorWizualizacji() {
     const startY = 60;
     doc.setTextColor(0, 0, 0);
     
-    // Wizualizacje (Wyśrodkowane w blokach)
     if (resFlat && resFlat.dataUrl) {
       const width = 85;
       const height = width / resFlat.ratio; 
-      // Centrowanie w lewym bloku (x: 15 do 105)
-      doc.addImage(resFlat.dataUrl, 'PNG', 15, startY + 38, width, height);
+      doc.addImage(resFlat.dataUrl, 'JPEG', 15, startY + 38, width, height); // JPEG bo w captureFlatHat zmieniliśmy format!
     }
 
     if (res3D && res3D.dataUrl) {
       const width = 80;
-      // Centrowanie w prawym bloku
       doc.addImage(res3D.dataUrl, 'PNG', 115, startY, width, 0);
     }
 
-    // ========== TABELA PARAMETRÓW (ZMNIEJSZONA) ==========
+    // ========== TABELA PARAMETRÓW ==========
     const tableY = 180;
     
     autoTable(doc, {
@@ -210,6 +276,7 @@ export function useGeneratorWizualizacji() {
         ['Góra (Top)', config.base.top || '-'],
         ['Środek (Middle)', config.base.middle || '-'],
         ['Dół (Bottom)', config.base.bottom || '-'],
+        ['Własny Logotyp', config.logo?.url ? `TAK (${config.logo.originalName || 'wgrano plik'})` : 'Brak'],
         ['Tekst / Napis', config.text.content || 'Brak'],
         ['Czcionka', config.text.font || 'Arial'],
       ],
@@ -230,14 +297,10 @@ export function useGeneratorWizualizacji() {
       margin: { left: 15, right: 15 }
     });
 
-    // ========== NOWA LEKKA NOTKA POD TABELKĄ ==========
     const finalY = doc.lastAutoTable.finalY + 12;
     
-    // Tło notki
     doc.setFillColor(248, 250, 252);
     doc.rect(15, finalY, 180, 22, 'F');
-    
-    // Border-left (Grafitowy pasek)
     doc.setFillColor(...THEME_COLOR);
     doc.rect(15, finalY, 1.2, 22, 'F');
 
@@ -252,7 +315,6 @@ export function useGeneratorWizualizacji() {
     const splitNote = doc.splitTextToSize(disclaimer, 170);
     doc.text(splitNote, 20, finalY + 13);
 
-    // ========== STOPKA ==========
     const pageHeight = doc.internal.pageSize.height;
     doc.setFillColor(245, 245, 245);
     doc.rect(0, pageHeight - 15, 210, 15, 'F');
@@ -262,7 +324,6 @@ export function useGeneratorWizualizacji() {
     doc.text("Wygenerowano automatycznie przez system Headwear Professionals Configuration", 105, pageHeight - 9, { align: 'center' });
     doc.text(`© ${new Date().getFullYear()} - System Headwear Configuration`, 105, pageHeight - 5, { align: 'center' });
 
-    // doc.save(`Zamowienie_${project.id}.pdf`);
     return doc.output('blob');
   };
 

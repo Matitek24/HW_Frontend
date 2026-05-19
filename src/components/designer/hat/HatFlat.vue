@@ -22,6 +22,9 @@
         <clipPath :id="`prostokat3-${uniqueId}`" transform="translate(0, -66)">
           <rect class="cls-2" x="0" y="0" width="1316.4" height="740" />
         </clipPath>
+        <clipPath :id="`logo-clip-${uniqueId}`">
+          <rect x="0.58" y="512.74" width="1313.78" height="227.89" />
+        </clipPath>
       </defs>
      
       <g :style="{ clipPath: `url(#clippath-new-${uniqueId})` }">
@@ -87,9 +90,33 @@
           <g v-html="mainPatternSvg"></g>
         </g>
       </g>
-      
+      <g :style="{ clipPath: `url(#prostokat-top-${uniqueId})` }">
+        <g :style="{ clipPath: `url(#clippath-new-${uniqueId})` }" :fill="config.pattern.top">
+          <g v-html="topPatternSvg" transform="translate(0, 50) scale(2.04)"></g>
+        </g>
+      </g>
+      <g :style="{ clipPath: `url(#clippath-new-${uniqueId})` }">
+        <g :fill="config.pattern.main" transform="translate(0, 283) scale(2.01)">
+          <g v-html="mainPatternSvg"></g>
+        </g>
+      </g>
+
+      <g v-if="config.logo && config.logo.url" :style="{ clipPath: `url(#logo-clip-${uniqueId})` }">
+        <image 
+          class="logo-image-exclude"
+          :href="config.logo.url" 
+          :x="(658 + (config.logo.x ?? 0)) - (150 * (config.logo.scale ?? 1)) / 2" 
+          :y="(625 + (config.logo.y ?? 0)) - (150 * (config.logo.scale ?? 1)) / 2" 
+          :width="150 * (config.logo.scale ?? 1)" 
+          :height="150 * (config.logo.scale ?? 1)" 
+          preserveAspectRatio="xMidYMid meet"
+        />
+      </g>
+
+
       <g :style="{ clipPath: `url(#prostokat3-${uniqueId})` }">
         <g :style="{ clipPath: `url(#prostokat2-${uniqueId})` }">
+          
           <text 
             ref="textElement"
             :x="658.14" 

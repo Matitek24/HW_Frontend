@@ -29,6 +29,14 @@ export const defaultConfig = {
   patterns: {
     top: 17,
     bottom: 32
+  },
+  logo: {
+    url: null,
+    rawFile: null,
+    scale: 1,
+    x: 0,      
+    y: 0,     
+    originalName: null
   }
 };
 
@@ -37,7 +45,14 @@ export const loadConfig = () => {
   const savedData = localStorage.getItem(STORAGE_KEY);
   if (savedData) {
     try {
-      return JSON.parse(savedData);
+      const parsed = JSON.parse(savedData);
+
+      if (parsed.logo && parsed.logo.url && parsed.logo.url.startsWith('blob:')) {
+        parsed.logo.url = null;
+        parsed.logo.rawFile = null;
+      }
+
+      return parsed;
     } catch (e) {
       console.error('Błąd odczytu konfiguracji:', e);
       localStorage.removeItem(STORAGE_KEY);
@@ -52,7 +67,13 @@ export const loadConfig = () => {
  */
 export const saveConfig = (config) => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+    const configToSave = JSON.parse(JSON.stringify(config));
+
+    if (configToSave.logo) {
+      delete configToSave.logo.rawFile;
+    }
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(configToSave));
     return true;
   } catch (e) {
     console.error('Błąd zapisu konfiguracji:', e);

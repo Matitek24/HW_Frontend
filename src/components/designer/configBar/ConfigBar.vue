@@ -32,6 +32,11 @@
         <PomponControls :config="config.pompons" :colors="dictionaries.colors" compact
           @update:config="updateConfig('pompons', $event)" @hover="$emit('hover', $event)"
           @hover-end="$emit('hover-end')" />
+
+        <div class="vertical-divider"></div>
+
+        <LogoControls :config="config.logo" compact
+          @update:config="updateConfig('logo', $event)" />
       </div>
 
       <!-- Footer Info (Compact) -->
@@ -53,9 +58,14 @@
             @update:pattern-colors="updateConfig('pattern', $event)" @update:patterns="updateConfig('patterns', $event)"
             @hover="$emit('hover', $event)" @hover-end="$emit('hover-end')" />
 
-          <PomponControls :config="config.pompons" :colors="dictionaries.colors"
-            @update:config="updateConfig('pompons', $event)" @hover="$emit('hover', $event)"
-            @hover-end="$emit('hover-end')" />
+          <div class="pompon-logo-group">
+            <PomponControls :config="config.pompons" :colors="dictionaries.colors"
+              @update:config="updateConfig('pompons', $event)" @hover="$emit('hover', $event)"
+              @hover-end="$emit('hover-end')" />
+
+            <LogoControls :config="config.logo"
+              @update:config="updateConfig('logo', $event)" />
+          </div>
         </div>
 
         <FooterInfo />
@@ -71,6 +81,7 @@ import HatColorControls from './HatColorControls.vue';
 import PatternControls from './PatternControls.vue';
 import PomponControls from './PomponControls.vue';
 import FooterInfo from './FooterInfo.vue';
+import LogoControls from './LogoControls.vue';
 
 const props = defineProps({
   config: {
@@ -206,7 +217,7 @@ const bottomPatterns = computed(() =>
 
 .config-bar-container.expanded .config-bar {
   width: 100%;
-  max-width: 1200px;
+  max-width: 1400px;
   padding: 20px 30px;
   margin: 0 auto;
   border-radius: 24px 24px 0 0;
@@ -265,8 +276,19 @@ const bottomPatterns = computed(() =>
 
 .expanded-grid {
   display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr 0.8fr;
+  grid-template-columns: 1.2fr 1fr 1fr 1fr;
   gap: 24px;
+}
+
+/* Pompon + Logo side-by-side in the last grid cell */
+.pompon-logo-group {
+  display: flex;
+  gap: 16px;
+}
+
+.pompon-logo-group > * {
+  flex: 1;
+  min-width: 0;
 }
 
 /* --- RESPONSIVE --- */
@@ -275,11 +297,25 @@ const bottomPatterns = computed(() =>
     grid-template-columns: 1fr 1fr;
     gap: 30px;
   }
+
+  .pompon-logo-group {
+    flex-direction: column;
+    gap: 20px;
+  }
 }
 
 @media (max-width: 768px) {
   .expanded-grid {
     grid-template-columns: 1fr;
+  }
+
+  .pompon-logo-group {
+    flex-direction: row;
+    gap: 16px;
+  }
+
+  .pompon-logo-group > * {
+    flex: 1;
   }
 }
 
@@ -325,6 +361,11 @@ const bottomPatterns = computed(() =>
     width: 100%;
     box-sizing: border-box;
     overflow-x: hidden;
+  }
+
+  .pompon-logo-group {
+    flex-direction: column;
+    gap: 16px;
   }
 
   .toggle-wrapper {
