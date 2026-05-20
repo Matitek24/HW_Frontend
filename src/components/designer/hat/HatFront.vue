@@ -98,8 +98,8 @@
           </g>
         </g>
 
-        <g v-if="config.logo && config.logo.url" clip-path="url(#logo-clip-front)">
-          <image 
+        <g v-if="config.logo && config.logo.show !== false" clip-path="url(#logo-clip-front)">
+          <image v-if="config.logo.url"
             class="logo-image-exclude"
             :href="config.logo.url" 
             :x="(LOGO_FRONT.CENTER_X + (config.logo.x ?? 0) * LOGO_FRONT.MULTIPLIER_X) - (LOGO_FRONT.BASE_SIZE * (config.logo.scale ?? 1)) / 2" 
@@ -108,6 +108,23 @@
             :height="LOGO_FRONT.BASE_SIZE * (config.logo.scale ?? 1)" 
             preserveAspectRatio="xMidYMid meet"
           />
+          <g v-else
+             @click="requestLogoUpload"
+             style="cursor: pointer;"
+             :transform="`translate(${(LOGO_FRONT.CENTER_X + (config.logo.x ?? 0) * LOGO_FRONT.MULTIPLIER_X)}, ${(LOGO_FRONT.CENTER_Y + (config.logo.y ?? 0) * LOGO_FRONT.MULTIPLIER_Y)}) scale(${config.logo.scale ?? 1})`"
+          >
+            <!-- Hexagon badge / shield placeholder -->
+            <path d="M -15 -26 L 15 -26 L 30 0 L 15 26 L -15 26 L -30 0 Z" 
+                  fill="#ffffff" 
+                  stroke="#cbd5e1" 
+                  stroke-width="2.5" 
+                  stroke-dasharray="5,3" />
+            <!-- Plus sign -->
+            <path d="M -10 0 L 10 0 M 0 -10 L 0 10"
+                  stroke="#94a3b8"
+                  stroke-width="3"
+                  stroke-linecap="round" />
+          </g>
         </g>
   
         <!-- Tekst na krzywej -->
@@ -165,6 +182,10 @@ import HatPompon from './HatPompon.vue';
 
 const svgRef = ref(null);
 const pomponRef = ref(null);
+
+const requestLogoUpload = () => {
+  window.dispatchEvent(new CustomEvent('request-logo-upload'));
+};
 
 const props = defineProps({
   config: {

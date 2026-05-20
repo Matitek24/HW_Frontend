@@ -400,6 +400,7 @@
   font-size: 10px;
   color: #9ca3af;
   font-weight: 700;
+  width: 120%;
 }
 
 .disabled-section {
@@ -467,6 +468,10 @@
   .expanded-column::after {
     display: none;
   }
+
+  .pompon-item label {
+    width: auto;
+  }
 }
 
 /* ========================================
@@ -476,6 +481,8 @@
   .mini-label {
     display: none;
   }
+
+
 
   .control-item {
     padding: 4px;

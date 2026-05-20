@@ -31,6 +31,7 @@ export const defaultConfig = {
     bottom: 32
   },
   logo: {
+    show: false,
     url: null,
     rawFile: null,
     scale: 1,

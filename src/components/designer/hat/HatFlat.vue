@@ -101,8 +101,8 @@
         </g>
       </g>
 
-      <g v-if="config.logo && config.logo.url" :style="{ clipPath: `url(#logo-clip-${uniqueId})` }">
-        <image 
+      <g v-if="config.logo && config.logo.show !== false" :style="{ clipPath: `url(#logo-clip-${uniqueId})` }">
+        <image v-if="config.logo.url"
           class="logo-image-exclude"
           :href="config.logo.url" 
           :x="(658 + (config.logo.x ?? 0)) - (150 * (config.logo.scale ?? 1)) / 2" 
@@ -111,6 +111,23 @@
           :height="150 * (config.logo.scale ?? 1)" 
           preserveAspectRatio="xMidYMid meet"
         />
+        <g v-else
+           @click="requestLogoUpload"
+           style="cursor: pointer;"
+           :transform="`translate(${(658 + (config.logo.x ?? 0))}, ${(625 + (config.logo.y ?? 0))}) scale(${config.logo.scale ?? 1})`"
+        >
+          <!-- Hexagon badge / shield placeholder -->
+          <path d="M -22 -38 L 22 -38 L 44 0 L 22 38 L -22 38 L -44 0 Z" 
+                fill="#ffffff" 
+                stroke="#cbd5e1" 
+                stroke-width="3.5" 
+                stroke-dasharray="8,5" />
+          <!-- Plus sign -->
+          <path d="M -15 0 L 15 0 M 0 -15 L 0 15"
+                stroke="#94a3b8"
+                stroke-width="4.5"
+                stroke-linecap="round" />
+        </g>
       </g>
 
 
@@ -146,6 +163,10 @@
     config: { type: Object, required: true },
     patternsDict: { type: Array, default: () => [] }
   });
+
+  const requestLogoUpload = () => {
+    window.dispatchEvent(new CustomEvent('request-logo-upload'));
+  };
 
   // --- TWOJA MAPA DOSTROJENIA (identyczna jak w Front) ---
   const FONT_TUNING = {
