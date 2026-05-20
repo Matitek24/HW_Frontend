@@ -87,22 +87,39 @@ const captureFlatHat = async (flatComponentRef, config) => {
             const logoImg = new Image();
             logoImg.crossOrigin = "anonymous";
             logoImg.onload = () => {
-              // Matematyka z HatFlat.vue
+              // Baza pozycjonowania
               const x = (658 + (config.logo.x || 0)) * scale;
               const y = (620 + (config.logo.y || 0)) * scale;
               const logoScale = config.logo.scale || 1;
-              const size = 150 * scale * logoScale; 
+              
+              // Max rozmiar boxa to 150px (pomnożone przez ewentualny zoom i skalę canvasa)
+              const maxSize = 150 * scale * logoScale; 
+
+              // --- RĘCZNE WYLICZANIE PROPORCJI (Aspect Ratio) ---
+              let drawWidth = maxSize;
+              let drawHeight = maxSize;
+
+              if (logoImg.width > logoImg.height) {
+                // Obrazek jest podłużny (np. napis Batman) -> zmniejszamy wysokość
+                drawHeight = maxSize * (logoImg.height / logoImg.width);
+              } else {
+                // Obrazek jest pionowy (np. tarcza Lecha) -> zmniejszamy szerokość
+                drawWidth = maxSize * (logoImg.width / logoImg.height);
+              }
+
+              // Obliczamy nowy lewy górny róg, żeby obrazek nadal był na środku wyznaczonego punktu
+              const drawX = x - drawWidth / 2;
+              const drawY = y - drawHeight / 2;
               
               ctx.save();
               
-     
+              // Maska (żeby logo ładnie chowało się pod wywinięciem, jeśli zjedzie za nisko)
               ctx.beginPath();
               ctx.rect(0.58 * scale, 512.74 * scale, 1313.78 * scale, 227.89 * scale);
               ctx.clip();
 
-              // Rysowanie bazy loga
-              ctx.drawImage(logoImg, x - size/2, y - size/2, size, size);
-
+              // Rysowanie loga z nowymi, prawidłowymi wymiarami
+              ctx.drawImage(logoImg, drawX, drawY, drawWidth, drawHeight);
 
               ctx.restore();
               resolveLogo();

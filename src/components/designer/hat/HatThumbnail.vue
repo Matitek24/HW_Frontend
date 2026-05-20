@@ -10,6 +10,10 @@
         <pattern id="stripes-pattern" x="0" y="0" width="28" height="10" patternUnits="userSpaceOnUse">
            <rect x="0" y="0" width="3" height="232" class="pasek" /> 
         </pattern>
+        
+        <clipPath id="logo-clip-thumb">
+          <rect x="0" y="432" width="1144" height="232" />
+        </clipPath>
       </defs>
 
       <g clip-path="url(#thumb-clip)">
@@ -21,13 +25,23 @@
         
         <rect :fill="config.base.top" x="0" y="0" width="1144" height="206" />
 
-
         <g v-if="mainPatternSvg" :fill="config.pattern.main" transform="translate(-20, 203) scale(2)">
            <g v-html="mainPatternSvg"></g>
         </g>
 
         <g v-if="topPatternSvg" :fill="config.pattern.top" transform="translate(70, 50) scale(1.5)">
            <g v-html="topPatternSvg"></g>
+        </g>
+
+        <g v-if="config.logo && config.logo.url" clip-path="url(#logo-clip-thumb)">
+          <image 
+            :href="config.logo.url" 
+            :x="(572 + (config.logo.x ?? 0) * 0.87) - (125 * (config.logo.scale ?? 1)) / 2" 
+            :y="(548 + (config.logo.y ?? 0) * 0.87) - 20 - (125 * (config.logo.scale ?? 1)) / 2" 
+            :width="125 * (config.logo.scale ?? 1)" 
+            :height="125 * (config.logo.scale ?? 1)" 
+            preserveAspectRatio="xMidYMid meet"
+          />
         </g>
 
         <text 
@@ -46,13 +60,7 @@
 
       </g>
 
-      <path 
-        fill="none" 
-        stroke="rgba(0,0,0,0.15)" 
-        stroke-width="4" 
-        d="M1144.45,171.3c-.95-4.95-30.61-156.45-95.19-156.45s-93.4,145.43-95.5,155.97c-2.07-10.54-31.82-155.97-95.1-155.97s-94.3,149.88-95.57,156.36c-1.25-6.48-30.94-156.36-95.17-156.36s-93.66,146.72-95.52,156.11c-1.84-9.39-31.57-156.11-95.12-156.11s-94.63,151.5-95.59,156.45h-.04c-.95-4.95-30.61-156.45-95.19-156.45s-94.63,151.5-95.59,156.45h-.05c-.95-4.95-30.61-156.45-95.19-156.45S.99,166.35.02,171.3h-.02v445.65h1144.47V171.3h-.02Z" 
-      />
-
+      <path fill="none" stroke="rgba(0,0,0,0.15)" stroke-width="4" d="M1144.45,171.3c-.95-4.95-30.61-156.45-95.19-156.45s-93.4,145.43-95.5,155.97c-2.07-10.54-31.82-155.97-95.1-155.97s-94.3,149.88-95.57,156.36c-1.25-6.48-30.94-156.36-95.17-156.36s-93.66,146.72-95.52,156.11c-1.84-9.39-31.57-156.11-95.12-156.11s-94.63,151.5-95.59,156.45h-.04c-.95-4.95-30.61-156.45-95.19-156.45s-94.63,151.5-95.59,156.45h-.05c-.95-4.95-30.61-156.45-95.19-156.45S.99,166.35.02,171.3h-.02v445.65h1144.47V171.3h-.02Z" />
     </svg>
   </div>
 </template>
@@ -79,7 +87,6 @@ const mainPatternSvg = computed(() => {
   return pattern ? pattern.kodSvg : null;
 });
 
-// --- LOGIKA POZYCJI TEKSTU ---
 const finalTextPosition = computed(() => {
   const baseY = 330.69; 
   const offset = -props.config.text.offsetY || 0;
@@ -88,12 +95,6 @@ const finalTextPosition = computed(() => {
 </script>
 
 <style scoped>
-.thumbnail-svg {
-  width: 100%;
-  height: 100%;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-}
-.pasek {
-  fill: #000000; 
-}
+.thumbnail-svg { width: 100%; height: 100%; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); }
+.pasek { fill: #000000; }
 </style>

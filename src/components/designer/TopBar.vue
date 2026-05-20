@@ -115,7 +115,7 @@
         </svg>
       </button> -->
 
-      <a href="/" class="logo-btn">
+      <a href="/" class="logo-btn desktop-hidden">
         <img v-if="hatConfig.customLogo" :src="hatConfig.customLogo" alt="Custom Logo"
           style="width: auto; max-width: 60%; max-height: 60%; object-fit: contain;" />
 
@@ -558,6 +558,12 @@ const submitForm = () => {
   display: none;
 }
 
+@media (min-width: 601px) {
+  .desktop-hidden {
+    display: none !important;
+  }
+}
+
 @media (max-width: 600px) {
   .mobile-only {
     display: flex;
@@ -602,6 +608,14 @@ const submitForm = () => {
   z-index: 200;
   /* Wyższy index niż dolny bar */
   pointer-events: none;
+  transition: right 0.3s ease;
+}
+
+@media (min-width: 601px) {
+  .top-header {
+    right: 440px; /* Centered relative to left panel (440px config bar) */
+    padding: 40px 60px;
+  }
 }
 
 .top-header>* {
@@ -646,20 +660,28 @@ const submitForm = () => {
 
 /* --- STYLIZACJA PRZYCISKÓW GLASSMORPHISM --- */
 .glass-btn {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 50px;
-  padding: 0;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-  color: #1f2937;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 14px;
+  height: 42px;
+  padding: 0 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 48px;
-  /* Stała wysokość */
+  color: #4b5563;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.glass-btn.with-text {
+  padding: 0 16px 0 20px;
+  font-size: 13px;
+  font-weight: 600;
+  gap: 10px;
 }
 
 .glass-btn:hover {

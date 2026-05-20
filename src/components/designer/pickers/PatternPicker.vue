@@ -102,21 +102,24 @@ onMounted(() => {
   
   /* Trigger (to co widać w pasku) */
   .pattern-trigger {
-    background: #f3f4f6;
-    border-radius: 12px;
+    background: #ffffff;
+    border-radius: 10px;
     width: 80px;
     padding: 8px 12px;
     display: flex;
     align-items: center;
     gap: 10px;
     cursor: pointer;
-    border: 2px solid transparent;
-    transition: all 0.2s;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    transition: all 0.2s ease;
     height: 42px;
   }
   .pattern-trigger:hover {
-    background: #fff;
-    border-color: #e5e7eb;
+    background: #ffffff;
+    border-color: #d1d5db;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
   }
   
   .pattern-preview-mini {

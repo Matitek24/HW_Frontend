@@ -1,15 +1,15 @@
 <template>
-  <div class="config-bar-container" :class="{ 'expanded': isExpanded }">
-    <!-- Toggle Button -->
-    <div class="toggle-wrapper" @click="toggleExpand">
+  <div class="config-bar-container" :class="{ 'expanded': effectiveExpanded, 'desktop-config': desktopMode }">
+    <!-- Toggle Button (Hidden in desktop mode) -->
+    <div v-if="!desktopMode" class="toggle-wrapper" @click="toggleExpand">
       <div class="toggle-btn">
-        <span class="chevron" :class="{ 'up': !isExpanded, 'down': isExpanded }"></span>
+        <span class="chevron" :class="{ 'up': !effectiveExpanded, 'down': effectiveExpanded }"></span>
       </div>
     </div>
 
     <div class="config-bar">
       <!-- Compact View -->
-      <div v-if="!isExpanded" class="view-compact">
+      <div v-if="!effectiveExpanded" class="view-compact">
         <TextControls :config="config.text" :colors="dictionaries.colors" :fonts="dictionaries.fonts" compact
           @update:config="updateConfig('text', $event)" @hover="$emit('hover', $event)"
           @hover-end="$emit('hover-end')" />
@@ -40,10 +40,10 @@
       </div>
 
       <!-- Footer Info (Compact) -->
-      <FooterInfo v-if="!isExpanded" />
+      <FooterInfo v-if="!effectiveExpanded" />
 
       <!-- Expanded View -->
-      <div v-if="isExpanded" class="view-expanded">
+      <div v-if="effectiveExpanded" class="view-expanded">
         <div class="expanded-grid">
           <TextControls :config="config.text" :colors="dictionaries.colors" :fonts="dictionaries.fonts"
             @update:config="updateConfig('text', $event)" @hover="$emit('hover', $event)"
@@ -95,12 +95,18 @@ const props = defineProps({
       patterns: [],
       fonts: []
     })
+  },
+  desktopMode: {
+    type: Boolean,
+    default: false
   }
 });
 
 const emit = defineEmits(['toggle-expand', 'hover', 'hover-end', 'update:config']);
 
 const isExpanded = ref(false);
+
+const effectiveExpanded = computed(() => props.desktopMode || isExpanded.value);
 
 const toggleExpand = () => {
   isExpanded.value = !isExpanded.value;
@@ -123,7 +129,6 @@ const getYarnNumber = (hex) => {
 
   if (!color) return hex;
 
-  // Zwracamy format: "Nazwa / Numer" (index + 1, żeby nie zaczynać od 0)
   return `${color.nazwa} / ${colorIndex + 1}`;
 };
 
@@ -156,6 +161,34 @@ const bottomPatterns = computed(() =>
   padding: 0;
   height: auto;
   align-items: flex-end;
+}
+
+/* --- DESKTOP CONFIG OVERRIDES --- */
+.config-bar-container.desktop-config {
+  position: static;
+  height: auto;
+  padding: 0;
+  align-items: flex-start;
+  z-index: 1;
+}
+
+.config-bar-container.desktop-config .config-bar {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+}
+
+.config-bar-container.desktop-config .expanded-grid {
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+
+.config-bar-container.desktop-config .pompon-logo-group {
+  flex-direction: column;
+  gap: 32px;
 }
 
 /* --- TOGGLE BUTTON --- */

@@ -32,16 +32,15 @@
         </div>
 
         <div v-else class="compact-uploaded">
-          <button class="btn-x btn-x--label" style="width: 100%; justify-content: center; margin-bottom: 12px;"
-            @click="removeLogo">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M18 6 6 18M6 6l12 12" />
-            </svg>
-            Usuń
-          </button>
-
           <div class="field">
-            <label>Skala: {{ Math.round((config.scale || 1) * 100) }}%</label>
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <label class="mb-0">Skala: {{ Math.round((config.scale || 1) * 100) }}%</label>
+              <button class="btn-x" @click="removeLogo" title="Usuń logo">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
             <input type="range" class="slider compact-slider" min="0.1" max="2" step="0.05" :value="config.scale || 1"
               @input="update('scale', parseFloat($event.target.value))" />
           </div>
@@ -84,14 +83,21 @@
         </div>
 
         <div v-else class="settings">
-          <div class="status-row">
-
-            <button class="btn-x btn-x--label" @click="removeLogo">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                <path d="M18 6 6 18M6 6l12 12" />
+          <div class="status-row mb-2">
+            <span class="badge-ok">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                 <path d="M20 6L9 17l-5-5"/>
               </svg>
-              Usuń
-            </button>
+              Plik załadowany
+            </span>
+            <button class="btn-x btn-x--label" style="width: 25%; justify-content: center; margin-bottom: -4px;"
+            @click="removeLogo">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+            Usuń
+          </button>
+
           </div>
 
           <div class="field">
@@ -186,6 +192,21 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+/* Styl dla switcha */
+.form-check-input:checked {
+  background-color: #5d5d5d !important;
+  border-color: #1f2937 !important;
+}
+
+.form-check-input:focus {
+  box-shadow: 0 0 0 0.25rem rgba(93, 93, 93, 0.25) !important;
+  border-color: #5d5d5d !important;
+}
+
+.form-check {
+  margin-bottom: 0.2rem;
+}
+
 .d-none {
   display: none;
 }
@@ -282,8 +303,8 @@ onUnmounted(() => {
   background: #fee2e2;
   color: #dc2626;
   border: none;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   display: inline-flex;
   align-items: center;
