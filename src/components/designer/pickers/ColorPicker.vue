@@ -90,27 +90,26 @@ const getActiveColorData = computed(() => {
 });
 // --- CORE LOGIC ---
 
-// Obliczanie pozycji okna (Fixed positioning dla Teleportu)
 const updatePosition = () => {
   if (!pickerTrigger.value || !isOpen.value) return;
 
   const rect = pickerTrigger.value.getBoundingClientRect();
   const dropdownWidth = 240;
 
-  // Centrowanie względem guzika
-  let left = rect.left + (rect.width / 2) - (dropdownWidth / 2);
-  let top = rect.top - 310; // Domyślnie nad guzikiem
+  let left = Math.round(rect.left + (rect.width / 2) - (dropdownWidth / 2));
+  let top = Math.round(rect.top - 310);
 
-  // Marginesy ekranu
   const margin = 10;
+  
+  const viewportWidth = document.documentElement.clientWidth;
+
   if (left < margin) left = margin;
-  if (left + dropdownWidth > window.innerWidth - margin) {
-    left = window.innerWidth - dropdownWidth - margin;
+  if (left + dropdownWidth > viewportWidth - margin) {
+    left = viewportWidth - dropdownWidth - margin;
   }
 
-  // Jeśli brak miejsca u góry, pokaż pod spodem
   if (top < margin) {
-    top = rect.bottom + 10;
+    top = Math.round(rect.bottom + 10);
   }
 
   dropdownStyle.value = {
@@ -207,8 +206,16 @@ onMounted(() => {
   window.addEventListener('scroll', handleScroll, true);
 });
 
-// Fix na scroll event (throttling niepotrzebny przy fixed, ale capture ważne)
-const handleScroll = () => { if (isOpen.value) updatePosition(); };
+
+const handleScroll = (event) => { 
+  if (dropdownEl.value && dropdownEl.value.contains(event.target)) {
+    return;
+  }
+  
+  if (isOpen.value) {
+    requestAnimationFrame(updatePosition); 
+  }
+};
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside, true);

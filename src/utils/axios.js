@@ -5,9 +5,6 @@ import router from '../router/index';
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080/api',
   timeout: 10000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
 api.interceptors.request.use(
@@ -124,12 +121,14 @@ export const dictionaryAPI = {
 
 export const projectAPI = {
   submitProject: (data) => api.post('/public/project', data),
+  
+  submitProjectWithLogo: (formData) => api.post('/public/project', formData),
+  
   getProject: (uuid) => api.get(`/public/project/${uuid}`),
-  updateProject: (uuid, data) => api.put(`/public/project/${uuid}`, data),
 
-  sendPdf: (formData) => api.post('/public/pdf/send-pdf', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  })
+  updateProject: (uuid, formData) => api.put(`/public/project/${uuid}`, formData),
+
+  sendPdf: (formData) => api.post('/public/pdf/send-pdf', formData)
 };
 
 export const adminAnalyticsAPI = {

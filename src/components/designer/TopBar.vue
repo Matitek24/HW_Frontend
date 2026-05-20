@@ -105,7 +105,7 @@
     </div>
     <div class="actions-container">
 
-      <button v-if="projectId && canEdit" class="glass-btn icon-only me-2" @click="openLogoModal"
+      <!-- <button v-if="projectId && canEdit" class="glass-btn icon-only me-2" @click="openLogoModal"
         title="Wgraj własne logo">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
@@ -113,7 +113,7 @@
           <circle cx="8.5" cy="8.5" r="1.5"></circle>
           <polyline points="21 15 16 10 5 21"></polyline>
         </svg>
-      </button>
+      </button> -->
 
       <a href="/" class="logo-btn">
         <img v-if="hatConfig.customLogo" :src="hatConfig.customLogo" alt="Custom Logo"
@@ -124,54 +124,6 @@
     </div>
   </div>
 
-  <Transition name="fade">
-    <div v-if="isLogoModalOpen" class="modal-overlay" @click.self="closeLogoModal">
-      <div class="glass-modal-content container p-4" style="max-width: 400px;">
-        <div class="position-relative text-center py-4">
-          <button class="btn position-absolute top-0 end-0 m-3" @click="closeLogoModal">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1f2937" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-          <h4 class="modal-title fs-5">Logo do wizualizacji</h4>
-          <p class="modal-subtitle">To logo pojawi się na karcie PDF.</p>
-        </div>
-
-        <div class="text-center">
-          <div v-if="hatConfig.customLogo" class="mb-4">
-            <div class="p-3 border rounded bg-light d-inline-block mb-3">
-              <img :src="hatConfig.customLogo" alt="Preview" style="max-height: 80px; max-width: 100%;">
-            </div>
-            <br>
-            <button class="btn btn-danger btn-sm m-3" @click="removeLogo">
-              Usuń
-            </button>
-          </div>
-
-          <div v-else class="upload-area mb-4">
-            <input type="file" id="logoInput" accept="image/png, image/jpeg" class="d-none" @change="handleLogoUpload">
-            <label for="logoInput" class="upload-label">
-              <svg class="mb-2" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9ca3af"
-                stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="17 8 12 3 7 8"></polyline>
-                <line x1="12" y1="3" x2="12" y2="15"></line>
-              </svg>
-              <span>Kliknij, aby wgrać plik</span>
-              <span class="small text-muted">(PNG, JPG max 2MB)</span>
-            </label>
-          </div>
-
-          <button class="action-btn-primary w-100 justify-content-center" @click="closeLogoModal">
-            Gotowe
-          </button>
-        </div>
-
-      </div>
-    </div>
-  </Transition>
 
   <Transition name="fade">
     <div v-if="isPdfEmailModalOpen" class="modal-overlay" @click.self="isPdfEmailModalOpen = false" style="z-index: 1000;">
@@ -434,7 +386,7 @@ const submitNewProject = async () => {
   isSubmitting.value = true;
 
   try {
-    const payload = {
+    const payloadData = {
       imieNazwisko: formData.imieNazwisko,
       email: formData.email,
       telefon: formData.telefon,
@@ -445,46 +397,56 @@ const submitNewProject = async () => {
       config: props.hatConfig
     };
 
-    await projectAPI.submitProject(payload);
+    // 2. KRYTYCZNE: Pakujemy to w FormData, żeby wysłać razem z plikiem
+    const form = new FormData();
+    
+    form.append('data', new Blob([JSON.stringify(payloadData)], { type: 'application/json' }));
 
-    alert('Dziękujemy! Twoje zapytanie zostało wysłane.');
+    if (props.hatConfig.logo && props.hatConfig.logo.rawFile) {
+      form.append('file', props.hatConfig.logo.rawFile);
+    }
+
+    await projectAPI.submitProjectWithLogo(form);
+
+    alert('Dziękujemy! Twoje zapytanie zostało wysłane. Projekt zapisano.');
     closeModal();
 
-    // Reset formularza
     formData.uwagi = '';
     formData.rodo = false;
-    // Tutaj opcjonalnie można przekierować usera na widok edycji, ale na razie zostawiamy
 
   } catch (error) {
     console.error(error);
-    alert('Wystąpił błąd podczas wysyłania.');
+    alert('Wystąpił błąd podczas wysyłania zapytania.');
   } finally {
     isSubmitting.value = false;
   }
 };
 
 // --- SCENARIUSZ 2: AKTUALIZACJA (PUT) ---
+// TopBar.vue
 const submitUpdateDirectly = async () => {
   if (!confirm("Czy chcesz nadpisać zapisaną konfigurację nową wersją?")) return;
 
   isSubmitting.value = true;
 
   try {
-    // Wysyłamy tylko konfigurację (backend i tak ignoruje dane osobowe przy update)
-    const payload = {
-      config: props.hatConfig
-    };
+    const payloadData = { config: props.hatConfig };
+    const form = new FormData();
+    
+    // Pakujemy JSON jako BLOB, żeby uniknąć błędu 415
+    form.append('data', new Blob([JSON.stringify(payloadData)], { type: 'application/json' }));
 
-    await projectAPI.updateProject(props.projectId, payload);
+    // Jeśli jest nowe logo (zmienione w trakcie edycji)
+    if (props.hatConfig.logo && props.hatConfig.logo.rawFile) {
+      form.append('file', props.hatConfig.logo.rawFile);
+    }
+
+    await projectAPI.updateProject(props.projectId, form);
     alert('Zapisano nową wersję projektu!');
 
   } catch (error) {
     console.error(error);
-    if (error.response && (error.response.status === 403 || error.response.status === 401)) {
-      alert("Nie można zapisać zmian. Projekt został zablokowany przez administratora.");
-    } else {
-      alert('Błąd zapisu.');
-    }
+    alert('Błąd zapisu.');
   } finally {
     isSubmitting.value = false;
   }
