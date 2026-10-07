@@ -26,9 +26,9 @@
                       @click="selectPattern(null)"
                     >
                       <div class="pattern-preview-box empty-box">
-                        <span class="text-muted small">Brak</span>
+                        <span class="text-muted small">{{t('configurator.options.lack')}}</span>
                       </div>
-                      <div class="pattern-label">Bez wzoru</div>
+                      <div class="pattern-label">{{t('configurator.options.unpatterned')}}</div>
                     </div>
                   </div>
   
@@ -48,7 +48,7 @@
                         </g>
                       </svg>
                     </div>
-                      <div class="pattern-label">{{ pattern.nazwa }}</div>
+                      <!-- <div class="pattern-label">{{ pattern.nazwa }}</div> -->
                     </div>
                   </div>
                 </div>
@@ -62,7 +62,9 @@
   
   <script setup>
   import { ref, computed, onMounted } from 'vue';
+  import { useLanguage } from '../../../locales/useLanguage';
   
+  const {t} = useLanguage();
   const props = defineProps({
     modelValue: { type: [Number, String, null], default: null },
     options: { type: Array, default: () => [] }, 

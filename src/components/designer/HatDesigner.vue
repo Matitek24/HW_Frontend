@@ -3,7 +3,7 @@
 
     <div v-if="isInitLoading" class="loading-overlay">
       <div class="spinner"></div>
-      <p>Wczytuję projekt...</p>
+      <p>{{ t('app.loading_project') }}</p>
     </div>
 
     <template v-else>
@@ -29,13 +29,13 @@
           @toggle-expand="(val) => isBarExpanded = val" @hover="handleHover" @hover-end="handleHoverEnd" />
 
         <div id="print-flat-container" class="czapka flat-layout" :class="{ 'is-active': activeView === 'flat' }">
-          <div class="hat-label mb-2">WIDOK PŁASKI</div>
+          <div class="hat-label mb-2">{{ t('configurator.views.flat_view') }}</div>
           <HatFlat ref="flatRef" :config="previewConfig" :patternsDict="dictionaryData.patterns" class="czapka2" />
 
         </div>
 
         <div id="print-front-container" class="czapka front-layout" :class="{ 'is-active': activeView === 'front' }">
-          <div class="hat-label mb-2">WIDOK PRZÓD CZAPKI</div>
+          <div class="hat-label mb-2">{{ t('configurator.views.front_view') }}</div>
           <HatFront ref="frontRef" :config="previewConfig" :show-pompon="previewConfig.pompons.show"
             :patternsDict="dictionaryData.patterns" class="czapka2" />
 
@@ -57,6 +57,10 @@ import HatFront from './hat/HatFront.vue';
 import { defaultConfig, loadConfig, saveConfig } from '../../utils/hatconfig.js';
 import { dictionaryAPI, projectAPI } from '../../utils/axios.js';
 import ProductSidebar from '../ui/ProductSidebar.vue';
+import { useLanguage } from '../../locales/useLanguage.js';
+
+// funkcja od jezyka
+const { t } = useLanguage();
 
 const isDownloading = ref(false);
 const isInitLoading = ref(true);
@@ -159,7 +163,7 @@ onMounted(async () => {
 
   } catch (e) {
     console.error("Błąd krytyczny inicjalizacji:", e);
-    alert("Nie udało się załadować projektu.");
+    alert(t('alerts.project_load_error'));
     router.push('/');
   } finally {
     isInitLoading.value = false;
@@ -203,13 +207,13 @@ const handleDownloadRequest = async (type) => {
 const handleDownload = async () => {
   // 1. Zbuduj obiekt danych projektu dynamicznie
   const projectData = {
-    id: route.params.id || "Nowy",
+    id: route.params.id || t('common.status.new'),
     createdAt: new Date().toLocaleDateString(),
     config: hatConfig, // Używamy naszego reaktywnego obiektu
     status: projectStatus.value,
     client: { // Dodaj przykładowe dane klienta lub pobierz je skądś
-      name: "Klient Indywidualny",
-      email: "brak@danych.pl"
+      name: t('defaults.client_name'),
+      email: t('defaults.client_email')
     }
   };
 
@@ -224,7 +228,7 @@ const handleDownload = async () => {
     }, 100);
   } catch (e) {
     console.error("Błąd PDF:", e);
-    alert("Wystąpił błąd podczas generowania PDF.");
+    alert(t('alerts.pdf_error'));
     isDownloading.value = false;
   }
 };

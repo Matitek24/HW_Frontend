@@ -1,0 +1,199 @@
+{
+  "common": {
+    "buttons": {
+      "download_pdf": "Download PDF Visualization",
+      "send_visualization": "Send Visualization",
+      "upload_file": "Upload File",
+      "remove": "Remove",
+      "cancel": "Cancel",
+      "send_inquiry": "Send Inquiry",
+      "send_pdf": "Send PDF",
+      "generating_pdf": "Generating PDF...",
+      "processing": "Processing...",
+      "save_version": "Save Version",
+      "done": "Done",
+      "close": "Close",
+      "sending": "Sending..."
+    },
+    "status": {
+      "new": "NEW",
+      "yes": "YES",
+      "yes_graphic_attached": "YES (Graphic Attached)"
+    },
+    "labels": {
+      "date": "Date",
+      "id": "ID",
+      "email": "Email",
+      "scale": "Scale",
+      "position_x": "Position X",
+      "position_y": "Position Y",
+      "size": "Size",
+      "file_loaded": "File Loaded",
+      "max_file_size": "PNG, JPG, SVG · max 5MB",
+      "status": "Status",
+      "czcionka":"Select a font"
+    }
+  },
+  "configurator": {
+    "views": {
+      "flat_view": "Flat View",
+      "front_view": "Front View"
+    },
+    "sections": {
+      "text": "TEXT",
+      "hat_colors": "HAT COLORS",
+      "patterns": "PATTERNS",
+      "pompon": "POM-POM",
+      "logotype": "LOGO",
+      "cuff": "Cuff",
+      "personalization": "PERSONALIZATION"
+    },
+    "options": {
+      "font": "Font",
+      "text_color": "Text Color",
+      "hat_top": "Hat Top",
+      "hat_middle": "Hat Middle",
+      "pattern_top": "Pattern Top",
+      "pattern_middle": "Pattern Middle",
+      "color_a": "Color A",
+      "color_b": "Color B",
+      "color_c": "Color C",
+      "logo_info": "Want to add a logo to the cuff? Send the saved M38 visualization along with your logo file to our sales representative, and we will select the best branding method (embroidery, patch, or leather patch).",
+      "your_text": "YOUR TEXT",
+      "text_placeholder": "Your text...",
+      "hat_top_short": "TOP",
+      "hat_middle_short": "MIDDLE",
+      "color": "Color",
+      "pompon_color_1": "Pom-pom (Color 1)",
+      "pompon_color_2": "Pom-pom (Color 2)",
+      "pompon_color_3": "Pom-pom (Color 3)",
+      "main_pattern": "Main Pattern",
+      "pattern_top_color": "Pattern Top Color",
+      "pattern_bottom_color": "Pattern Bottom Color",
+      "pick_pattern_top": "Select pattern (Top)",
+      "pick_pattern_bottom": "Select pattern (Bottom)",
+      "lack": "-",
+      "unpatterned": "Unpatterned"
+    }
+  },
+  "modals": {
+    "info": {
+      "production_title": "PRODUCTION AND VISUALIZATION",
+      "production_desc_1": "The visualization is for illustrative purposes only. Final approval is based on the submitted knitting program.",
+      "production_desc_2": "If the selected yarn color is unavailable, our sales representative will propose the closest alternative.",
+      "personalization_title": "LOGO PERSONALIZATION",
+      "personalization_desc": "If you want to add a logo to the cuff, send your M38 visualization along with the logo to our sales representative, and we will select the best branding method.",
+      "tech_title": "TECHNICAL INFORMATION",
+      "tech_desc": "The color visible on screen may differ from the actual color due to monitor settings.",
+      "title": "INFORMATION"
+    },
+    "send_pdf": {
+      "title": "Where should we send the visualization?",
+      "subtitle": "Enter the email address where you would like to receive the finished PDF design file.",
+      "email_placeholder": "Your email address"
+    },
+    "inquiry": {
+      "title": "Send Inquiry",
+      "subtitle": "Get a quote for your configuration",
+      "name_company": "FULL NAME / COMPANY",
+      "email": "EMAIL",
+      "phone": "PHONE NUMBER",
+      "quantity": "NUMBER OF CAPS / HATS",
+      "notes": "ORDER NOTES",
+      "consent": "I accept the privacy policy and the processing of my data for the purpose of preparing a quote.",
+      "placeholder_name": "Enter name...",
+      "placeholder_email": "your@email.com",
+      "placeholder_notes": "Additional information about embroidery, deadline, etc."
+    },
+    "logo": {
+      "title": "Logo for the visualization",
+      "subtitle": "This logo will appear on the PDF card.",
+      "upload_tooltip": "Upload your own logo",
+      "click_to_upload": "Click to upload a file",
+      "file_hint": "(PNG, JPG max 2MB)"
+    },
+    "download": {
+      "generating_title": "Generating file...",
+      "generating_desc": "Thank you for downloading your project. Please wait while we prepare your PDF visualization.",
+      "ready_title": "Done!",
+      "ready_desc": "The file has been downloaded. Thank you!"
+    }
+  },
+  "admin": {
+    "list": {
+      "orders": "Orders",
+      "id_date": "ID / DATE",
+      "visualization": "VISUALIZATION",
+      "client": "CLIENT",
+      "contact": "CONTACT",
+      "quantity": "QUANTITY",
+      "status": "STATUS",
+      "actions": "ACTIONS"
+    },
+    "production_card": {
+      "title": "PRODUCTION CARD",
+      "client_company": "Client / Company",
+      "notes": "Order notes:",
+      "table_element": "Element",
+      "table_spec": "Specification / Color (HEX)",
+      "top_color": "Top - Color",
+      "middle_color": "Middle - Color",
+      "bottom_color": "Bottom - Color",
+      "pattern_top": "Pattern Top",
+      "pattern_bottom": "Pattern Bottom",
+      "pattern_color_top": "Pattern Color Top",
+      "pattern_color_bottom": "Pattern Color Bottom",
+      "own_logo": "Custom Logo",
+      "font_size": "Font Size",
+      "font": "Font",
+      "text": "Text",
+      "text_color": "Text Color",
+      "text_y": "Text Y Position",
+      "pompon": "Pom-pom",
+      "pompon_colors": "Pom-pom Colors",
+      "hat_base": "Hat Base",
+      "accessories": "Accessories",
+      "your_text": "Your Text",
+      "client_notes": "Client Notes",
+      "hat_name": "Cap / Hat Name"
+    },
+    "stats": {
+      "daily_downloads": "Daily PDF Downloads",
+      "email_address": "EMAIL ADDRESS",
+      "downloads_count": "NUMBER OF DOWNLOADS",
+      "last_activity": "LAST ACTIVITY"
+    }
+  },
+  "alerts": {
+    "consent_required": "You must accept the privacy policy consent.",
+    "inquiry_sent": "Thank you! Your inquiry has been sent.",
+    "send_error": "An error occurred while sending.",
+    "confirm_overwrite": "Do you want to overwrite the saved configuration with the new version?",
+    "version_saved": "New project version saved!",
+    "project_locked": "Unable to save changes. The project has been locked by the administrator.",
+    "save_error": "Save error.",
+    "file_too_large": "The file is too large! Please choose a smaller image.",
+    "image_processing_error": "Image processing error.",
+    "project_load_error": "Failed to load the project.",
+    "pdf_error": "An error occurred while generating the PDF."
+  },
+  "app": {
+    "loading_project": "Loading project..."
+  },
+  "defaults": {
+    "client_name": "Individual Client",
+    "client_email": "no-data@example.com"
+  },
+
+  "pdf": {
+  "title": "M38-H VISUALIZATION",
+  "disclaimer_colors": "* Colors may vary due to monitor displays - this is for visualization purposes only",
+  "param_name": "PRODUCT PARAMETER",
+  "param_value": "SELECTED VALUE",
+  "none": "None",
+  "yes_uploaded": "YES (file uploaded)",
+  "info_title": "INFORMATION:",
+  "footer_auto": "Automatically generated by the Configurator system",
+  "footer_copy": "System"
+}
+}

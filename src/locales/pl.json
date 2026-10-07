@@ -1,0 +1,198 @@
+{
+  "common": {
+    "buttons": {
+      "download_pdf": "Pobierz Wizualizację PDF",
+      "send_visualization": "Wyślij wizualizacje",
+      "upload_file": "Wgraj plik",
+      "remove": "Usuń",
+      "cancel": "Anuluj",
+      "send_inquiry": "Wyślij zapytanie",
+      "send_pdf": "Wyślij PDF",
+      "generating_pdf": "Generowanie PDF...",
+      "processing": "Przetwarzanie...",
+      "save_version": "Zapisz Wersję",
+      "done": "Gotowe",
+      "close": "Zamknij",
+      "sending": "Wysyłanie..."
+    },
+    "status": {
+      "new": "NOWY",
+      "yes": "TAK",
+      "yes_graphic_attached": "TAK (Załączono grafikę)"
+    },
+    "labels": {
+      "date": "Data",
+      "id": "ID",
+      "email": "Email",
+      "scale": "Skala",
+      "position_x": "Pozycja X",
+      "position_y": "Pozycja Y",
+      "size": "Rozmiar",
+      "file_loaded": "Plik załadowany",
+      "max_file_size": "PNG, JPG, SVG · max 5MB",
+      "status": "Status",
+      "czcionka": "Wybierz czcionkę"
+    }
+  },
+  "configurator": {
+    "views": {
+      "flat_view": "Widok Płaski",
+      "front_view": "Widok Przód"
+    },
+    "sections": {
+      "text": "NAPIS",
+      "hat_colors": "KOLORY CZAPKI",
+      "patterns": "WZORY",
+      "pompon": "POMPON",
+      "logotype": "LOGOTYP",
+      "cuff": "Wywinięcie",
+      "personalization": "PERSONALIZACJA"
+    },
+    "options": {
+      "font": "Czcionka",
+      "text_color": "Kolor Tekstu",
+      "hat_top": "Góra Czapki",
+      "hat_middle": "Środek Czapki",
+      "pattern_top": "Wzór Góra",
+      "pattern_middle": "Wzór Środek",
+      "color_a": "Kolor A",
+      "color_b": "Kolor B",
+      "color_c": "Kolor C",
+      "logo_info": "Chcesz dodać logotyp na wywinięcie? Wyślij zapisaną wizualizację M38 wraz z plikiem logo do handlowca – dobierzemy najlepszą metodę znakowania (haft, naszywka, skórka).",
+      "your_text": "TWÓJ NAPIS / TEKST",
+      "text_placeholder": "Twój tekst...",
+      "hat_top_short": "GÓRA",
+      "hat_middle_short": "ŚRODEK",
+      "color": "Kolor",
+      "pompon_color_1": "Pompon (Kolor 1)",
+      "pompon_color_2": "Pompon (Kolor 2)",
+      "pompon_color_3": "Pompon (Kolor 3)",
+      "main_pattern": "Wzór Główny",
+      "pattern_top_color": "Kolor Wzoru góra",
+      "pattern_bottom_color": "Kolor Wzoru dół",
+      "pick_pattern_top": "Wybierz wzór (Góra)",
+      "pick_pattern_bottom": "Wybierz wzór (Dół)",
+      "lack": "Brak",
+      "unpatterned": "Bez wzoru"
+    }
+  },
+  "modals": {
+    "info": {
+      "production_title": "PRODUKCJA I WIZUALIZACJA",
+      "production_desc_1": "Wizualizacja ma charakter poglądowy. Ostateczna akceptacja odbywa się na podstawie przesłanego programu dziewiarskiego.",
+      "production_desc_2": "W przypadku braku wybranego koloru przędzy, handlowiec zaproponuje najbliższy zamiennik.",
+      "personalization_title": "PERSONALIZACJA LOGO",
+      "personalization_desc": "Jeśli chcesz dodać logo na wywinięcie, wyślij swoją wizualizację M38 wraz z logo do handlowca – dobierzemy najlepszą metodę znakowania.",
+      "tech_title": "INFORMACJE TECHNICZNE",
+      "tech_desc": "Widoczny na ekranie kolor może różnić się od faktycznego ze względu na parametry monitora.",
+      "title": "INFORMACJE"
+    },
+    "send_pdf": {
+      "title": "Gdzie wysłać wizualizację?",
+      "subtitle": "Podaj adres e-mail, na który otrzymasz gotowy plik PDF z projektem.",
+      "email_placeholder": "Twój adres e-mail"
+    },
+    "inquiry": {
+      "title": "Wyślij zapytanie",
+      "subtitle": "Otrzymaj wycenę dla Twojej konfiguracji",
+      "name_company": "IMIĘ I NAZWISKO / FIRMA",
+      "email": "E-MAIL",
+      "phone": "NUMER TELEFONU",
+      "quantity": "ILOŚĆ CZAPEK",
+      "notes": "UWAGI DO ZAMÓWIENIA",
+      "consent": "Akceptuję politykę prywatności i przetwarzanie danych w celu wyceny.",
+      "placeholder_name": "Wpisz nazwę...",
+      "placeholder_email": "twoj@email.com",
+      "placeholder_notes": "Dodatkowe informacje o hafcie, terminie itp."
+    },
+    "logo": {
+      "title": "Logo do wizualizacji",
+      "subtitle": "To logo pojawi się na karcie PDF.",
+      "upload_tooltip": "Wgraj własne logo",
+      "click_to_upload": "Kliknij, aby wgrać plik",
+      "file_hint": "(PNG, JPG max 2MB)"
+    },
+    "download": {
+      "generating_title": "Generowanie pliku...",
+      "generating_desc": "Dziękujemy za pobranie projektu. Proszę czekać, przygotowujemy Twoją wizualizację PDF.",
+      "ready_title": "Gotowe!",
+      "ready_desc": "Plik został pobrany. Dziękujemy!"
+    }
+  },
+  "admin": {
+    "list": {
+      "orders": "Zamówienia",
+      "id_date": "ID / DATA",
+      "visualization": "WIZUALIZACJA",
+      "client": "KLIENT",
+      "contact": "KONTAKT",
+      "quantity": "ILOŚĆ",
+      "status": "STATUS",
+      "actions": "AKCJE"
+    },
+    "production_card": {
+      "title": "KARTA PRODUKCYJNA",
+      "client_company": "Klient Firma",
+      "notes": "Uwagi do zamówienia:",
+      "table_element": "Element",
+      "table_spec": "Specyfikacja / Kolor (HEX)",
+      "top_color": "Góra - Kolor",
+      "middle_color": "Środek - Kolor",
+      "bottom_color": "Dół - Kolor",
+      "pattern_top": "Wzór Góra",
+      "pattern_bottom": "Wzór Dół",
+      "pattern_color_top": "Kolor Wzoru Góra",
+      "pattern_color_bottom": "Kolor Wzoru Dół",
+      "own_logo": "Własny Logotyp",
+      "font_size": "Rozmiar czcionki",
+      "font": "Czcionka",
+      "text": "Tekst",
+      "text_color": "Kolor Tekstu",
+      "text_y": "Y Tekstu",
+      "pompon": "Pompon",
+      "pompon_colors": "Kolory Pompona",
+      "hat_base": "Baza czapki",
+      "accessories": "Dodatki",
+      "your_text": "Twój napis",
+      "client_notes": "Uwagi klienta",
+      "hat_name": "Czapka Imię"
+    },
+    "stats": {
+      "daily_downloads": "Dzienne pobrania PDF",
+      "email_address": "ADRES E-MAIL",
+      "downloads_count": "LICZBA POBRAŃ",
+      "last_activity": "OSTATNIA AKTYWNOŚĆ"
+    }
+  },
+  "alerts": {
+    "consent_required": "Musisz zaakceptować zgodę RODO.",
+    "inquiry_sent": "Dziękujemy! Twoje zapytanie zostało wysłane.",
+    "send_error": "Wystąpił błąd podczas wysyłania.",
+    "confirm_overwrite": "Czy chcesz nadpisać zapisaną konfigurację nową wersją?",
+    "version_saved": "Zapisano nową wersję projektu!",
+    "project_locked": "Nie można zapisać zmian. Projekt został zablokowany przez administratora.",
+    "save_error": "Błąd zapisu.",
+    "file_too_large": "Plik jest za duży! Wybierz mniejszy obrazek.",
+    "image_processing_error": "Błąd przetwarzania obrazka.",
+    "project_load_error": "Nie udało się załadować projektu.",
+    "pdf_error": "Wystąpił błąd podczas generowania PDF."
+  },
+  "app": {
+    "loading_project": "Wczytuję projekt..."
+  },
+  "defaults": {
+    "client_name": "Klient Indywidualny",
+    "client_email": "brak@danych.pl"
+  },
+  "pdf": {
+  "title": "WIZUALIZACJA CZAPKI M38-H",
+  "disclaimer_colors": "* Kolory mogą się różnić przez wyświetlanie na monitorach - jest to tylko wizualizacja",
+  "param_name": "PARAMETR PRODUKTU",
+  "param_value": "WYBRANA WARTOŚĆ",
+  "none": "Brak",
+  "yes_uploaded": "TAK (wgrano plik)",
+  "info_title": "INFORMACJA:",
+  "footer_auto": "Wygenerowano automatycznie przez system Configurator",
+  "footer_copy": "System"
+}
+}

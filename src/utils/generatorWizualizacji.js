@@ -5,6 +5,7 @@ import { ensureFontLoaded } from './fonts/fontLoader.js';
 import { inlineStyles } from './inlineStyles.js';   
 import { embedCurrentFont } from './embedFont.js';
 import { exportSvgToImage } from './exportSvg.js'; 
+import { useLanguage } from '../locales/useLanguage.js'; // Dodany import tłumaczeń
 
 // --- KONFIGURACJA KOLORYSTYCZNA (Ciemny Grafit) ---
 const THEME_COLOR = [44, 62, 80]; 
@@ -146,6 +147,7 @@ const captureFrontHat = async (frontComponentRef, config, showPompon) => {
 };
 
 export function useGeneratorWizualizacji() {
+  const { t } = useLanguage(); // Pobieranie funkcji t()
 
   const generatePDF = async (project, flatRef, frontRef) => {
   
@@ -165,15 +167,18 @@ export function useGeneratorWizualizacji() {
     
     doc.setFontSize(22);
     doc.setFont("Roboto", "bold");
-    doc.text("WIZUALIZACJA CZAPKI M38", 105, 15, { align: 'center' });
+    doc.text(t('pdf.title'), 105, 15, { align: 'center' }); // Tłumaczenie tytułu
     
     doc.setFontSize(9);
     doc.setFont("Roboto", "normal");
-    doc.text(`ID PROJEKTU: ${project.id}  |  DATA: ${project.createdAt}`, 105, 23, { align: 'center' });
+    // Tłumaczenie etykiet ID i Daty
+    const idLabel = t('common.labels.id');
+    const dateLabel = t('common.labels.date');
+    doc.text(`${idLabel}: ${project.id || t('pdf.none')}  |  ${dateLabel}: ${project.createdAt || new Date().toLocaleDateString()}`, 105, 23, { align: 'center' });
     
     doc.setFontSize(7.5);
     doc.setTextColor(200, 200, 200);
-    doc.text("* Kolory mogą się różnić przez wyświetlanie na monitorach - jest to tylko wizualizacja", 105, 34, { align: 'center', style: 'italic' });
+    doc.text(t('pdf.disclaimer_colors'), 105, 34, { align: 'center', style: 'italic' }); // Tłumaczenie disclaimer'a
 
     const config = project.config; 
     const isPompon = config.pompons?.show;
@@ -205,13 +210,13 @@ export function useGeneratorWizualizacji() {
     
     autoTable(doc, {
       startY: tableY,
-      head: [['PARAMETR PRODUKTU', 'WYBRANA WARTOŚĆ']],
+      head: [[t('pdf.param_name'), t('pdf.param_value')]], // Tłumaczenie nagłówków tabeli
       body: [
-        ['Góra (Top)', config.base.top || '-'],
-        ['Środek (Middle)', config.base.middle || '-'],
-        ['Dół (Bottom)', config.base.bottom || '-'],
-        ['Tekst / Napis', config.text.content || 'Brak'],
-        ['Czcionka', config.text.font || 'Arial'],
+        [t('configurator.options.hat_top'), config.base.top || '-'],
+        [t('configurator.options.hat_middle'), config.base.middle || '-'],
+        [t('admin.production_card.bottom_color'), config.base.bottom || '-'],
+        [t('admin.production_card.text'), config.text.content || t('pdf.none')],
+        [t('configurator.options.font'), config.text.font || 'Arial'],
       ],
       styles: { 
         font: "Roboto",
@@ -244,11 +249,12 @@ export function useGeneratorWizualizacji() {
     doc.setFontSize(8.5);
     doc.setTextColor(...THEME_COLOR);
     doc.setFont("Roboto", "bold");
-    doc.text("INFORMACJA:", 20, finalY + 7);
+    doc.text(t('pdf.info_title'), 20, finalY + 7); // Tłumaczenie tytułu sekcji Info
 
     doc.setFont("Roboto", "normal");
     doc.setTextColor(50, 50, 50);
-    const disclaimer = "Wizualizacja ma charakter poglądowy. Ostateczna akceptacja odbywa się na podstawie przesłanego programu dziewiarskiego. W przypadku braku wybranego koloru przędzy, handlowiec zaproponuje najbliższy zamiennik.";
+    // Tłumaczenie opisu
+    const disclaimer = `${t('modals.info.production_desc_1')} ${t('modals.info.production_desc_2')}`;
     const splitNote = doc.splitTextToSize(disclaimer, 170);
     doc.text(splitNote, 20, finalY + 13);
 
@@ -259,10 +265,11 @@ export function useGeneratorWizualizacji() {
     
     doc.setFontSize(7.5);
     doc.setTextColor(150, 150, 150);
-    doc.text("Wygenerowano automatycznie przez system Configurator ", 105, pageHeight - 9, { align: 'center' });
-    doc.text(`© ${new Date().getFullYear()} - System`, 105, pageHeight - 5, { align: 'center' });
+    // Tłumaczenie stopki
+    doc.text(t('pdf.footer_auto'), 105, pageHeight - 9, { align: 'center' });
+    doc.text(`© ${new Date().getFullYear()} - ${t('pdf.footer_copy')}`, 105, pageHeight - 5, { align: 'center' });
 
-    doc.save(`Zamowienie_${project.id}.pdf`);
+    doc.save(`Zamowienie_${project.id || t('pdf.none')}.pdf`);
   };
 
   return { generatePDF };

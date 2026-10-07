@@ -1,12 +1,16 @@
 <template>
-    <div class="nano-footer-info">
-      <span class="nano-content">
-        Chcesz dodać logotyp na wywinięcie? Wyślij zapisaną wizualizację M38 wraz z plikiem logo do handlowca –
-        dobierzemy najlepszą metodę znakowania (haft, naszywka, skórka).
-      </span>
-    </div>
-  </template>
-  
+  <div class="nano-footer-info">
+    <span class="nano-content">
+      {{ t('configurator.options.logo_info') }}
+    </span>
+  </div>
+</template>
+
+  <script setup>
+import { useLanguage } from '../../../locales/useLanguage';
+
+const {t} = useLanguage();
+</script>
   <style scoped>
   .nano-footer-info {
     margin-top: 8px;

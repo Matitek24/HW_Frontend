@@ -9,7 +9,7 @@
     </div>
 
     <!-- 130 px przez usuniecie logotypu -->
-    <div class="d-flex justify-content-center" style="margin-right: 130px;">
+    <div class="d-flex justify-content-center" style="margin-right: 40px;">
       <button class="view-toggle-btn mobile-only" :class="{ 'btn-flat-mode': activeView === 'flat' }"
         @click="$emit('toggle-view')">
         <span v-if="activeView === 'flat'" class="btn-content">
@@ -36,7 +36,7 @@
       <button class="glass-btn with-text me-3" :class="{ 'disabled-btn': isDownloading }" :disabled="isDownloading"
         @click="handlePDFDownload">
         <span class="btn-text">
-          {{ isDownloading ? 'Generuję PDF...' : 'Pobierz Wizualizację PDF' }}
+          {{ isDownloading ? t('common.buttons.generating_pdf') : t('common.buttons.download_pdf') }}
         </span>
 
         <span class="btn-icon">
@@ -66,7 +66,7 @@
       <button class="glass-btn with-text" @click="handleMainAction"
         :class="{ 'disabled-btn': !canEdit || isSubmitting }" :disabled="!canEdit || isSubmitting">
         <span class="btn-text">
-          {{ isSubmitting ? 'Przetwarzanie...' : buttonText }}
+          {{ isSubmitting ? t('common.buttons.processing') : buttonText }}
         </span>
 
         <span class="btn-icon">
@@ -107,7 +107,7 @@
     <div class="actions-container">
 
       <button v-if="projectId && canEdit" class="glass-btn icon-only me-2" @click="openLogoModal"
-        title="Wgraj własne logo">
+        :title="t('modals.logo.upload_tooltip')">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
@@ -115,7 +115,13 @@
           <polyline points="21 15 16 10 5 21"></polyline>
         </svg>
       </button>
-
+      <button class="glass-btn with-text lang-toggle" @click="toggleLanguage">
+        <span class="btn-icon d-flex align-items-center">
+          <img v-if="currentLocale === 'pl'" src="https://flagcdn.com/w20/pl.png" alt="Polska" class="flag-icon" />
+          <img v-else src="https://flagcdn.com/w20/gb.png" alt="English" class="flag-icon" />
+        </span>
+        <span class="btn-text">{{ currentLocale === 'pl' ? 'PL' : 'EN' }}</span>
+      </button>
       <!-- <a href="/" class="logo-btn">
         <img v-if="hatConfig.customLogo" :src="hatConfig.customLogo" alt="Custom Logo"
           style="width: auto; max-width: 60%; max-height: 60%; object-fit: contain;" />
@@ -136,8 +142,8 @@
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
-          <h4 class="modal-title fs-5">Logo do wizualizacji</h4>
-          <p class="modal-subtitle">To logo pojawi się na karcie PDF.</p>
+          <h4 class="modal-title fs-5">{{ t('modals.logo.title') }}</h4>
+          <p class="modal-subtitle">{{ t('modals.logo.subtitle') }}</p>
         </div>
 
         <div class="text-center">
@@ -147,7 +153,7 @@
             </div>
             <br>
             <button class="btn btn-danger btn-sm m-3" @click="removeLogo">
-              Usuń
+              {{ t('common.buttons.remove') }}
             </button>
           </div>
 
@@ -160,13 +166,13 @@
                 <polyline points="17 8 12 3 7 8"></polyline>
                 <line x1="12" y1="3" x2="12" y2="15"></line>
               </svg>
-              <span>Kliknij, aby wgrać plik</span>
-              <span class="small text-muted">(PNG, JPG max 2MB)</span>
+              <span>{{ t('modals.logo.click_to_upload') }}</span>
+              <span class="small text-muted">{{ t('modals.logo.file_hint') }}</span>
             </label>
           </div>
 
           <button class="action-btn-primary w-100 justify-content-center" @click="closeLogoModal">
-            Gotowe
+            {{ t('common.buttons.done') }}
           </button>
         </div>
 
@@ -187,58 +193,59 @@
               <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
           </button>
-          <h3 class="modal-title">Wyślij zapytanie</h3>
-          <p class="modal-subtitle">Otrzymaj wycenę dla Twojej konfiguracji</p>
+          <h3 class="modal-title">{{ t('modals.inquiry.title') }}</h3>
+          <p class="modal-subtitle">{{ t('modals.inquiry.subtitle') }}</p>
         </div>
 
 
         <form @submit.prevent="submitForm" class="row g-3">
           <div class="col-12">
-            <label class="form-label">Imię i Nazwisko / Firma</label>
-            <input type="text" v-model="formData.imieNazwisko" class="input-pill w-100" placeholder="Wpisz nazwę..."
-              required>
+            <label class="form-label">{{ t('modals.inquiry.name_company') }}</label>
+            <input type="text" v-model="formData.imieNazwisko" class="input-pill w-100"
+              :placeholder="t('modals.inquiry.placeholder_name')" required>
           </div>
 
           <div class="col-md-4">
-            <label class="form-label">E-mail</label>
-            <input type="email" v-model="formData.email" class="input-pill w-100" placeholder="twoj@email.com" required>
+            <label class="form-label">{{ t('modals.inquiry.email') }}</label>
+            <input type="email" v-model="formData.email" class="input-pill w-100"
+              :placeholder="t('modals.inquiry.placeholder_email')" required>
           </div>
           <div class="col-md-4">
-            <label class="form-label">Numer telefonu</label>
+            <label class="form-label">{{ t('modals.inquiry.phone') }}</label>
             <input type="tel" v-model="formData.telefon" class="input-pill w-100" placeholder="+48 000 000 000">
           </div>
           <div class="col-md-4">
-            <label class="form-label">Ilośc czapek</label>
+            <label class="form-label">{{ t('modals.inquiry.quantity') }}</label>
             <input type="number" v-model="formData.ilosc" class="input-pill w-100" placeholder="100">
           </div>
 
           <div class="col-12">
-            <label class="form-label">Uwagi do zamówienia</label>
+            <label class="form-label">{{ t('modals.inquiry.notes') }}</label>
             <textarea v-model="formData.uwagi" class="input-pill w-100" rows="4"
-              placeholder="Dodatkowe informacje o hafcie, terminie itp."></textarea>
+              :placeholder="t('modals.inquiry.placeholder_notes')"></textarea>
           </div>
 
           <div class="col-12 mt-2">
             <div class="form-check">
               <input class="form-check-input" type="checkbox" id="rodoCheck" v-model="formData.rodo" required>
               <label class="form-check-label small text-muted d-flex ms-2 mt-4 fw-lighter" for="rodoCheck">
-                Akceptuję politykę prywatności i przetwarzanie danych w celu wyceny.
+                {{ t('modals.inquiry.consent') }}
               </label>
             </div>
           </div>
 
           <div class="col-12 mt-4 d-flex justify-content-end gap-3">
-            <button type="button" class="glass-btn secondary" @click="closeModal">Anuluj</button>
+            <button type="button" class="glass-btn secondary" @click="closeModal">{{ t('common.buttons.cancel') }}</button>
             <button type="submit" class="action-btn-primary" :disabled="isSubmitting">
               <template v-if="!isSubmitting">
-                Wyślij zapytanie
+                {{ t('common.buttons.send_inquiry') }}
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"
                   stroke-linecap="round" stroke-linejoin="round" class="ms-2">
                   <line x1="22" y1="2" x2="11" y2="13"></line>
                   <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                 </svg>
               </template>
-              <span v-else>Wysyłanie...</span>
+              <span v-else>{{ t('common.buttons.sending') }}</span>
             </button>
           </div>
         </form>
@@ -273,19 +280,19 @@
         </div>
 
         <h3 class="modal-title mb-2">
-          {{ isDownloading ? 'Generowanie pliku...' : 'Gotowe!' }}
+          {{ isDownloading ? t('modals.download.generating_title') : t('modals.download.ready_title') }}
         </h3>
 
         <p class="modal-subtitle fs-6 px-3">
           {{ isDownloading
-            ? 'Dziękujemy za pobranie projektu. Proszę czekać, przygotowujemy Twoją wizualizację PDF.'
-            : 'Plik został pobrany. Dziękujemy!'
+            ? t('modals.download.generating_desc')
+            : t('modals.download.ready_desc')
           }}
         </p>
 
         <button v-if="!isDownloading" class="action-btn-primary mt-4 w-100 justify-content-center"
           @click="isDownloadModalOpen = false">
-          Zamknij
+          {{ t('common.buttons.close') }}
         </button>
       </div>
     </div>
@@ -297,6 +304,7 @@
 import { ref, reactive, computed, watch, nextTick } from 'vue';
 import { projectAPI } from '../../utils/axios.js';
 import { resizeImage } from '../../utils/imageUtils.js';
+import { useLanguage } from '../../locales/useLanguage.js';
 
 const props = defineProps({
   isDownloading: { type: Boolean, default: false },
@@ -354,8 +362,10 @@ const canEdit = computed(() => {
 
 // 3. Tekst na guziku
 const buttonText = computed(() => {
-  if (!isEditMode.value) return 'Wyślij wizualizacje';
-  return canEdit.value ? 'Zapisz Wersję' : `Status: ${props.currentStatus}`;
+  if (!isEditMode.value) return t('common.buttons.send_visualization');
+  return canEdit.value
+    ? t('common.buttons.save_version')
+    : `${t('common.labels.status')}: ${props.currentStatus}`;
 });
 
 // --- GŁÓWNA AKCJA PRZYCISKU ---
@@ -379,7 +389,7 @@ const closeModal = () => {
 // --- SCENARIUSZ 1: NOWY PROJEKT (POST) ---
 const submitNewProject = async () => {
   if (!formData.rodo) {
-    alert("Musisz zaakceptować zgodę RODO.");
+    alert(t('alerts.consent_required'));
     return;
   }
 
@@ -399,7 +409,7 @@ const submitNewProject = async () => {
 
     await projectAPI.submitProject(payload);
 
-    alert('Dziękujemy! Twoje zapytanie zostało wysłane.');
+    alert(t('alerts.inquiry_sent'));
     closeModal();
 
     // Reset formularza
@@ -409,7 +419,7 @@ const submitNewProject = async () => {
 
   } catch (error) {
     console.error(error);
-    alert('Wystąpił błąd podczas wysyłania.');
+    alert(t('alerts.send_error'));
   } finally {
     isSubmitting.value = false;
   }
@@ -417,7 +427,7 @@ const submitNewProject = async () => {
 
 // --- SCENARIUSZ 2: AKTUALIZACJA (PUT) ---
 const submitUpdateDirectly = async () => {
-  if (!confirm("Czy chcesz nadpisać zapisaną konfigurację nową wersją?")) return;
+  if (!confirm(t('alerts.confirm_overwrite'))) return;
 
   isSubmitting.value = true;
 
@@ -428,14 +438,14 @@ const submitUpdateDirectly = async () => {
     };
 
     await projectAPI.updateProject(props.projectId, payload);
-    alert('Zapisano nową wersję projektu!');
+    alert(t('alerts.version_saved'));
 
   } catch (error) {
     console.error(error);
     if (error.response && (error.response.status === 403 || error.response.status === 401)) {
-      alert("Nie można zapisać zmian. Projekt został zablokowany przez administratora.");
+      alert(t('alerts.project_locked'));
     } else {
-      alert('Błąd zapisu.');
+      alert(t('alerts.save_error'));
     }
   } finally {
     isSubmitting.value = false;
@@ -451,7 +461,7 @@ const handleLogoUpload = async (event) => {
 
   // Limit 2MB przed kompresją
   if (file.size > 2 * 1024 * 1024) {
-    alert("Plik jest za duży! Wybierz mniejszy obrazek.");
+    alert(t('alerts.file_too_large'));
     return;
   }
 
@@ -465,7 +475,7 @@ const handleLogoUpload = async (event) => {
 
   } catch (e) {
     console.error(e);
-    alert("Błąd przetwarzania obrazka.");
+    alert(t('alerts.image_processing_error'));
   }
 };
 
@@ -477,6 +487,10 @@ const removeLogo = () => {
 const submitForm = () => {
   submitNewProject();
 };
+
+// funkcja od jezyka
+
+const { currentLocale, toggleLanguage, t} = useLanguage();
 </script>
 
 <style scoped>
@@ -930,6 +944,25 @@ const submitForm = () => {
   /* Ukryj metkę na małym ekranie, żeby zrobić miejsce */
   .model-tag-container {
     display: none;
+  }
+}
+.lang-toggle {
+  padding: 0 16px 0 12px !important;
+  min-width: 85px;
+}
+
+.flag-icon {
+  width: 20px;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  object-fit: cover;
+}
+
+/* Dostosowanie dla wersji mobilnej, żeby tekst znikał, a flaga zostawała */
+@media (max-width: 600px) {
+  .lang-toggle {
+    min-width: 48px;
+    padding: 0 !important;
   }
 }
 </style>

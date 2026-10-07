@@ -3,7 +3,7 @@
 
         <div class="drawer-handle" @click="isOpen = !isOpen">
             <div class="handle-content">
-                <span class="handle-text">INFORMACJE</span>
+                <span class="handle-text">{{ t('modals.info.title') }}</span>
                 <div class="handle-dot"></div>
             </div>
         </div>
@@ -17,28 +17,26 @@
             <div class="drawer-content">
 
                 <div class="info-block mb-5">
-                    <label class="info-label">PRODUKCJA I WIZUALIZACJA</label>
+                    <label class="info-label">{{ t('modals.info.production_title') }}</label>
                     <p class="info-text">
-                        Wizualizacja ma charakter poglądowy. Ostateczna akceptacja odbywa się na podstawie przesłanego
-                        programu dziewiarskiego.
+                        {{ t('modals.info.production_desc_1') }}
                     </p>
                     <p class="info-text mt-2">
-                        W przypadku braku wybranego koloru przędzy, handlowiec zaproponuje najbliższy zamiennik.
+                        {{ t('modals.info.production_desc_2') }}
                     </p>
                 </div>
 
                 <div class="info-block mb-5 logo-section">
-                    <label class="info-label text-primary">PERSONALIZACJA LOGO</label>
+                    <label class="info-label text-primary">{{ t('modals.info.personalization_title') }}</label>
                     <p class="info-text fw-medium">
-                        Jeśli chcesz dodać logo na wywinięcie, wyślij swoją wizualizację M38 wraz z logo do handlowca –
-                        dobierzemy najlepszą metodę znakowania.
+                        {{ t('modals.info.personalization_desc') }}
                     </p>
                 </div>
                 <div class="info-block">
-                    <label class="info-label">INFORMACJE TECHNICZNE</label>
-                       <p class="info-text fw-medium">
-                        Widoczny na ekranie kolor może różnić się od faktycznego ze względu na parametry monitora.
-                       </p>
+                    <label class="info-label">{{ t('modals.info.tech_title') }}</label>
+                    <p class="info-text fw-medium">
+                        {{ t('modals.info.tech_desc') }}
+                    </p>
                 </div>
             </div>
 
@@ -51,6 +49,9 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
+import { useLanguage } from '../../locales/useLanguage.js';
+
+const { t } = useLanguage();
 
 const isOpen = ref(false);
 const drawerRef = ref(null);

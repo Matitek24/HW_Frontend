@@ -1,46 +1,111 @@
 <template>
-    <div class="section-wrapper" :class="{ 'expanded-column': !compact }">
-      <div v-if="compact" class="group-section">
-        <div class="group-header">Pompon</div>
-  
-        <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
-          <div class="form-check form-switch m-0">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              role="switch"
-              :checked="config.show"
-              @change="updateShow($event.target.checked)"
-            />
-          </div>
+  <div class="section-wrapper" :class="{ 'expanded-column': !compact }">
+    <div v-if="compact" class="group-section">
+      <div class="group-header">{{ t('configurator.sections.pompon') }}</div>
+
+      <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
+        <div class="form-check form-switch m-0">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            role="switch"
+            :checked="config.show"
+            @change="updateShow($event.target.checked)"
+          />
         </div>
-  
-        <div class="pompon-carousel" :class="{ 'disabled-section': !config.show }">
-          <div class="color-pill compact">
+      </div>
+
+      <div class="pompon-carousel" :class="{ 'disabled-section': !config.show }">
+        <div class="color-pill compact">
+          <ColorPicker
+            :model-value="config.p2"
+            :color-options="colors"
+            :title="t('configurator.options.pompon_color_1')"
+            @update:model-value="updatePomponColor(2, $event)"
+            @hover="(hex) => onPomponHover(2, hex)"
+            @hover-end="$emit('hover-end')"
+          />
+
+          <ColorPicker
+            v-if="pomponMode !== 'single'"
+            :model-value="config.p3"
+            :color-options="colors"
+            :title="t('configurator.options.pompon_color_2')"
+            @update:model-value="updatePomponColor(3, $event)"
+            @hover="(hex) => onPomponHover(3, hex)"
+            @hover-end="$emit('hover-end')"
+          />
+
+          <ColorPicker
+            v-if="pomponMode === 'triple'"
+            :model-value="config.p4"
+            :color-options="colors"
+            :title="t('configurator.options.pompon_color_3')"
+            @update:model-value="updatePomponColor(4, $event)"
+            @hover="(hex) => onPomponHover(4, hex)"
+            @hover-end="$emit('hover-end')"
+          />
+        </div>
+      </div>
+    </div>
+
+    <template v-else>
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="column-title mb-0">{{ t('configurator.sections.pompon') }}</h3>
+        <div class="form-check form-switch mb-0">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            role="switch"
+            :checked="config.show"
+            @change="updateShow($event.target.checked)"
+          />
+        </div>
+      </div>
+
+      <div :class="{ 'disabled-section': !config.show }">
+        <!-- Mode Selector -->
+        <div class="mode-selector mb-3">
+          <button
+            v-for="opt in pomponOptions"
+            :key="opt.value"
+            @click="changePomponMode(opt.value)"
+            class="mode-btn"
+            :class="{ active: pomponMode === opt.value }"
+          >
+            {{ opt.label }}
+          </button>
+        </div>
+
+        <!-- Color Pickers -->
+        <div class="pompon-grid-display">
+          <div class="pompon-item">
+            <label>{{ pomponMode === 'single' ? t('configurator.options.color') : t('configurator.options.color_a') }}</label>
             <ColorPicker
               :model-value="config.p2"
               :color-options="colors"
-              title="Pompon (Kolor 1)"
               @update:model-value="updatePomponColor(2, $event)"
               @hover="(hex) => onPomponHover(2, hex)"
               @hover-end="$emit('hover-end')"
             />
-  
+          </div>
+
+          <div v-if="pomponMode !== 'single'" class="pompon-item">
+            <label>{{ t('configurator.options.color_b') }}</label>
             <ColorPicker
-              v-if="pomponMode !== 'single'"
               :model-value="config.p3"
               :color-options="colors"
-              title="Pompon (Kolor 2)"
               @update:model-value="updatePomponColor(3, $event)"
               @hover="(hex) => onPomponHover(3, hex)"
               @hover-end="$emit('hover-end')"
             />
-  
+          </div>
+
+          <div v-if="pomponMode === 'triple'" class="pompon-item">
+            <label>{{ t('configurator.options.color_c') }}</label>
             <ColorPicker
-              v-if="pomponMode === 'triple'"
               :model-value="config.p4"
               :color-options="colors"
-              title="Pompon (Kolor 3)"
               @update:model-value="updatePomponColor(4, $event)"
               @hover="(hex) => onPomponHover(4, hex)"
               @hover-end="$emit('hover-end')"
@@ -48,80 +113,18 @@
           </div>
         </div>
       </div>
-  
-      <template v-else>
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <h3 class="column-title mb-0">Pompon</h3>
-          <div class="form-check form-switch mb-0">
-            <input
-              class="form-check-input"
-              type="checkbox"
-              role="switch"
-              :checked="config.show"
-              @change="updateShow($event.target.checked)"
-            />
-          </div>
-        </div>
-  
-        <div :class="{ 'disabled-section': !config.show }">
-          <!-- Mode Selector -->
-          <div class="mode-selector mb-3">
-            <button
-              v-for="opt in pomponOptions"
-              :key="opt.value"
-              @click="changePomponMode(opt.value)"
-              class="mode-btn"
-              :class="{ active: pomponMode === opt.value }"
-            >
-              {{ opt.label }}
-            </button>
-          </div>
-  
-          <!-- Color Pickers -->
-          <div class="pompon-grid-display">
-            <div class="pompon-item">
-              <label>{{ pomponMode === 'single' ? 'Kolor' : 'Kolor A' }}</label>
-              <ColorPicker
-                :model-value="config.p2"
-                :color-options="colors"
-                @update:model-value="updatePomponColor(2, $event)"
-                @hover="(hex) => onPomponHover(2, hex)"
-                @hover-end="$emit('hover-end')"
-              />
-            </div>
-  
-            <div v-if="pomponMode !== 'single'" class="pompon-item">
-              <label>Kolor B</label>
-              <ColorPicker
-                :model-value="config.p3"
-                :color-options="colors"
-                @update:model-value="updatePomponColor(3, $event)"
-                @hover="(hex) => onPomponHover(3, hex)"
-                @hover-end="$emit('hover-end')"
-              />
-            </div>
-  
-            <div v-if="pomponMode === 'triple'" class="pompon-item">
-              <label>Kolor C</label>
-              <ColorPicker
-                :model-value="config.p4"
-                :color-options="colors"
-                @update:model-value="updatePomponColor(4, $event)"
-                @hover="(hex) => onPomponHover(4, hex)"
-                @hover-end="$emit('hover-end')"
-              />
-            </div>
-          </div>
-        </div>
-      </template>
-    </div>
-  </template>
+    </template>
+  </div>
+</template>
   
   <script setup>
   import { ref, watch } from 'vue';
   import ColorPicker from '../pickers/ColorPicker.vue';
   import './styles/controls.css';
+  import { useLanguage } from '../../../locales/useLanguage.js';
   
+  const {t} = useLanguage();
+
   const props = defineProps({
     config: {
       type: Object,

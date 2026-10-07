@@ -1,109 +1,114 @@
 <template>
-    <div class="section-wrapper" :class="{ 'expanded-column': !compact }">
-      <div v-if="compact" class="group-section">
-        <div class="group-header">Wzory</div>
-  
-        <!-- Wzór Góra -->
-        <div class="controls-row compact-gap">
-          <div class="mini-color-stack" title="Wzór Główny">
-            <ColorPicker
-              :model-value="patternColors.top"
-              :color-options="colors"
-              @update:model-value="updatePatternColor('top', $event)"
-              @hover="(hex) => $emit('hover', { path: 'pattern.top', value: hex })"
-              @hover-end="$emit('hover-end')"
-              title="Kolor Wzoru góra"
-            />
-          </div>
-          <div class="select-wrapper w-100">
-            <PatternPicker
-              :model-value="patterns.top"
-              :options="topPatterns"
-              @update:model-value="updatePattern('top', $event)"
-              title="Wybierz wzór (Góra)"
-            />
-          </div>
+  <div class="section-wrapper" :class="{ 'expanded-column': !compact }">
+    <div v-if="compact" class="group-section">
+      <div class="group-header">{{ t('configurator.sections.patterns') }}</div>
+
+      <!-- Wzór Góra -->
+      <div class="controls-row compact-gap">
+        <div class="mini-color-stack" :title="t('configurator.options.main_pattern')">
+          <ColorPicker
+            :model-value="patternColors.top"
+            :color-options="colors"
+            @update:model-value="updatePatternColor('top', $event)"
+            @hover="(hex) => $emit('hover', { path: 'pattern.top', value: hex })"
+            @hover-end="$emit('hover-end')"
+            :title="t('configurator.options.pattern_top_color')"
+          />
         </div>
-  
-        <!-- Wzór Środek -->
-        <div class="controls-row compact-gap">
-          <div class="mini-color-stack" title="Wzór Główny">
-            <ColorPicker
-              :model-value="patternColors.main"
-              :color-options="colors"
-              @update:model-value="updatePatternColor('main', $event)"
-              @hover="(hex) => $emit('hover', { path: 'pattern.main', value: hex })"
-              @hover-end="$emit('hover-end')"
-              title="Kolor Wzoru dół"
-            />
-          </div>
-          <div class="select-wrapper w-100">
-            <PatternPicker
-              :model-value="patterns.bottom"
-              :options="bottomPatterns"
-              @update:model-value="updatePattern('bottom', $event)"
-              title="Wybierz wzór (Dół)"
-            />
-          </div>
+        <div class="select-wrapper w-100">
+          <PatternPicker
+            :model-value="patterns.top"
+            :options="topPatterns"
+            @update:model-value="updatePattern('top', $event)"
+            :title="t('configurator.options.pick_pattern_top')"
+          />
         </div>
       </div>
-  
-      <template v-else>
-        <h3 class="column-title">Wzory</h3>
-  
-        <!-- Wzór Góra -->
-        <div class="expanded-row">
-          <div class="expanded-field grow">
-            <label>Wzór Góra</label>
-            <PatternPicker
-              :model-value="patterns.top"
-              :options="topPatterns"
-              @update:model-value="updatePattern('top', $event)"
-              :opt="true"
-            />
-          </div>
-          <div class="expanded-field auto-width">
-            <label>Kolor</label>
-            <ColorPicker
-              :model-value="patternColors.top"
-              :color-options="colors"
-              @update:model-value="updatePatternColor('top', $event)"
-              @hover="(hex) => $emit('hover', { path: 'pattern.top', value: hex })"
-              @hover-end="$emit('hover-end')"
-            />
-          </div>
+
+      <!-- Wzór Środek -->
+      <div class="controls-row compact-gap">
+        <div class="mini-color-stack" :title="t('configurator.options.main_pattern')">
+          <ColorPicker
+            :model-value="patternColors.main"
+            :color-options="colors"
+            @update:model-value="updatePatternColor('main', $event)"
+            @hover="(hex) => $emit('hover', { path: 'pattern.main', value: hex })"
+            @hover-end="$emit('hover-end')"
+            :title="t('configurator.options.pattern_bottom_color')"
+          />
         </div>
-  
-        <!-- Wzór Środek -->
-        <div class="expanded-row mt-2">
-          <div class="expanded-field grow">
-            <label>Wzór Środek</label>
-            <PatternPicker
-              :model-value="patterns.bottom"
-              :options="bottomPatterns"
-              @update:model-value="updatePattern('bottom', $event)"
-              :opt="true"
-            />
-          </div>
-          <div class="expanded-field auto-width">
-            <label>Kolor</label>
-            <ColorPicker
-              :model-value="patternColors.main"
-              :color-options="colors"
-              @update:model-value="updatePatternColor('main', $event)"
-              @hover="(hex) => $emit('hover', { path: 'pattern.main', value: hex })"
-              @hover-end="$emit('hover-end')"
-            />
-          </div>
+        <div class="select-wrapper w-100">
+          <PatternPicker
+            :model-value="patterns.bottom"
+            :options="bottomPatterns"
+            @update:model-value="updatePattern('bottom', $event)"
+            :title="t('configurator.options.pick_pattern_bottom')"
+          />
         </div>
-      </template>
+      </div>
     </div>
-  </template>
+
+    <template v-else>
+      <h3 class="column-title">{{ t('configurator.sections.patterns') }}</h3>
+
+      <!-- Wzór Góra -->
+      <div class="expanded-row">
+        <div class="expanded-field grow">
+          <label>{{ t('configurator.options.pattern_top') }}</label>
+          <PatternPicker
+            :model-value="patterns.top"
+            :options="topPatterns"
+            @update:model-value="updatePattern('top', $event)"
+            :opt="true"
+          />
+        </div>
+        <div class="expanded-field auto-width">
+          <label>{{ t('configurator.options.color') }}</label>
+          <ColorPicker
+            :model-value="patternColors.top"
+            :color-options="colors"
+            @update:model-value="updatePatternColor('top', $event)"
+            @hover="(hex) => $emit('hover', { path: 'pattern.top', value: hex })"
+            @hover-end="$emit('hover-end')"
+          />
+        </div>
+      </div>
+
+      <!-- Wzór Środek -->
+      <div class="expanded-row mt-2">
+        <div class="expanded-field grow">
+          <label>{{ t('configurator.options.pattern_middle') }}</label>
+          <PatternPicker
+            :model-value="patterns.bottom"
+            :options="bottomPatterns"
+            @update:model-value="updatePattern('bottom', $event)"
+            :opt="true"
+          />
+        </div>
+        <div class="expanded-field auto-width">
+          <label>{{ t('configurator.options.color') }}</label>
+          <ColorPicker
+            :model-value="patternColors.main"
+            :color-options="colors"
+            @update:model-value="updatePatternColor('main', $event)"
+            @hover="(hex) => $emit('hover', { path: 'pattern.main', value: hex })"
+            @hover-end="$emit('hover-end')"
+          />
+        </div>
+      </div>
+    </template>
+  </div>
+</template>
+
   
   <script setup>
   import ColorPicker from '../pickers/ColorPicker.vue';
   import PatternPicker from '../pickers/PatternPicker.vue';
   import './styles/controls.css';
+  import { useLanguage } from '../../../locales/useLanguage.js';
+
+  const {t} = useLanguage();
+
 
   const props = defineProps({
     patternColors: {

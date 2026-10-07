@@ -16,7 +16,7 @@
                @click.stop>
             
             <div class="font-dropdown-header">
-              <span>WYBIERZ CZCIONKĘ</span>
+              <span>{{t('common.labels.czcionka')}}</span>
               <button class="close-btn" @click="close">×</button>
             </div>
   
@@ -43,6 +43,9 @@
   
   <script setup>
   import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
+  import { useLanguage } from '../../../locales/useLanguage.js';
+
+  const { t } = useLanguage();
   
   const props = defineProps({
     modelValue: { type: String, required: true },
