@@ -115,12 +115,12 @@
         </svg>
       </button>
 
-      <a href="/" class="logo-btn">
+      <!-- <a href="/" class="logo-btn">
         <img v-if="hatConfig.customLogo" :src="hatConfig.customLogo" alt="Custom Logo"
           style="width: auto; max-width: 60%; max-height: 60%; object-fit: contain;" />
 
         <img v-else src="../../assets/Headwear_COLOR_CMYK_logo-1.png.webp" width="120" alt="hw" />
-      </a>
+      </a> -->
     </div>
   </div>
 
