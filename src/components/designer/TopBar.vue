@@ -8,7 +8,8 @@
       </div>
     </div>
 
-    <div class="d-flex justify-content-center">
+    <!-- 130 px przez usuniecie logotypu -->
+    <div class="d-flex justify-content-center" style="margin-right: 130px;">
       <button class="view-toggle-btn mobile-only" :class="{ 'btn-flat-mode': activeView === 'flat' }"
         @click="$emit('toggle-view')">
         <span v-if="activeView === 'flat'" class="btn-content">
