@@ -259,8 +259,8 @@ export function useGeneratorWizualizacji() {
     
     doc.setFontSize(7.5);
     doc.setTextColor(150, 150, 150);
-    doc.text("Wygenerowano automatycznie przez system Headwear Professionals Configuration", 105, pageHeight - 9, { align: 'center' });
-    doc.text(`© ${new Date().getFullYear()} - System Headwear Configuration`, 105, pageHeight - 5, { align: 'center' });
+    doc.text("Wygenerowano automatycznie przez system Configurator ", 105, pageHeight - 9, { align: 'center' });
+    doc.text(`© ${new Date().getFullYear()} - System`, 105, pageHeight - 5, { align: 'center' });
 
     doc.save(`Zamowienie_${project.id}.pdf`);
   };
