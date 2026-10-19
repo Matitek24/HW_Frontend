@@ -83,7 +83,11 @@
         </defs>
         
         <!-- Wzór górny -->
-        <g :fill="config.pattern.top">
+        <g 
+          :fill="config.pattern.top"
+          :stroke="config.pattern.top"
+          :style="{ color: config.pattern.top }"
+        >
           <g class="fls-4">
             <g transform="translate(-160, 50) scale(1.40)" id="target-wzor">
               <g v-html="topPatternSvg"></g> 
@@ -92,7 +96,12 @@
         </g>
         
         <!-- Główny wzór -->
-        <g clip-path="url(#clippath3)" :fill="config.pattern.main">
+        <g 
+          clip-path="url(#clippath3)" 
+          :fill="config.pattern.main"
+          :stroke="config.pattern.main"
+          :style="{ color: config.pattern.main }"
+        >
           <g transform="translate(0, 210) scale(1.52)" id="target-graphic">
             <g v-html="mainPatternSvg"></g>
           </g>

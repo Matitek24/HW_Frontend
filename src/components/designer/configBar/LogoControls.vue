@@ -49,7 +49,7 @@
     </div>
 
     <!-- ═══ EXPANDED ═══ -->
-    <template v-else>
+    <template v-if="false">
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h3 class="column-title mb-0" style="border: none; padding: 0;">Logotyp</h3>
         <div class="form-check form-switch mb-0" v-show="true">

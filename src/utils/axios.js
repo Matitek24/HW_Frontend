@@ -146,3 +146,17 @@ export const adminAPI = {
 
 
 };
+
+export const adminDictionaryAPI = {
+  // KOLORY
+  getColors: () => api.get('/admin/dictionary/colors'),
+  addColor: (data) => api.post('/admin/dictionary/colors', data),
+  updateColorStatus: (id, isActive) => api.put(`/admin/dictionary/colors/${id}/status`, { isActive }),
+  deleteColor: (id) => api.delete(`/admin/dictionary/colors/${id}`),
+  addColorsBulk: (data) => api.post('/admin/dictionary/colors/bulk', data),
+  deleteColorsBulk: (ids) => api.delete('/admin/dictionary/colors/bulk', { data: ids }),
+  getPatterns: () => api.get('/admin/dictionary/patterns'),
+  addPattern: (data) => api.post('/admin/dictionary/patterns', data),
+  updatePatternStatus: (id, isActive) => api.put(`/admin/dictionary/patterns/${id}/status`, { isActive }),
+  deletePattern: (id) => api.delete(`/admin/dictionary/patterns/${id}`)
+};

@@ -95,27 +95,37 @@ const updatePosition = () => {
 
   const rect = pickerTrigger.value.getBoundingClientRect();
   const dropdownWidth = 240;
+  // Wysokość dropdownu (orientacyjna, dla ustalenia czy okno ma być nad czy pod guzikiem)
+  const dropdownHeight = 310; 
 
-  let left = Math.round(rect.left + (rect.width / 2) - (dropdownWidth / 2));
-  let top = Math.round(rect.top - 310);
+  // Wyliczamy środek względem guzika
+  let left = rect.left + (rect.width / 2) - (dropdownWidth / 2);
+  
+  // Domyślnie otwieramy NAD guzikiem
+  let top = rect.top - dropdownHeight - 10;
 
   const margin = 10;
-  
-  const viewportWidth = document.documentElement.clientWidth;
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
 
-  if (left < margin) left = margin;
-  if (left + dropdownWidth > viewportWidth - margin) {
+  // Korekta w poziomie (żeby nie uciekło za prawą ani za lewą krawędź ekranu)
+  if (left < margin) {
+    left = margin;
+  } else if (left + dropdownWidth > viewportWidth - margin) {
     left = viewportWidth - dropdownWidth - margin;
   }
 
+  // Korekta w pionie (jeśli nie ma miejsca NAD guzikiem, wyświetlamy POD nim)
   if (top < margin) {
-    top = Math.round(rect.bottom + 10);
+    top = rect.bottom + 10;
   }
 
+  // Używamy absolute + window.scrollY, aby okno "trzymało się" strony podczas scrolla,
+  // a nie skakało jako 'fixed'
   dropdownStyle.value = {
-    position: 'fixed',
-    top: `${top}px`,
-    left: `${left}px`,
+    position: 'absolute',
+    top: `${top + window.scrollY}px`,
+    left: `${left + window.scrollX}px`,
     width: `${dropdownWidth}px`,
     zIndex: 999999
   };
@@ -208,12 +218,15 @@ onMounted(() => {
 
 
 const handleScroll = (event) => { 
+  // Ignorujemy scrollowanie WEWNĄTRZ samej palety kolorów
   if (dropdownEl.value && dropdownEl.value.contains(event.target)) {
     return;
   }
   
   if (isOpen.value) {
-    requestAnimationFrame(updatePosition); 
+    // Zamykamy picker podczas głównego scrolla zamiast go ciągle przeliczać, 
+    // co daje dużo płynniejsze UX w panelach konfiguracyjnych
+    close();
   }
 };
 

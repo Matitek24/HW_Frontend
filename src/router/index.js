@@ -5,6 +5,7 @@ import Czapka from '../pages/Czapka.vue';
 import ForgotPassword from '../pages/ForgotPassword.vue';
 import ResetPassword from '../pages/ResetPassword.vue';
 import LeadsView from '../pages/LeadsView.vue';
+import CMSView from '../pages/CMSView.vue';
 
 const routes = [
   {
@@ -34,6 +35,13 @@ const routes = [
     meta: { requiresAuth: true }
   },
   
+  {
+    path: '/cms',
+    name: 'CMS',
+    component: CMSView,
+    meta: { requiresAuth: true }
+  },
+
   {
     path: '/login',
     name: 'Login',

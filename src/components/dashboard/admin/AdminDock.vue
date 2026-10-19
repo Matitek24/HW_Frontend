@@ -15,6 +15,13 @@
         <span class="dock-label">Leads</span>
       </router-link>
 
+      <router-link to="/cms" class="dock-item" active-class="active">
+        <div class="icon-container">
+          <i class="fa-solid fa-pen-to-square"></i>
+        </div>
+        <span class="dock-label">CMS</span>
+      </router-link>
+
     </div>
   </div>
 </template>
