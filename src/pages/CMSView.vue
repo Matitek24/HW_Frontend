@@ -39,7 +39,9 @@
             <div class="glass-panel p-4 p-lg-5" style="padding-bottom: 150px !important;">
             <router-view v-slot="{ Component }">
                 <KeepAlive>
-                <component :is="activeTab === 'colors' ? DictColors : (activeTab === 'patterns' ? DictPatterns : null)" />
+                  <component :is="activeTab === 'colors' ? DictColors
+              : activeTab === 'patterns' ? DictPatterns
+              : DictFonts" />                
                 </KeepAlive>
             </router-view>
             </div>
@@ -55,6 +57,7 @@
   import AdminDock from '../components/dashboard/admin/AdminDock.vue';
   import DictColors from '../components/dashboard/cms/DictColors.vue';
   import DictPatterns from '../components/dashboard/cms/DictPatterns.vue';
+  import DictFonts from '../components/dashboard/cms/DictFonts.vue';
   
   const activeTab = ref('colors');
   </script>

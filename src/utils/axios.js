@@ -158,5 +158,8 @@ export const adminDictionaryAPI = {
   getPatterns: () => api.get('/admin/dictionary/patterns'),
   addPattern: (data) => api.post('/admin/dictionary/patterns', data),
   updatePatternStatus: (id, isActive) => api.put(`/admin/dictionary/patterns/${id}/status`, { isActive }),
-  deletePattern: (id) => api.delete(`/admin/dictionary/patterns/${id}`)
+  deletePattern: (id) => api.delete(`/admin/dictionary/patterns/${id}`),
+  uploadFont: (formData) => api.post('/admin/fonts/upload', formData, { timeout: 30000 }),
+  deleteFont: (id) => api.delete(`admin/fonts/${id}`),
+  calibrateFont: (id, data) => api.put(`/admin/fonts/${id}/calibrate`, data),
 };

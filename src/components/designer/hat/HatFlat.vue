@@ -19,23 +19,30 @@
         <clipPath :id="`prostokat2-${uniqueId}`" transform="translate(0, 93) rotate(180, 658, 370)">
           <rect class="cls-2" x="0" y="0" width="1316.4" height="740" />
         </clipPath>
+        
         <clipPath :id="`prostokat3-${uniqueId}`" transform="translate(0, -66)">
           <rect class="cls-2" x="0" y="0" width="1316.4" height="740" />
         </clipPath>
+        
         <clipPath :id="`logo-clip-${uniqueId}`">
           <rect x="0.58" y="512.74" width="1313.78" height="227.89" />
         </clipPath>
+
+        <!-- TEKSTURA ŻAKARDU Z UNIQUE ID -->
+        <pattern :id="`jacquard-knit-${uniqueId}`" width="12" height="14" patternUnits="userSpaceOnUse" patternTransform="scale(1)">
+          <path d="M 2 4 L 6 12 L 10 4" fill="none" stroke="rgba(0,0,0,0.15)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M 2 2 L 6 10 L 10 2" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+        </pattern>
       </defs>
      
+      <!-- 1. BAZA CZAPKI (Kolory i paski pionowe) -->
       <g :style="{ clipPath: `url(#clippath-new-${uniqueId})` }">
-  
         <rect :fill="config.base.bottom" class="cls-5" x="0.58" y="512.74" width="1313.78" height="227.89" />
-        
         <rect :fill="config.base.top" class="cls-3" x="-0.12" y="-1.57" width="1316.4" height="286.07" />
-        
         <rect :fill="config.base.middle" class="cls-1" x="-0.12" y="284.49" width="1316.4" height="228.85" />
         
         <g>
+           <!-- Twoje pionowe paski wywinięcia (skróciłem w podglądzie dla czytelności, zachowaj wszystkie swoje <rect class="pasek" ... />) -->
            <rect class="pasek" x="25.2" y="512.74" width="3.16" height="227.89"/>
            <rect class="pasek" x="56.78" y="512.74" width="3.16" height="227.89"/>
            <rect class="pasek" x="89.63" y="512.74" width="3.16" height="227.89"/>
@@ -49,7 +56,6 @@
            <rect class="pasek" x="355.81" y="512.74" width="3.16" height="227.89"/>
            <rect class="pasek" x="388.66" y="512.74" width="3.16" height="227.89"/>
            <rect class="pasek" x="421.52" y="512.74" width="3.16" height="227.89"/>
-
            <rect class="pasek" x="453.95" y="512.74" width="3.16" height="227.89"/>
            <rect class="pasek" x="486.8" y="512.74" width="3.16" height="227.89"/>
            <rect class="pasek" x="519.65" y="512.74" width="3.16" height="227.89"/>
@@ -62,7 +68,6 @@
            <rect class="pasek" x="752.98" y="512.74" width="3.16" height="227.89"/>
            <rect class="pasek" x="785.83" y="512.74" width="3.16" height="227.89"/>
            <rect class="pasek" x="818.68" y="512.74" width="3.16" height="227.89"/>
-
            <rect class="pasek" x="853" y="512.74" width="3.16" height="227.89"/>
            <rect class="pasek" x="885.85" y="512.74" width="3.16" height="227.89"/>
            <rect class="pasek" x="918.7" y="512.74" width="3.16" height="227.89"/>
@@ -79,6 +84,8 @@
            <rect class="pasek" x="1286.6" y="512.74" width="3.16" height="227.89"/>
         </g>
       </g>
+
+      <!-- 2. WZORY Z BAZY -->
       <g :style="{ clipPath: `url(#prostokat-top-${uniqueId})` }">
         <g :style="{ clipPath: `url(#clippath-new-${uniqueId})` }" :fill="config.pattern.top">
           <g v-html="topPatternSvg" transform="translate(0, 50) scale(2.04)"></g>
@@ -90,17 +97,14 @@
           <g v-html="mainPatternSvg"></g>
         </g>
       </g>
-      <g :style="{ clipPath: `url(#prostokat-top-${uniqueId})` }">
-        <g :style="{ clipPath: `url(#clippath-new-${uniqueId})` }" :fill="config.pattern.top">
-          <g v-html="topPatternSvg" transform="translate(0, 50) scale(2.04)"></g>
-        </g>
-      </g>
+
+      <!-- 3. NAKŁADKA ŻAKARDOWA (Musi być pod wzorami, a nad logiem i tekstem) -->
       <g :style="{ clipPath: `url(#clippath-new-${uniqueId})` }">
-        <g :fill="config.pattern.main" transform="translate(0, 283) scale(2.01)">
-          <g v-html="mainPatternSvg"></g>
-        </g>
+        <!-- Zmiana: opacity: 0.5 (nie 50%) oraz poprawione wywołanie url() z uniqueId -->
+        <rect x="-100" y="-100" width="1500" height="1000" :fill="`url(#jacquard-knit-${uniqueId})`" style="pointer-events: none; opacity: 0.5;" />
       </g>
 
+      <!-- 4. LOGOTYP -->
       <g v-if="config.logo && config.logo.show !== false" :style="{ clipPath: `url(#logo-clip-${uniqueId})` }">
         <image v-if="config.logo.url"
           class="logo-image-exclude"
@@ -112,17 +116,16 @@
           preserveAspectRatio="xMidYMid meet"
         />
         <g v-else
+           class="logo-placeholder-exclude"
            @click="requestLogoUpload"
            style="cursor: pointer;"
            :transform="`translate(${(658 + (config.logo.x ?? 0))}, ${(625 + (config.logo.y ?? 0))}) scale(${config.logo.scale ?? 1})`"
         >
-          <!-- Hexagon badge / shield placeholder -->
           <path d="M -22 -38 L 22 -38 L 44 0 L 22 38 L -22 38 L -44 0 Z" 
                 fill="#ffffff" 
                 stroke="#cbd5e1" 
                 stroke-width="3.5" 
                 stroke-dasharray="8,5" />
-          <!-- Plus sign -->
           <path d="M -15 0 L 15 0 M 0 -15 L 0 15"
                 stroke="#94a3b8"
                 stroke-width="4.5"
@@ -130,23 +133,21 @@
         </g>
       </g>
 
-
+      <!-- 5. TEKST -->
       <g :style="{ clipPath: `url(#prostokat3-${uniqueId})` }">
         <g :style="{ clipPath: `url(#prostokat2-${uniqueId})` }">
-          
           <text 
             ref="textElement"
             :x="658.14" 
             :y="finalTextPosition"
             :fill="config.text.color" 
-            :font-family="config.text.font" 
+            :font-family="currentFont.family" 
             :font-size="config.text.fontSize" 
-            :font-weight="['tahoma', 'arialbold'].includes(config.text.font.toLowerCase()) ? 'bold' : 'normal'"
+            :font-weight="currentFont.bold ? 'bold' : 'normal'"
             text-anchor="middle" 
             dominant-baseline="central"
             xml:space="preserve"
             style="white-space: pre; pointer-events: none;" 
-        
           >
             {{ config.text.content }}
           </text>
@@ -156,7 +157,9 @@
   </div>
 </template>
 <script setup>
-  import { computed, ref } from 'vue';
+  import { computed, watch, ref } from 'vue';
+import { getFont } from '../../../utils/fonts/fontsStore';
+import { loadFont } from '../../../utils/fonts/fontService';
   const svgRef = ref(null);
 
   const props = defineProps({
@@ -168,30 +171,26 @@
     window.dispatchEvent(new CustomEvent('request-logo-upload'));
   };
 
-  // --- TWOJA MAPA DOSTROJENIA (identyczna jak w Front) ---
-  const FONT_TUNING = {
-    'impact': { shift: 4, pivot: -0.01},
-    'roboto': { shift: 4, pivot: 0.0},
-    'arialbold': { shift: 6, pivot: -0.06},
-    'arial': { shift: 2, pivot: 0.02},
-    'tahoma': { shift: 5, pivot: -0.05},
-    'default': { shift: 8, pivot: -0.05},
-  };
+// 1. Zawsze mamy aktualny obiekt fontu:
+const currentFont = computed(() => getFont(props.config.text.font));
+
+// 2. Kiedy font się zmienia, ładujemy go fizycznie do przeglądarki
+watch(currentFont, async (newFont) => {
+  await loadFont(newFont); // Przeglądarka "uczy się" tej czcionki
+}, { immediate: true });
   
   const uniqueId = Math.random().toString(36).substr(2, 9);
   
   const FLAT_BASE_Y = 395; 
   
   const finalTextPosition = computed(() => {
-    const fontSize = props.config.text.fontSize || 64;
-    const userOffset = -props.config.text.offsetY || 0;
-    const fontName = (props.config.text.font || 'arial').toLowerCase();
+  const fontSize = props.config.text.fontSize || 64;
+  const userOffset = -(props.config.text.offsetY || 0);
+  const tuning = currentFont.value.flat; // dla HatFront.vue użyj: currentFont.value.front
 
-    const tuning = FONT_TUNING[fontName] || FONT_TUNING['default'];
-
-
-    return FLAT_BASE_Y + tuning.shift + (userOffset*0.85) + (fontSize * tuning.pivot);
-  });
+  // Y = Baza + Tuning Y + (Rozmiar * Pivot) + Offset użytkownika
+  return FLAT_BASE_Y + tuning.shift + (fontSize * tuning.pivot) + (userOffset * 0.85); 
+});
   
   // --- LOGIKA WZORÓW ---
   const topPatternSvg = computed(() => {

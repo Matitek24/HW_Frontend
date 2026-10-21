@@ -43,15 +43,16 @@
             </div>
           </div>
 
-          <!-- Napis -->
-          <div class="col-md-3">
+         <!-- Napis -->
+         <div class="col-md-3">
             <h6 class="detail-header">TWÓJ NAPIS / TEKST</h6>
             <div class="mt-3 p-3 bg-light rounded-3 text-center border border-light">
               <span 
                 class="d-block mb-2 text-preview" 
                 :style="{ 
                   color: project.config.text.color, 
-                  fontFamily: project.config.text.font
+                  fontFamily: `'${currentFont.family}', sans-serif`,
+                  fontWeight: currentFont.bold ? 'bold' : 'normal'
                 }">
                 {{ project.config.text.content }}
               </span>
@@ -74,16 +75,21 @@
 </template>
 
 <script setup>
-defineProps({
-  project: {
-    type: Object,
-    required: true
-  },
-  getPatternName: {
-    type: Function,
-    required: true
-  }
+import { computed, watch } from 'vue';
+import { getFont } from '../../utils/fonts/fontsStore';
+import { loadFont } from '../../utils/fonts/fontService';
+
+const props = defineProps({
+  project: { type: Object, required: true },
+  getPatternName: { type: Function, required: true }
 });
+
+const currentFont = computed(() => getFont(props.project.config.text?.font));
+
+// Od razu prosimy przeglądarkę o plik, gdy tylko użytkownik kliknie rozwinięcie wiersza
+watch(currentFont, async (newFont) => {
+  await loadFont(newFont);
+}, { immediate: true });
 </script>
 
 <style scoped>

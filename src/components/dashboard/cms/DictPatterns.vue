@@ -169,16 +169,16 @@
             
             <ol class="ps-3 mb-4">
               <li class="mb-3">
-                <strong>Wymiary obszaru roboczego:</strong> Ustaw obszar na dokładnie <b>1316.28 x 800.63 px</b>. Najlepiej pobierz nasz gotowy szablon, który ma już te proporcje oraz punkty stabilizujące.
+                <strong>Wymiary obszaru roboczego:</strong> Ustaw obszar na dokładnie <b>1316.28 x 800.63 px</b>. Najlepiej pobierz nasz gotowy szablon, który ma już te proporcje.
               </li>
               <li class="mb-3">
-                <strong>Wklej wzór:</strong> Umieść wektor ze swoim wzorem (np. tak jak przygotowane oczy[cite: 10]) na szablonie w docelowym miejscu.
+                <strong>Wklej wzór:</strong> Umieść wektor ze swoim wzorem na szablonie w docelowym miejscu.
               </li>
               <li class="mb-3">
                 <strong>Zaznacz wszystko:</strong> Wciśnij <b>Ctrl + A</b> (Mac: <b>Cmd + A</b>), aby zaznaczyć całą zawartość obszaru roboczego.
               </li>
               <li class="mb-3">
-                <strong>Spłaszcz obiekty:</strong> Z górnego menu wybierz <b>Obiekt &rarr; Rozwinięcie...</b> (Object &rarr; Expand). Zaznacz „Wypełnienie” i „Obrys”, a następnie kliknij OK.
+                <strong>Spłaszcz obiekty:</strong> Z górnego menu wybierz <b>Obiekt &rarr; Rozwinięcie...</b> (Object &rarr; Expand). Zaznacz „Wypełnienie” i „Obrys”,a następnie kliknij OK.
               </li>
               <li class="mb-2">
                 <strong>Zapisz jako SVG:</strong> Wybierz opcję Plik &rarr; Eksportuj jako (format SVG). W okienku opcji ustaw:
@@ -186,6 +186,7 @@
                   <li>Styl: <b>Atrybuty prezentacji</b></li>
                   <li>Responsywny: <b>Odznaczone</b> (puste okienko)</li>
                   <li>Zminimalizuj: <b>Zaznaczone</b></li>
+                  <li>Korzystaj z obszarów robocznych </li>
                 </ul>
               </li>
             </ol>

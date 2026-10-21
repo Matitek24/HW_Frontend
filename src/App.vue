@@ -3,9 +3,15 @@
     <router-view />
   </div>
 </template>
-
 <script setup>
+import { onMounted } from 'vue';
+import { useFontsStore } from './utils/fonts/fontsStore';
 
+const fontsStore = useFontsStore();
+
+onMounted(async () => {
+  await fontsStore.fetchFonts(); 
+});
 </script>
 
 <style>

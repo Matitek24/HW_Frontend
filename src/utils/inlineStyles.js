@@ -34,7 +34,7 @@ export const inlineStyles = (sourceElement, forceFill = true) => {
         
         // Specjalne traktowanie atrybutów (tylko jeśli forceFill włączone dla fill)
         if (forceFill && prop === 'fill' && val !== 'none') {
-            el.setAttribute('fill', val); 
+          el.setAttribute('fill', val.replace(/url\(["']?(#[^"')]+)["']?\)/, 'url($1)'));
         }
         if (prop === 'stroke' && val !== 'none') {
             el.setAttribute('stroke', val); 

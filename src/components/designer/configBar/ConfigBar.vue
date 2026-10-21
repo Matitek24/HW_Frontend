@@ -10,6 +10,7 @@
     <div class="config-bar">
       <!-- Compact View -->
       <div v-if="!effectiveExpanded" class="view-compact">
+        
         <TextControls :config="config.text" :colors="dictionaries.colors" :fonts="dictionaries.fonts" compact
           @update:config="updateConfig('text', $event)" @hover="$emit('hover', $event)"
           @hover-end="$emit('hover-end')" />
@@ -45,6 +46,41 @@
       <!-- Expanded View -->
       <div v-if="effectiveExpanded" class="view-expanded">
         <div class="expanded-grid">
+          <!-- Przełącznik widoku (tylko desktop) -->
+          <!-- Wybór widoku (tylko desktop): miniatura + przyciski -->
+            <div v-if="desktopMode" class="view-picker">
+              <div
+                class="mini-thumbnail"
+                :class="{
+                  'mini-thumbnail-front': activeView === 'flat',
+                  'mini-thumbnail-flat': activeView === 'front'
+                }"
+                role="button"
+                tabindex="0"
+                @click="toggleView"
+                @keydown.enter.prevent="toggleView"
+                @keydown.space.prevent="toggleView"
+              >
+              <KeepAlive>
+                <HatFlat v-if="activeView === 'front'" :config="thumbConfig" :patternsDict="dictionaries.patterns" />
+                <HatFront v-else :config="thumbConfig" :show-pompon="thumbConfig.pompons?.show"
+                  :patternsDict="dictionaries.patterns" />
+              </KeepAlive>
+                <div class="mini-overlay">
+                  <span>{{ activeView === 'front' ? 'Widok Płaski' : 'Widok 3D' }}</span>
+                </div>
+              </div>
+
+              <div class="view-switch" role="tablist" aria-label="Widok czapki">
+                <button type="button" role="tab" class="view-switch__btn"
+                  :class="{ active: activeView === 'flat' }" :aria-selected="activeView === 'flat'"
+                  @click="emit('update:activeView', 'flat')">Płaski</button>
+                <button type="button" role="tab" class="view-switch__btn"
+                  :class="{ active: activeView === 'front' }" :aria-selected="activeView === 'front'"
+                  @click="emit('update:activeView', 'front')">Frontalny</button>
+              </div>
+            </div>
+
           <TextControls :config="config.text" :colors="dictionaries.colors" :fonts="dictionaries.fonts"
             @update:config="updateConfig('text', $event)" @hover="$emit('hover', $event)"
             @hover-end="$emit('hover-end')" />
@@ -82,6 +118,8 @@ import PatternControls from './PatternControls.vue';
 import PomponControls from './PomponControls.vue';
 import FooterInfo from './FooterInfo.vue';
 import LogoControls from './LogoControls.vue';
+import HatFlat from '../hat/HatFlat.vue';
+import HatFront from '../hat/HatFront.vue';
 
 const props = defineProps({
   config: {
@@ -99,14 +137,28 @@ const props = defineProps({
   desktopMode: {
     type: Boolean,
     default: false
+  },
+  activeView: {
+    type: String,
+    default: 'front'
+  },
+  previewConfig: {
+    type: Object,
+    default: null
   }
 });
 
-const emit = defineEmits(['toggle-expand', 'hover', 'hover-end', 'update:config']);
+const emit = defineEmits(['toggle-expand', 'hover', 'hover-end', 'update:config', 'update:activeView']);
 
 const isExpanded = ref(false);
 
 const effectiveExpanded = computed(() => props.desktopMode || isExpanded.value);
+
+const thumbConfig = computed(() => props.previewConfig || props.config);
+
+const toggleView = () => {
+  emit('update:activeView', props.activeView === 'front' ? 'flat' : 'front');
+};
 
 const toggleExpand = () => {
   isExpanded.value = !isExpanded.value;
@@ -409,5 +461,67 @@ const bottomPatterns = computed(() =>
     height: 35px;
     width: 50px;
   }
+}
+/* --- WYBÓR WIDOKU --- */
+.view-picker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 36px;              /* oddech przed sekcją NAPIS */
+}
+
+.view-picker .mini-thumbnail {
+  flex-shrink: 0;
+  position: relative;
+  margin-bottom: 18px;              /* przestrzeń pod miniaturą */
+}
+
+.view-picker .mini-thumbnail:focus-visible {
+  outline: 2px solid #1f2937;
+  outline-offset: 2px;
+}
+
+.view-switch {
+  width: 100%;
+  max-width: 236px;                 /* całość mniejsza i wyśrodkowana */
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  padding: 3px;
+  background: rgba(17, 24, 39, 0.05);
+  border-radius: 10px;
+}
+
+.view-switch__btn {
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  padding: 6px 0;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.view-switch__btn:hover:not(.active) {
+  color: #374151;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.view-switch__btn.active {
+  background: #1f2937;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.view-switch__btn:focus-visible {
+  outline: 2px solid #1f2937;
+  outline-offset: 2px;
+}
+.view-picker .mini-thumbnail.mini-thumbnail-front,
+.view-picker .mini-thumbnail.mini-thumbnail-flat {
+  height: 190px;
 }
 </style>

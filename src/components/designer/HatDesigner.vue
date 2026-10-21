@@ -21,7 +21,7 @@
       }">
 
         <div class="preview-panel">
-          <div class="main-preview">
+          <div class="main-preview" :style="previewScaleStyle">
             <div id="print-flat-container" class="czapka flat-layout" :class="{ 'is-active': activeView === 'flat' }">
               <div class="hat-label mb-2">WIDOK PŁASKI</div>
               <HatFlat ref="flatRef" :config="previewConfig" :patternsDict="dictionaryData.patterns" class="czapka2" />
@@ -33,45 +33,14 @@
                 :patternsDict="dictionaryData.patterns" class="czapka2" />
             </div>
           </div>
-
-          <!-- Desktop Mini Thumbnail & View Switcher -->
-          <div v-if="isDesktop" class="preview-footer">
-            <div 
-              class="mini-thumbnail" 
-              :class="{ 
-                'mini-thumbnail-front': activeView === 'flat', 
-                'mini-thumbnail-flat': activeView === 'front' 
-              }" 
-              @click="toggleView"
-            >
-              <HatFlat v-if="activeView === 'front'" :config="previewConfig" :patternsDict="dictionaryData.patterns" />
-              <HatFront v-else :config="previewConfig" :show-pompon="previewConfig.pompons.show" :patternsDict="dictionaryData.patterns" />
-              <div class="mini-overlay">
-                <span>{{ activeView === 'front' ? 'Widok Płaski' : 'Widok 3D' }}</span>
-              </div>
-            </div>
-            
-            <div class="view-switcher">
-              <button :class="{ active: activeView === 'flat' }" @click="activeView = 'flat'">
-                Płaski
-              </button>
-              <button :class="{ active: activeView === 'front' }" @click="activeView = 'front'">
-                Frontalny
-              </button>
-            </div>
-          </div>
         </div>
 
         <div class="config-panel" v-if="isDesktop">
-          <ConfigBar :config="hatConfig" :dictionaries="dictionaryData" @update:config="handleConfigUpdate"
-            @hover="handleHover" @hover-end="handleHoverEnd" :desktopMode="true" />
+          <ConfigBar :config="hatConfig" :previewConfig="previewConfig" :dictionaries="dictionaryData"
+            v-model:activeView="activeView"
+            @update:config="handleConfigUpdate" @hover="handleHover" @hover-end="handleHoverEnd" :desktopMode="true" />
             
-          <div class="config-panel-footer mt-5 mb-3 d-flex justify-content-center">
-            <a href="/" class="bottom-logo-btn">
-              <img v-if="hatConfig.customLogo" :src="hatConfig.customLogo" alt="Custom Logo" style="width: auto; max-width: 100%; max-height: 50px; object-fit: contain;" />
-              <img v-else src="../../assets/Headwear_COLOR_CMYK_logo-1.png.webp" width="100" alt="hw" />
-            </a>
-          </div>
+          
         </div>
 
         <ConfigBar v-if="!isDesktop" :config="hatConfig" :dictionaries="dictionaryData" @update:config="handleConfigUpdate"
@@ -83,7 +52,7 @@
   </div>
 </template>
 <script setup>
-import { reactive, watch, onMounted, ref, computed } from 'vue';
+import { reactive, watch, onMounted, onUnmounted, ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useGeneratorWizualizacji } from '../../utils/generatorWizualizacji.js';
 import ConfigBar from './configBar/ConfigBar.vue';
@@ -153,7 +122,7 @@ const handleHover = (data) => {
 };
 
 const handleHoverEnd = () => {
-  hoverState.path = null;
+  hoverState.paths = [];
   hoverState.value = null;
 };
 //hover
@@ -201,13 +170,53 @@ onMounted(async () => {
     isInitLoading.value = false;
   }
 
-  // Update isDesktop on resize
-  window.addEventListener('resize', () => {
-    isDesktop.value = window.innerWidth > 600;
-  });
+  
 });
 
 const isDesktop = ref(window.innerWidth > 600);
+// --- SKALOWANIE PODGLĄDU (tylko desktop) ---
+const previewScale = ref(1);
+const PREVIEW_SIZE = 0.8;
+
+const updatePreviewScale = () => {
+  if (!isDesktop.value) { previewScale.value = 1; return; }
+
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const panelW = vw <= 1024 ? 360 : 440;
+  const wrapperW = vw <= 1250 ? 420 : 530;
+  const innerW = wrapperW - 60;
+  const labelH = 64;
+  const hatH = 160 + innerW * 0.977;   // zawsze wyższy widok (front), więc skala nie zmienia się przy przełączaniu
+
+  const availW = vw - panelW - 80;
+  const availH = vh - 120;
+
+  const fit = Math.min(availW / (wrapperW + 20), availH / (labelH + hatH));
+  previewScale.value = Math.min(1.5, Math.max(1, fit)) * PREVIEW_SIZE;
+};
+
+const previewScaleStyle = computed(() =>
+  isDesktop.value
+    ? {
+        transform: `scale(${previewScale.value})`,
+        transformOrigin: 'center center',
+        '--preview-scale': previewScale.value
+      }
+    : {}
+);
+
+const handleResize = () => {
+  isDesktop.value = window.innerWidth > 600;
+  updatePreviewScale();
+};
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize);
+  updatePreviewScale();
+});
+onUnmounted(() => window.removeEventListener('resize', handleResize));
+watch(isDesktop, updatePreviewScale);   
 
 watch(hatConfig, (newVal) => {
   updateCssVariables(newVal.base);
@@ -283,44 +292,7 @@ const handleDownloadRequest = async (eventData) => {
   }
 };
 
-// --- PDF GENERATOR ---
-// Funkcja obsługująca przycisk z TopBar (stara)
-// const handleDownloadRequest = async (type) => {
-//   if (type === "pdf") {
-//     handleDownload(); // Przekieruj do nowej funkcji
-//   }
-// };
-// Gdzieś w Twoim App.vue / Głównym komponencie:
 
-// NOWA FUNKCJA GENERUJĄCA
-// const handleDownload = async () => {
-//   // 1. Zbuduj obiekt danych projektu dynamicznie
-//   const projectData = {
-//     id: route.params.id || "Nowy",
-//     createdAt: new Date().toLocaleDateString(),
-//     config: hatConfig, // Używamy naszego reaktywnego obiektu
-//     status: projectStatus.value,
-//     client: { // Dodaj przykładowe dane klienta lub pobierz je skądś
-//       name: "Klient Indywidualny",
-//       email: "brak@danych.pl"
-//     }
-//   };
-
-//   // 2. Wywołaj generator (przekazując Refy)
-//   // Dodajemy prosty loader UI
-//   isDownloading.value = true;
-//   try {
-//     // Dajemy chwilę na przerysowanie UI
-//     setTimeout(async () => {
-//       await generatePDF(projectData, flatRef.value, frontRef.value);
-//       isDownloading.value = false;
-//     }, 100);
-//   } catch (e) {
-//     console.error("Błąd PDF:", e);
-//     alert("Wystąpił błąd podczas generowania PDF.");
-//     isDownloading.value = false;
-//   }
-// };
 
 // Inicjalne ustawienie CSS
 updateCssVariables(hatConfig.base);
@@ -483,8 +455,7 @@ updateCssVariables(hatConfig.base);
   overflow: hidden;
   cursor: pointer;
   background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+
   border: 1px solid rgba(255, 255, 255, 0.8);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
@@ -550,7 +521,7 @@ updateCssVariables(hatConfig.base);
   left: 0;
   right: 0;
   background: rgba(255,255,255,0.85);
-  backdrop-filter: blur(4px);
+
   padding: 6px 0;
   text-align: center;
   font-size: 10px;
@@ -873,5 +844,11 @@ body {
     display: none !important;
   }
 
+}
+.main-preview .hat-label {
+  font-size: calc(11px / var(--preview-scale, 1));
+  padding: calc(8px / var(--preview-scale, 1)) calc(16px / var(--preview-scale, 1));
+  border-radius: 999px;
+  margin-bottom: 14px;
 }
 </style>

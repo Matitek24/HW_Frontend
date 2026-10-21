@@ -138,7 +138,10 @@ const downloadProductionPdf = async (project) => {
     try {
         pdfProjectData.value = project;
         await nextTick();
-        await new Promise(r => setTimeout(r, 100)); 
+        
+      
+        await new Promise(r => setTimeout(r, 400)); 
+        
         const ghostElement = document.getElementById('pdf-ghost-container');
         await generateProductionCard(project, ghostElement, patternsDict.value);
     } catch (e) {

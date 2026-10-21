@@ -2,6 +2,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import logo from "../assets/Headwear_COLOR_CMYK_logo-1.png.webp";
 import { fontBase64 as RobotoBase64 } from './fonts/Roboto-Regular.js';
+import { captureFlatHat } from './captureFlatHat.js';
 
 const imageCache = new Map();
 
@@ -29,121 +30,7 @@ export function useProductionCard() {
     });
   };
 
-  const loadFontForCanvas = async (fontName) => {
-    const fontFileName = getFontFileName(fontName);
-    const fontUrl = `${window.location.origin}/fonts/${fontFileName}`;
-
-    try {
-      if (document.fonts.check(`16px "${fontName}"`)) return true;
-      const fontFace = new FontFace(fontName, `url(${fontUrl})`);
-      await fontFace.load();
-      document.fonts.add(fontFace);
-      await document.fonts.ready;
-      return true;
-    } catch (e) {
-      console.error(`Błąd ładowania fontu ${fontName}:`, e);
-      return false;
-    }
-  };
-
-  const getFontFileName = (fontName) => {
-    if (!fontName) return 'arial.ttf';
-    const lower = fontName.toLowerCase();
-    const fontMap = {
-      'arial': 'arial.ttf',
-      'arialbold': 'arialbold.ttf',
-      'gothic': 'msgothic.ttf',
-      'calibri': 'calibri.ttf',
-      'tahoma': 'Tahoma.ttf',
-      'impact': 'impact.ttf',
-      'roboto': 'roboto.ttf'
-    };
-    for (const [key, file] of Object.entries(fontMap)) {
-      if (lower.includes(key)) return file;
-    }
-    return 'arial.ttf';
-  };
-
-  const captureHatWithFont = async (hatElement, config) => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const svgElement = hatElement.querySelector('svg');
-        if (!svgElement) return reject(new Error('Brak SVG'));
-
-        const scale = 2; 
-        const svgWidth = 1316.28;
-        const svgHeight = 800.63;
-        const canvas = document.createElement('canvas');
-        canvas.width = svgWidth * scale;
-        canvas.height = svgHeight * scale;
-        const ctx = canvas.getContext('2d');
-
-        const svgClone = svgElement.cloneNode(true);
-
-        // Usuwamy tekst i wbudowane logo z SVG żeby nie brudziło Canvasa (rysujemy je ręcznie)
-        svgClone.querySelectorAll('text').forEach(el => el.remove());
-        svgClone.querySelectorAll('.logo-image-exclude').forEach(el => el.remove());
-
-        const svgData = new XMLSerializer().serializeToString(svgClone);
-        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-        const svgUrl = URL.createObjectURL(svgBlob);
-
-        const img = new Image();
-
-        // UWAGA: Zmiana na async () => 
-        img.onload = async () => {
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          URL.revokeObjectURL(svgUrl);
-
-          // 1. RYSOWANIE LOGA RĘCZNIE
-          if (config.logo && config.logo.url) {
-             const logoImg = await loadImage(config.logo.url);
-             if (logoImg) {
-                const x = (658.14 + (config.logo.x || 0)) * scale;
-                const y = (620 + (config.logo.y || 0)) * scale;
-                const size = 150 * scale * (config.logo.scale || 1);
-
-                ctx.save();
-                // Opcjonalna maska (żeby nie wyszło za pasek na renderingu produkcyjnym)
-                ctx.beginPath();
-                ctx.rect(0.58 * scale, 512.74 * scale, 1313.78 * scale, 227.89 * scale);
-                ctx.clip();
-                ctx.drawImage(logoImg, x - size/2, y - size/2, size, size);
-                ctx.restore();
-             }
-          }
-
-          // 2. NAŁÓŻ TEKST
-          if (config.text?.content) {
-            const fontName = config.text.font || 'Arial';
-            await loadFontForCanvas(fontName);
-
-            const fontSize = (config.text.fontSize || 64) * scale;
-            const textY = (395 - (config.text.offsetY || 0)) * scale; 
-
-            ctx.font = `normal ${fontSize}px "${fontName}", sans-serif`;
-            ctx.fillStyle = config.text.color || '#000000';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            if (fontName == 'tahoma') {
-              ctx.font = `bold ${fontSize}px "${fontName}", sans-serif`;
-            }
-
-            ctx.fillText(config.text.content, 658.14 * scale, textY);
-          }
-
-          resolve(canvas.toDataURL('image/png'));
-        };
-
-        img.onerror = () => reject(new Error('Nie udało się załadować SVG'));
-        img.src = svgUrl;
-
-      } catch (error) {
-        reject(error);
-      }
-    });
-  };
-
+  // Główna metoda generująca kartę
   const generateProductionCard = async (project, hatDomElement, patternsDict) => {
     const doc = new jsPDF();
 
@@ -153,11 +40,24 @@ export function useProductionCard() {
     doc.setFont("Roboto");
 
     let hatImage = null;
+    
+    // MAGIA: Używamy tego samego captureFlatHat co w wizualizacji!
     if (hatDomElement) {
       try {
-        hatImage = await captureHatWithFont(hatDomElement, project.config);
+        // hatDomElement to u Ciebie '<div class="pdf-ghost-inner"><HatFlat /></div>'
+        // więc musimy wyciągnąć z niego element SVG
+        const svgElement = hatDomElement.querySelector('svg');
+        if (svgElement) {
+            // Generujemy z opcją formatu PNG, tak jak używał tego jsPDF w karcie produkcyjnej
+            const result = await captureFlatHat(svgElement, project.config, { scale: 2, format: 'png' });
+            if (result) {
+                hatImage = result.dataUrl;
+            }
+        } else {
+            console.error("Nie znaleziono tagu SVG w hatDomElement");
+        }
       } catch (e) {
-        console.error("Błąd wizualizacji:", e);
+        console.error("Błąd generowania obrazka do karty produkcyjnej:", e);
       }
     }
 
@@ -197,8 +97,6 @@ export function useProductionCard() {
       ['Wzór Dół', getPatternName(conf.patterns?.bottom, patternsDict)],
       ['Kolor Wzoru Góra', conf.pattern?.top || '-'],
       ['Kolor Wzoru Dół', conf.pattern?.main || '-'],
-      // Dodana informacja o Logotypie!
-      ['Własny Logotyp', conf.logo?.url ? 'TAK (Załączono graficznie)' : 'Brak'],
       ['Rozmiar czcionki', fontSizeDisplay],
       ['Czcionka', conf.text?.font || '-'],
       ['Tekst', conf.text?.content || '-'],
@@ -230,17 +128,7 @@ export function useProductionCard() {
       doc.text(splitNotes, 14, finalY + 5);
     }
 
-    const logoImg = await loadImage(logo);
-    if (logoImg) {
-      const pageHeight = doc.internal.pageSize.height;
-      const pageWidth = doc.internal.pageSize.width;
-      const logoWidth = 40;
-      const logoHeight = (logoImg.height / logoImg.width) * logoWidth;
-      const x = (pageWidth - logoWidth) / 2;
-      const y = pageHeight - logoHeight - 15;
-      doc.addImage(logoImg, "PNG", x, y, logoWidth, logoHeight);
-    }
-
+  
     doc.save(`Karta_${project.id.slice(0, 8)}.pdf`);
   };
 
